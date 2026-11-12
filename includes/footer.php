@@ -1,0 +1,1 @@
+<footer class="dashboard-footer"><span>&copy; 2026 Sistem Informasi Peminjaman Barang Multimedia KOMINFO</span><span>Versi 1.0.0 · Tahap Pengembangan I</span></footer>
