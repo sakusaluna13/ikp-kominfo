@@ -13,7 +13,7 @@ $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 $userId = (int) $_SESSION['user']['id'];
 
 // ============================================
-// FILTER & PENCARIAN
+// FILTER & QUERY PENCARIAN
 // ============================================
 $search = trim((string) ($_GET['search'] ?? ''));
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
@@ -27,14 +27,11 @@ $sql = "
         u.username,
         b.nama_barang,
         b.kategori,
+        p.jumlah,
         p.tanggal_pinjam,
         p.tanggal_kembali,
         p.status,
-        p.created_at,
-        CASE 
-            WHEN p.tanggal_kembali IS NOT NULL THEN DATEDIFF(p.tanggal_kembali, p.tanggal_pinjam)
-            ELSE DATEDIFF(CURDATE(), p.tanggal_pinjam)
-        END AS lama_hari
+        p.created_at
     FROM peminjaman p
     JOIN users u ON u.id = p.user_id
     JOIN barang b ON b.id = p.barang_id
@@ -91,98 +88,104 @@ foreach ($rows as $r) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($pageTitle) ?> | KOMINFO</title>
+    <title><?= e($pageTitle) ?> | SIMPEL MEDIA KOMINFO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
-<body class="dashboard-body">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <div class="app-shell">
+    <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-        <?php require __DIR__ . '/../includes/sidebar.php'; ?>
+    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
 
-        <main class="main-content">
+        <?php require __DIR__ . '/../includes/header.php'; ?>
 
-            <?php require __DIR__ . '/../includes/header.php'; ?>
+        <main class="flex-1 flex flex-col gap-6">
 
-            <!-- STATISTIK RINGKASAN FILTER -->
-            <section class="stats-grid" style="margin-top: 24px;">
-                <article class="stat-card">
-                    <div class="stat-icon blue">
-                        <i data-lucide="clipboard-list"></i>
+            <!-- STATISTIK RINGKASAN -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
+                    <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="clipboard-list" class="w-5 h-5"></i>
                     </div>
-                    <div>
-                        <span>Total Transaksi</span>
-                        <strong><?= $countTotal ?></strong>
-                        <small>Sesuai filter pencarian</small>
-                    </div>
-                </article>
-
-                <article class="stat-card">
-                    <div class="stat-icon green">
-                        <i data-lucide="check-check"></i>
-                    </div>
-                    <div>
-                        <span>Selesai Kembali</span>
-                        <strong><?= $countKembali ?></strong>
-                        <small>Peralatan dikembalikan</small>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-[11px] font-bold text-slate-400">Total Transaksi</span>
+                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countTotal ?></strong>
+                        <small class="text-[10px] text-slate-400">Sesuai filter pencarian</small>
                     </div>
                 </article>
 
-                <article class="stat-card">
-                    <div class="stat-icon amber">
-                        <i data-lucide="clock"></i>
+                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="check-check" class="w-5 h-5"></i>
                     </div>
-                    <div>
-                        <span>Sedang Berjalan</span>
-                        <strong><?= $countDipinjam ?></strong>
-                        <small>Masih berstatus dipinjam</small>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-[11px] font-bold text-slate-400">Selesai Kembali</span>
+                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countKembali ?></strong>
+                        <small class="text-[10px] text-slate-400">Peralatan dikembalikan</small>
                     </div>
                 </article>
 
-                <article class="stat-card">
-                    <div class="stat-icon violet">
-                        <i data-lucide="x-circle"></i>
+                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
+                    <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
                     </div>
-                    <div>
-                        <span>Ditolak</span>
-                        <strong><?= $countDitolak ?></strong>
-                        <small>Pengajuan tidak disetujui</small>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-[11px] font-bold text-slate-400">Sedang Berjalan</span>
+                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countDipinjam ?></strong>
+                        <small class="text-[10px] text-slate-400">Masih berstatus dipinjam</small>
+                    </div>
+                </article>
+
+                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
+                    <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="x-circle" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-[11px] font-bold text-slate-400">Ditolak / Dibatalkan</span>
+                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countDitolak ?></strong>
+                        <small class="text-[10px] text-slate-400">Pengajuan tidak disetujui</small>
                     </div>
                 </article>
             </section>
 
-            <!-- TABEL RIWAYAT TRANSAKSI -->
-            <section class="content-card">
-                <div class="section-heading">
+            <!-- KONTEN TABEL RIWAYAT -->
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                        <span class="eyebrow">REKAPITULASI</span>
-                        <h3>Histori Semua Peminjaman</h3>
-                        <p><?= $userRole === 'admin' ? 'Seluruh rekam jejak peminjaman aset multimedia KOMINFO.' : 'Rekam jejak peminjaman yang pernah Anda ajukan.' ?></p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">REKAPITULASI</span>
+                        <h2 class="text-xl font-bold text-[#102b4e]">Histori Semua Peminjaman</h2>
+                        <p class="text-xs text-slate-400">
+                            <?= $userRole === 'admin' 
+                                ? 'Seluruh rekam jejak transaksi peminjaman aset multimedia KOMINFO.' 
+                                : 'Rekam jejak peminjaman peralatan yang pernah Anda ajukan.' ?>
+                        </p>
                     </div>
 
                     <?php if ($userRole === 'admin'): ?>
-                        <a href="../laporan/index.php" class="btn-primary btn-sm">
-                            <i data-lucide="printer"></i>
+                        <a href="../laporan/index.php" class="inline-flex items-center gap-2 px-4 py-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
                             <span>Cetak Laporan</span>
                         </a>
                     <?php endif; ?>
                 </div>
 
-                <!-- FILTER FORM -->
-                <form method="get" class="filter-bar">
-                    <div class="filter-group">
+                <!-- FORM FILTER PENCARIAN -->
+                <form method="get" class="flex flex-wrap items-center justify-between gap-3 mb-6 p-3 bg-slate-50/80 rounded-xl border border-slate-100">
+                    <div class="flex flex-wrap items-center gap-2.5">
                         <input
                             type="text"
                             name="search"
-                            class="form-input"
+                            class="h-9 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 min-w-[200px]"
                             placeholder="Cari peminjam atau barang..."
                             value="<?= e($search) ?>"
-                            style="min-width: 190px;"
                         >
 
-                        <select name="status" class="form-select">
+                        <select name="status" class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                             <option value="">Semua Status</option>
                             <option value="menunggu persetujuan" <?= $filterStatus === 'menunggu persetujuan' ? 'selected' : '' ?>>Menunggu Persetujuan</option>
                             <option value="dipinjam" <?= $filterStatus === 'dipinjam' ? 'selected' : '' ?>>Sedang Dipinjam</option>
@@ -190,84 +193,90 @@ foreach ($rows as $r) {
                             <option value="ditolak" <?= $filterStatus === 'ditolak' ? 'selected' : '' ?>>Ditolak</option>
                         </select>
 
-                        <input
-                            type="date"
-                            name="start_date"
-                            class="form-input"
-                            title="Tanggal Mulai"
-                            value="<?= e($startDate) ?>"
-                        >
+                        <div class="flex items-center gap-1.5">
+                            <input
+                                type="date"
+                                name="start_date"
+                                class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                value="<?= e($startDate) ?>"
+                                title="Tanggal Mulai"
+                            >
+                            <span class="text-xs text-slate-400">s/d</span>
+                            <input
+                                type="date"
+                                name="end_date"
+                                class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                value="<?= e($endDate) ?>"
+                                title="Tanggal Akhir"
+                            >
+                        </div>
 
-                        <span style="font-size: 11px; color: #8292a5;">s/d</span>
-
-                        <input
-                            type="date"
-                            name="end_date"
-                            class="form-input"
-                            title="Tanggal Akhir"
-                            value="<?= e($endDate) ?>"
-                        >
-
-                        <button type="submit" class="btn-secondary btn-sm">
-                            <i data-lucide="filter"></i>
+                        <button type="submit" class="h-9 px-3.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+                            <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                             <span>Terapkan</span>
                         </button>
 
                         <?php if ($search !== '' || $filterStatus !== '' || $startDate !== '' || $endDate !== ''): ?>
-                            <a href="index.php" class="btn-outline btn-sm">Reset</a>
+                            <a href="index.php" class="h-9 px-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-xl flex items-center transition">
+                                Reset
+                            </a>
                         <?php endif; ?>
                     </div>
 
-                    <span class="table-count"><?= count($rows) ?> data ditemukan</span>
+                    <span class="text-xs font-semibold text-slate-500">
+                        Total <strong><?= count($rows) ?></strong> catatan
+                    </span>
                 </form>
 
                 <!-- TABEL DATA -->
-                <div class="table-scroll">
-                    <table class="data-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Peminjam</th>
-                                <th>Nama Barang</th>
-                                <th>Kategori</th>
-                                <th>Tanggal Pinjam</th>
-                                <th>Tanggal Pengembalian</th>
-                                <th>Durasi</th>
-                                <th>Status</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <th class="py-3 px-3 w-12">No.</th>
+                                <th class="py-3 px-3">Nama Peminjam</th>
+                                <th class="py-3 px-3">Peralatan</th>
+                                <th class="py-3 px-3">Kategori</th>
+                                <th class="py-3 px-3">Tgl. Pinjam</th>
+                                <th class="py-3 px-3">Tgl. Pengembalian</th>
+                                <th class="py-3 px-3">Durasi</th>
+                                <th class="py-3 px-3">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$rows): ?>
                                 <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i data-lucide="archive"></i>
-                                            <strong>Tidak ada catatan transaksi</strong>
-                                            <span>Tidak ada histori peminjaman yang cocok dengan kriteria filter.</span>
+                                    <td colspan="8" class="text-center py-10 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-2">
+                                            <i data-lucide="archive" class="w-7 h-7 text-slate-300"></i>
+                                            <span class="font-bold text-xs">Tidak ada catatan transaksi ditemukan</span>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($rows as $i => $r): ?>
                                     <?php
-                                    $cls = match ($r['status']) {
-                                        'dipinjam' => 'badge-warning',
-                                        'dikembalikan' => 'badge-success',
-                                        'menunggu persetujuan' => 'badge-info',
-                                        'ditolak' => 'badge-danger',
-                                        default => 'badge-neutral',
+                                    $badge = match ($r['status']) {
+                                        'dipinjam' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                        'dikembalikan' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                        'menunggu persetujuan' => 'bg-blue-50 text-blue-700 border-blue-200',
+                                        'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                        default => 'bg-slate-50 text-slate-600 border-slate-200'
                                     };
                                     ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell"><?= e($r['nama_peminjam']) ?></td>
-                                        <td><?= e($r['nama_barang']) ?></td>
-                                        <td><?= e($r['kategori']) ?></td>
-                                        <td><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
-                                        <td><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
-                                        <td><strong><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?></strong> hari</td>
-                                        <td>
-                                            <span class="status-badge <?= $cls ?>">
+                                    <tr class="hover:bg-slate-50/60 transition">
+                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
+                                        <td class="py-3.5 px-3 font-bold text-slate-800"><?= e($r['nama_peminjam']) ?></td>
+                                        <td class="py-3.5 px-3 font-medium text-slate-700">
+                                            <?= e($r['nama_barang']) ?>
+                                            <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md ml-1"><?= (int) $r['jumlah'] ?> unit</span>
+                                        </td>
+                                        <td class="py-3.5 px-3 text-slate-500"><?= e($r['kategori']) ?></td>
+                                        <td class="py-3.5 px-3 text-slate-500"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
+                                        <td class="py-3.5 px-3 text-slate-500 font-medium"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-3.5 px-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
                                                 <?= e(ucwords($r['status'])) ?>
                                             </span>
                                         </td>
@@ -280,13 +289,12 @@ foreach ($rows as $r) {
 
             </section>
 
-            <!-- FOOTER -->
-            <?php require __DIR__ . '/../includes/footer.php'; ?>
-
         </main>
+
+        <?php require __DIR__ . '/../includes/footer.php'; ?>
+
     </div>
 
     <script src="../assets/js/script.js"></script>
 </body>
 </html>
-

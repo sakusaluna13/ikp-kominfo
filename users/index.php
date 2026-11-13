@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($password) < 8) {
             flash('error', 'Password minimal 8 karakter.');
         } else {
-            // Cek username
             $cek = $pdo->prepare('SELECT id FROM users WHERE username = :u LIMIT 1');
             $cek->execute(['u' => $username]);
             if ($cek->fetch()) {
@@ -43,10 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare('INSERT INTO users (nama, username, password, role, status) VALUES (:nama, :user, :pass, :role, :status)');
                 $stmt->execute([
-                    'nama' => $nama,
-                    'user' => $username,
-                    'pass' => $hash,
-                    'role' => $role,
+                    'nama'   => $nama,
+                    'user'   => $username,
+                    'pass'   => $hash,
+                    'role'   => $role,
                     'status' => $status,
                 ]);
                 flash('success', 'Pengguna baru "' . $nama . '" berhasil didaftarkan.');
@@ -73,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. UBAH ROLE (ADMIN / PEMINJAM)
+    // 3. UBAH ROLE
     if ($action === 'ubah_role') {
         $id = (int) ($_POST['id'] ?? 0);
         $newRole = in_array($_POST['new_role'] ?? '', ['admin', 'peminjam'], true) ? $_POST['new_role'] : 'peminjam';
@@ -113,11 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id === $currentAdminId) {
             flash('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         } else {
-            // Cek apakah punya riwayat transaksi
             $cek = $pdo->prepare('SELECT COUNT(*) FROM peminjaman WHERE user_id = :id');
             $cek->execute(['id' => $id]);
             if ($cek->fetchColumn() > 0) {
-                flash('error', 'Pengguna tidak dapat dihapus karena memiliki riwayat peminjaman. Anda dapat menonaktifkan status akunnya saja.');
+                flash('error', 'Pengguna tidak dapat dihapus karena memiliki riwayat peminjaman. Nonaktifkan saja akunnya.');
             } else {
                 $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id');
                 $stmt->execute(['id' => $id]);
@@ -132,42 +130,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ============================================
 // DATA PENGGUNA
 // ============================================
-$search = trim((string) ($_GET['search'] ?? ''));
-$filterRole = trim((string) ($_GET['role'] ?? ''));
+$search       = trim((string) ($_GET['search'] ?? ''));
+$filterRole   = trim((string) ($_GET['role'] ?? ''));
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
 
 $sql = "
     SELECT 
-        u.id,
-        u.nama,
-        u.username,
-        u.role,
-        u.status,
-        u.created_at,
+        u.id, u.nama, u.username, u.role, u.status, u.created_at,
         COUNT(p.id) AS total_transaksi
     FROM users u
     LEFT JOIN peminjaman p ON p.user_id = u.id
     WHERE 1=1
 ";
-
 $params = [];
 
 if ($search !== '') {
-    $sql .= " AND (u.nama LIKE :search OR u.username LIKE :search)";
+    $sql .= ' AND (u.nama LIKE :search OR u.username LIKE :search)';
     $params['search'] = "%$search%";
 }
-
 if ($filterRole !== '') {
-    $sql .= " AND u.role = :role";
+    $sql .= ' AND u.role = :role';
     $params['role'] = $filterRole;
 }
-
 if ($filterStatus !== '') {
-    $sql .= " AND u.status = :status";
+    $sql .= ' AND u.status = :status';
     $params['status'] = $filterStatus;
 }
 
-$sql .= " GROUP BY u.id ORDER BY u.role ASC, u.nama ASC";
+$sql .= ' GROUP BY u.id ORDER BY u.role ASC, u.nama ASC';
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -179,166 +169,191 @@ $userList = $stmt->fetchAll();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($pageTitle) ?> | KOMINFO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
-<body class="dashboard-body">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="app-shell">
+    <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-        <?php require __DIR__ . '/../includes/sidebar.php'; ?>
+    <div class="md:ml-64 min-h-screen flex flex-col">
 
-        <main class="main-content">
+        <?php require __DIR__ . '/../includes/header.php'; ?>
 
-            <?php require __DIR__ . '/../includes/header.php'; ?>
+        <main class="flex-1 p-4 md:p-6 space-y-6">
 
-            <section class="content-card" style="margin-top: 24px;">
-                <div class="section-heading">
+            <!-- CARD UTAMA -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+                <!-- Header Card -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 border-b border-slate-100">
                     <div>
-                        <span class="eyebrow">HAK AKSES & AKUN</span>
-                        <h3>Daftar Pengguna Sistem</h3>
-                        <p>Kelola hak akses administrator dan akun staf peminjam multimedia.</p>
+                        <p class="text-xs font-bold tracking-widest text-blue-600 uppercase mb-1">Hak Akses &amp; Akun</p>
+                        <h3 class="text-lg font-bold text-slate-800">Daftar Pengguna Sistem</h3>
+                        <p class="text-sm text-slate-500 mt-0.5">Kelola hak akses administrator dan akun staf peminjam multimedia.</p>
                     </div>
-
-                    <button type="button" class="btn-primary btn-sm" data-modal-open="modalTambahUser">
-                        <i data-lucide="user-plus"></i>
-                        <span>Tambah Pengguna</span>
+                    <button type="button"
+                        data-modal-open="modalTambahUser"
+                        class="inline-flex items-center gap-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        Tambah Pengguna
                     </button>
                 </div>
 
                 <!-- FILTER FORM -->
-                <form method="get" class="filter-bar">
-                    <div class="filter-group">
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-input"
-                            placeholder="Cari nama atau username..."
-                            value="<?= e($search) ?>"
-                            style="min-width: 200px;"
-                        >
+                <form method="get" class="flex flex-wrap items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/60">
+                    <input
+                        type="text"
+                        name="search"
+                        class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-56 bg-white"
+                        placeholder="Cari nama atau username..."
+                        value="<?= e($search) ?>"
+                    >
 
-                        <select name="role" class="form-select">
-                            <option value="">Semua Peran (Role)</option>
-                            <option value="admin" <?= $filterRole === 'admin' ? 'selected' : '' ?>>Admin</option>
-                            <option value="peminjam" <?= $filterRole === 'peminjam' ? 'selected' : '' ?>>Peminjam</option>
-                        </select>
+                    <select name="role" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Semua Peran (Role)</option>
+                        <option value="admin" <?= $filterRole === 'admin' ? 'selected' : '' ?>>Admin</option>
+                        <option value="peminjam" <?= $filterRole === 'peminjam' ? 'selected' : '' ?>>Peminjam</option>
+                    </select>
 
-                        <select name="status" class="form-select">
-                            <option value="">Semua Status</option>
-                            <option value="aktif" <?= $filterStatus === 'aktif' ? 'selected' : '' ?>>Aktif</option>
-                            <option value="nonaktif" <?= $filterStatus === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
-                        </select>
+                    <select name="status" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Semua Status</option>
+                        <option value="aktif" <?= $filterStatus === 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                        <option value="nonaktif" <?= $filterStatus === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
+                    </select>
 
-                        <button type="submit" class="btn-secondary btn-sm">
-                            <i data-lucide="filter"></i>
-                            <span>Filter</span>
-                        </button>
+                    <button type="submit" class="inline-flex items-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter
+                    </button>
 
-                        <?php if ($search !== '' || $filterRole !== '' || $filterStatus !== ''): ?>
-                            <a href="index.php" class="btn-outline btn-sm">Reset</a>
-                        <?php endif; ?>
-                    </div>
+                    <?php if ($search !== '' || $filterRole !== '' || $filterStatus !== ''): ?>
+                        <a href="index.php" class="inline-flex items-center gap-1.5 border border-slate-300 hover:bg-slate-100 text-slate-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                            Reset
+                        </a>
+                    <?php endif; ?>
 
-                    <span class="table-count"><?= count($userList) ?> akun terdaftar</span>
+                    <span class="ml-auto text-xs text-slate-400 font-medium"><?= count($userList) ?> akun terdaftar</span>
                 </form>
 
-                <!-- TABEL PENGGUNA -->
-                <div class="table-scroll">
-                    <table class="data-table">
+                <!-- TABEL -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Lengkap</th>
-                                <th>Username</th>
-                                <th>Peran (Role)</th>
-                                <th>Status</th>
-                                <th>Total Pinjam</th>
-                                <th>Terdaftar Sejak</th>
-                                <th style="text-align: right;">Aksi</th>
+                            <tr class="bg-slate-50 border-b border-slate-100 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                <th class="px-4 py-3 w-10">No.</th>
+                                <th class="px-4 py-3">Nama Lengkap</th>
+                                <th class="px-4 py-3">Username</th>
+                                <th class="px-4 py-3">Peran (Role)</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Total Pinjam</th>
+                                <th class="px-4 py-3">Terdaftar Sejak</th>
+                                <th class="px-4 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$userList): ?>
                                 <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i data-lucide="users"></i>
-                                            <strong>Tidak ada pengguna ditemukan</strong>
+                                    <td colspan="8" class="px-4 py-14 text-center">
+                                        <div class="flex flex-col items-center gap-2 text-slate-400">
+                                            <i data-lucide="users" class="w-10 h-10 opacity-30"></i>
+                                            <p class="font-semibold">Tidak ada pengguna ditemukan</p>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($userList as $i => $u): ?>
-                                    <?php
-                                    $isMe = ((int) $u['id'] === $currentAdminId);
-                                    $roleBadge = ($u['role'] === 'admin') ? 'badge-info' : 'badge-neutral';
-                                    $statusBadge = ($u['status'] === 'aktif') ? 'badge-success' : 'badge-danger';
-                                    ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell">
+                                    <?php $isMe = ((int) $u['id'] === $currentAdminId); ?>
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="px-4 py-3 text-slate-400 text-xs"><?= $i + 1 ?></td>
+                                        <td class="px-4 py-3 font-semibold text-slate-800">
                                             <?= e($u['nama']) ?>
                                             <?php if ($isMe): ?>
-                                                <span style="font-size: 9px; color: #2563a6; font-weight: 700; margin-left: 5px;">(Anda)</span>
+                                                <span class="ml-1.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">(Anda)</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><code><?= e($u['username']) ?></code></td>
-                                        <td>
-                                            <span class="status-badge <?= $roleBadge ?>">
-                                                <?= ucfirst($u['role']) ?>
-                                            </span>
+                                        <td class="px-4 py-3">
+                                            <code class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-mono"><?= e($u['username']) ?></code>
                                         </td>
-                                        <td>
-                                            <span class="status-badge <?= $statusBadge ?>">
-                                                <?= ucfirst($u['status']) ?>
-                                            </span>
+                                        <td class="px-4 py-3">
+                                            <?php if ($u['role'] === 'admin'): ?>
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
+                                                    <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                                                    <i data-lucide="user" class="w-3 h-3"></i> Peminjam
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
-                                        <td><?= (int) $u['total_transaksi'] ?> kali</td>
-                                        <td><?= date('d/m/Y', strtotime($u['created_at'])) ?></td>
-                                        <td style="text-align: right;">
-                                            <div class="action-group" style="justify-content: flex-end;">
-                                                <?php if (!$isMe): ?>
-                                                    <!-- TOGGLE STATUS AKTIF / NONAKTIF -->
-                                                    <form method="post" style="margin:0;">
+                                        <td class="px-4 py-3">
+                                            <?php if ($u['status'] === 'aktif'): ?>
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span> Aktif
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-rose-50 text-rose-700 px-2.5 py-1 rounded-full">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400 inline-block"></span> Nonaktif
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-600"><?= (int) $u['total_transaksi'] ?> kali</td>
+                                        <td class="px-4 py-3 text-slate-500 text-xs"><?= date('d/m/Y', strtotime($u['created_at'])) ?></td>
+                                        <td class="px-4 py-3">
+                                            <?php if (!$isMe): ?>
+                                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+
+                                                    <!-- TOGGLE STATUS -->
+                                                    <form method="post" class="m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="toggle_status">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                                         <input type="hidden" name="current_status" value="<?= $u['status'] ?>">
-                                                        <button 
-                                                            type="submit" 
-                                                            class="<?= $u['status'] === 'aktif' ? 'btn-secondary' : 'btn-success' ?> btn-sm"
-                                                            title="<?= $u['status'] === 'aktif' ? 'Nonaktifkan Akun' : 'Aktifkan Akun' ?>"
-                                                        >
-                                                            <i data-lucide="<?= $u['status'] === 'aktif' ? 'user-x' : 'user-check' ?>"></i>
-                                                            <span><?= $u['status'] === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' ?></span>
-                                                        </button>
+                                                        <?php if ($u['status'] === 'aktif'): ?>
+                                                            <button type="submit"
+                                                                title="Nonaktifkan Akun"
+                                                                class="inline-flex items-center gap-1 text-xs font-medium bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                                <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+                                                                <span class="hidden sm:inline">Nonaktifkan</span>
+                                                            </button>
+                                                        <?php else: ?>
+                                                            <button type="submit"
+                                                                title="Aktifkan Akun"
+                                                                class="inline-flex items-center gap-1 text-xs font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                                                                <span class="hidden sm:inline">Aktifkan</span>
+                                                            </button>
+                                                        <?php endif; ?>
                                                     </form>
 
-                                                    <!-- RESET PASSWORD BUTTON -->
+                                                    <!-- RESET PASSWORD -->
                                                     <button
                                                         type="button"
-                                                        class="btn-outline btn-sm"
                                                         onclick="bukaResetPassword(<?= $u['id'] ?>, '<?= e($u['nama']) ?>')"
                                                         title="Reset Password"
-                                                    >
-                                                        <i data-lucide="key"></i>
+                                                        class="inline-flex items-center gap-1 text-xs font-medium bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                        <i data-lucide="key" class="w-3.5 h-3.5"></i>
                                                     </button>
 
-                                                    <!-- HAPUS AKUN -->
-                                                    <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?');" style="margin:0;">
+                                                    <!-- HAPUS -->
+                                                    <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?')" class="m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                                                        <button type="submit" class="btn-danger btn-sm" title="Hapus Akun">
-                                                            <i data-lucide="trash-2"></i>
+                                                        <button type="submit"
+                                                            title="Hapus Akun"
+                                                            class="inline-flex items-center gap-1 text-xs font-medium bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                                         </button>
                                                     </form>
-                                                <?php else: ?>
-                                                    <span style="font-size: 10px; color: #94a3b8; font-style: italic;">Akun Aktif</span>
-                                                <?php endif; ?>
-                                            </div>
+
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="text-xs text-slate-400 italic text-right block">Akun Aktif</span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -346,98 +361,119 @@ $userList = $stmt->fetchAll();
                         </tbody>
                     </table>
                 </div>
-            </section>
 
-            <!-- FOOTER -->
-            <?php require __DIR__ . '/../includes/footer.php'; ?>
+            </div>
 
         </main>
+
+        <?php require __DIR__ . '/../includes/footer.php'; ?>
+
     </div>
 
     <!-- MODAL TAMBAH USER -->
-    <div class="app-modal" id="modalTambahUser">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Tambah Pengguna Baru</h3>
-                <button type="button" class="modal-close" data-modal-close>
-                    <i data-lucide="x"></i>
+    <div id="modalTambahUser" class="app-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-800">Tambah Pengguna Baru</h3>
+                <button type="button" data-modal-close class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <form method="post">
+            <form method="post" class="p-6 space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="action" value="tambah">
 
-                <div class="form-field">
-                    <label>Nama Lengkap Pegawai *</label>
-                    <input type="text" name="nama" class="form-input" placeholder="Contoh: Budi Santoso" required>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap Pegawai *</label>
+                    <input type="text" name="nama"
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Contoh: Budi Santoso" required>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-field">
-                        <label>Username *</label>
-                        <input type="text" name="username" class="form-input" placeholder="budisantoso" required>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Username *</label>
+                        <input type="text" name="username"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="budisantoso" required>
                     </div>
-
-                    <div class="form-field">
-                        <label>Password Awal *</label>
-                        <input type="password" name="password" class="form-input" placeholder="Min. 8 karakter" required>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password Awal *</label>
+                        <input type="password" name="password"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Min. 8 karakter" required>
                     </div>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-field">
-                        <label>Peran (Role) *</label>
-                        <select name="role" class="form-select">
-                            <option value="peminjam">Peminjam (Pegawai / Staf)</option>
-                            <option value="admin">Administrator (Pengelola Inventaris)</option>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Peran (Role) *</label>
+                        <select name="role"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="peminjam">Peminjam (Staf)</option>
+                            <option value="admin">Administrator</option>
                         </select>
                     </div>
-
-                    <div class="form-field">
-                        <label>Status Akun *</label>
-                        <select name="status" class="form-select">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Status Akun *</label>
+                        <select name="status"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                             <option value="aktif">Aktif</option>
                             <option value="nonaktif">Nonaktif</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary btn-sm" data-modal-close>Batal</button>
-                    <button type="submit" class="btn-primary btn-sm">Simpan Akun</button>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" data-modal-close
+                        class="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 text-sm font-semibold text-white bg-[#102b4e] hover:bg-[#1a3d6b] rounded-xl transition-colors">
+                        Simpan Akun
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL RESET PASSWORD -->
-    <div class="app-modal" id="modalResetPassword">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Reset Password Pengguna</h3>
-                <button type="button" class="modal-close" data-modal-close>
-                    <i data-lucide="x"></i>
+    <div id="modalResetPassword" class="app-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-800">Reset Password Pengguna</h3>
+                <button type="button" data-modal-close class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <form method="post">
+            <form method="post" class="p-6 space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="action" value="reset_password">
                 <input type="hidden" name="id" id="reset_user_id">
 
-                <p style="font-size: 12px; color: #475569; margin: 0 0 14px;">
-                    Mengatur ulang kata sandi untuk akun: <strong id="reset_user_nama">—</strong>
-                </p>
-
-                <div class="form-field">
-                    <label>Password Baru *</label>
-                    <input type="password" name="new_password" class="form-input" placeholder="Minimal 8 karakter" required>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
+                    Mengatur ulang kata sandi untuk: <strong id="reset_user_nama" class="text-amber-900">—</strong>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary btn-sm" data-modal-close>Batal</button>
-                    <button type="submit" class="btn-primary btn-sm">Perbarui Password</button>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru *</label>
+                    <input type="password" name="new_password"
+                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Minimal 8 karakter" required>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" data-modal-close
+                        class="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 text-sm font-semibold text-white bg-[#102b4e] hover:bg-[#1a3d6b] rounded-xl transition-colors">
+                        Perbarui Password
+                    </button>
                 </div>
             </form>
         </div>
@@ -449,7 +485,8 @@ $userList = $stmt->fetchAll();
         document.getElementById('reset_user_nama').textContent = userName;
 
         const modal = document.getElementById('modalResetPassword');
-        modal.classList.add('show');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         if (window.lucide) lucide.createIcons();
     }
     </script>
@@ -457,4 +494,3 @@ $userList = $stmt->fetchAll();
     <script src="../assets/js/script.js"></script>
 </body>
 </html>
-

@@ -1,203 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // INISIALISASI ICON LUCIDE
+    // 1. INISIALISASI LUCIDE ICONS
     if (window.lucide) {
         lucide.createIcons();
     }
 
-    // TOGGLE PASSWORD
+    // 2. TOGGLE PASSWORD (LIHAT / SEMBUNYIKAN PASSWORD)
     document.querySelectorAll('[data-toggle-password]').forEach(btn => {
         btn.addEventListener('click', () => {
-
-            const input = document.getElementById(
-                btn.dataset.togglePassword
-            );
-
+            const inputId = btn.getAttribute('data-toggle-password');
+            const input = document.getElementById(inputId);
             if (!input) return;
 
-            const show = input.type === 'password';
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
 
-            input.type = show ? 'text' : 'password';
-
-            btn.innerHTML = `
-                <i data-lucide="${show ? 'eye-off' : 'eye'}"></i>
-            `;
-
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            btn.innerHTML = `<i data-lucide="${isPassword ? 'eye-off' : 'eye'}" class="w-4 h-4 text-slate-400"></i>`;
+            if (window.lucide) lucide.createIcons();
         });
     });
 
-    // VALIDASI FORM LOGIN
-    const login = document.getElementById('loginForm');
-
-    login?.addEventListener('submit', e => {
-
-        const u = login.querySelector('[name=username]');
-        const p = login.querySelector('[name=password]');
-
-        if (!u.value.trim() || !p.value) {
-            e.preventDefault();
-
-            alert('Username dan password wajib diisi.');
-
-            (!u.value.trim() ? u : p).focus();
-
-            return;
-        }
-
-        const b = login.querySelector('button[type=submit]');
-
-        b.disabled = true;
-        b.querySelector('span').textContent = 'Memproses...';
-    });
-
-    // VALIDASI FORM REGISTRASI
-    const reg = document.getElementById('registerForm');
-
-    reg?.addEventListener('submit', e => {
-
-        const p = reg.querySelector('[name=password]');
-        const c = reg.querySelector('[name=confirmation]');
-
-        if (p.value.length < 8) {
-            e.preventDefault();
-
-            alert('Password minimal 8 karakter.');
-
-            p.focus();
-
-            return;
-        }
-
-        if (p.value !== c.value) {
-            e.preventDefault();
-
-            alert('Konfirmasi password tidak sama.');
-
-            c.focus();
-        }
-    });
-
-    // SIDEBAR
+    // 3. SIDEBAR RESPONSIVE (MOBILE)
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const sidebarClose = document.getElementById('sidebarClose');
 
-    const close = () => {
-        sidebar?.classList.remove('mobile-open');
-        backdrop?.classList.remove('visible');
+    const openSidebar = () => {
+        sidebar?.classList.remove('-translate-x-full');
+        backdrop?.classList.remove('hidden');
     };
 
-    // BUKA SIDEBAR MOBILE
-    document.getElementById('mobileMenu')?.addEventListener('click', () => {
-        sidebar?.classList.add('mobile-open');
-        backdrop?.classList.add('visible');
-    });
-
-    // TUTUP SIDEBAR MELALUI BACKDROP
-    backdrop?.addEventListener('click', close);
-
-    // COLLAPSE SIDEBAR
-    document.getElementById('sidebarCollapse')?.addEventListener('click', () => {
-
-        if (matchMedia('(min-width:901px)').matches) {
-
-            document.body.classList.toggle('sidebar-collapsed');
-
-            const icon = document.querySelector('#sidebarCollapse i');
-
-            if (icon) {
-                icon.setAttribute(
-                    'data-lucide',
-                    document.body.classList.contains('sidebar-collapsed')
-                        ? 'panel-left-open'
-                        : 'panel-left-close'
-                );
-            }
-
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-
-        } else {
-            close();
-        }
-    });
-
-    // MODAL LOGOUT
-    const modal = document.getElementById('logoutModal');
-    const form = document.querySelector('[data-logout-form]');
-
-    // BUKA MODAL
-    const open = () => {
-        modal?.classList.add('show');
-        modal?.setAttribute('aria-hidden', 'false');
+    const closeSidebar = () => {
+        sidebar?.classList.add('-translate-x-full');
+        backdrop?.classList.add('hidden');
     };
 
-    // TUTUP MODAL
-    const shut = () => {
-        modal?.classList.remove('show');
-        modal?.setAttribute('aria-hidden', 'true');
-    };
+    mobileMenu?.addEventListener('click', openSidebar);
+    sidebarClose?.addEventListener('click', closeSidebar);
+    backdrop?.addEventListener('click', closeSidebar);
 
-    // TOMBOL LOGOUT
-    document.querySelector('[data-logout-trigger]')
-        ?.addEventListener('click', open);
-
-    // TOMBOL BATAL LOGOUT
-    document.querySelector('[data-logout-cancel]')
-        ?.addEventListener('click', shut);
-
-    // KONFIRMASI LOGOUT
-    document.querySelector('[data-logout-confirm]')
-        ?.addEventListener('click', () => {
-            form?.submit();
-        });
-
-    // TUTUP MODAL SAAT KLIK DI LUAR MODAL
-    modal?.addEventListener('click', e => {
-        if (e.target === modal) {
-            shut();
-        }
-    });
-
-    // TUTUP MODAL DENGAN TOMBOL ESCAPE
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            shut();
-        }
-    });
-
-    // TANGGAL SAAT INI
-    const date = document.getElementById('currentDate');
-
-    if (date) {
-        date.textContent = new Intl.DateTimeFormat('id-ID', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        }).format(new Date());
-    }
-
-    // NOTIFIKASI SETELAH LOGOUT
-    if (new URLSearchParams(location.search).has('logged_out')) {
-
-        const el = document.createElement('div');
-
-        el.className = 'login-query-notice';
-        el.textContent = 'Anda telah berhasil logout.';
-
-        document.querySelector('.auth-content')?.prepend(el);
-    }
-
-    // MODAL UMUM (GENERIC MODALS)
+    // 4. MODAL DIALOG (TAILWIND TOGGLE HIDDEN / FLEX)
     document.querySelectorAll('[data-modal-open]').forEach(btn => {
         btn.addEventListener('click', () => {
             const modalId = btn.getAttribute('data-modal-open');
             const target = document.getElementById(modalId);
             if (target) {
-                target.classList.add('show');
+                target.classList.remove('hidden');
+                target.classList.add('flex');
                 if (window.lucide) lucide.createIcons();
             }
         });
@@ -206,21 +56,83 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-modal-close]').forEach(btn => {
         btn.addEventListener('click', () => {
             const modal = btn.closest('.app-modal');
-            modal?.classList.remove('show');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         });
     });
 
+    // TUTUP MODAL SAAT KLIK DI LUAR KARTU ATAU ESCAPE
     document.querySelectorAll('.app-modal').forEach(m => {
         m.addEventListener('click', e => {
             if (e.target === m) {
-                m.classList.remove('show');
+                m.classList.add('hidden');
+                m.classList.remove('flex');
             }
         });
     });
 
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.app-modal.show').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.app-modal.flex').forEach(m => {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            });
+            closeSidebar();
+        }
+    });
+
+    // 5. TANGGAL HARI INI DI TOPBAR
+    const dateEl = document.getElementById('currentDate');
+    if (dateEl) {
+        dateEl.textContent = new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        }).format(new Date());
+    }
+
+    // 6. NOTIFIKASI SETELAH LOGOUT
+    if (new URLSearchParams(location.search).has('logged_out')) {
+        const noticeEl = document.getElementById('logoutNotice');
+        if (noticeEl) {
+            noticeEl.classList.remove('hidden');
+        }
+    }
+
+    // 7. VALIDASI FORM LOGIN & REGISTRASI SEDERHANA
+    const loginForm = document.getElementById('loginForm');
+    loginForm?.addEventListener('submit', e => {
+        const u = loginForm.querySelector('[name=username]');
+        const p = loginForm.querySelector('[name=password]');
+        if (!u.value.trim() || !p.value) {
+            e.preventDefault();
+            alert('Username dan password wajib diisi.');
+            (!u.value.trim() ? u : p).focus();
+            return;
+        }
+        const btn = loginForm.querySelector('button[type=submit]');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Memproses...</span>';
+        }
+    });
+
+    const regForm = document.getElementById('registerForm');
+    regForm?.addEventListener('submit', e => {
+        const p = regForm.querySelector('[name=password]');
+        const c = regForm.querySelector('[name=confirmation]');
+        if (p && p.value.length < 8) {
+            e.preventDefault();
+            alert('Password minimal 8 karakter.');
+            p.focus();
+            return;
+        }
+        if (p && c && p.value !== c.value) {
+            e.preventDefault();
+            alert('Konfirmasi password tidak sama.');
+            c.focus();
         }
     });
 

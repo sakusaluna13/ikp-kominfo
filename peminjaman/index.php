@@ -23,16 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1. AJUKAN PEMINJAMAN (OLEH PEMINJAM)
     if ($action === 'ajukan_peminjam') {
         $barang_id = (int) ($_POST['barang_id'] ?? 0);
+        $jumlah = max(1, (int) ($_POST['jumlah'] ?? 1));
         $tanggal_pinjam = trim((string) ($_POST['tanggal_pinjam'] ?? date('Y-m-d')));
         $tanggal_kembali = trim((string) ($_POST['tanggal_kembali'] ?? ''));
 
-        // Cek stok barang
         $stmt = $pdo->prepare("
             SELECT b.id, b.nama_barang, b.jumlah,
                    COALESCE(p.dipinjam_count, 0) AS sedang_dipinjam
             FROM barang b
             LEFT JOIN (
-                SELECT barang_id, COUNT(*) AS dipinjam_count
+                SELECT barang_id, SUM(jumlah) AS dipinjam_count
                 FROM peminjaman
                 WHERE status = 'dipinjam'
                 GROUP BY barang_id
@@ -42,22 +42,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute(['id' => $barang_id]);
         $barang = $stmt->fetch();
 
+        $sisa = $barang ? max(0, $barang['jumlah'] - $barang['sedang_dipinjam']) : 0;
+
         if (!$barang) {
             flash('error', 'Barang yang dipilih tidak ditemukan.');
-        } elseif (($barang['jumlah'] - $barang['sedang_dipinjam']) <= 0) {
+        } elseif ($sisa <= 0) {
             flash('error', 'Maaf, stok barang "' . $barang['nama_barang'] . '" saat ini sedang habis.');
+        } elseif ($jumlah > $sisa) {
+            flash('error', 'Jumlah peminjaman (' . $jumlah . ' unit) melebihi sisa stok yang tersedia (' . $sisa . ' unit).');
         } else {
             $insert = $pdo->prepare("
-                INSERT INTO peminjaman (user_id, barang_id, tanggal_pinjam, tanggal_kembali, status)
-                VALUES (:uid, :bid, :tgl_pinjam, :tgl_kembali, 'menunggu persetujuan')
+                INSERT INTO peminjaman (user_id, barang_id, jumlah, tanggal_pinjam, tanggal_kembali, status)
+                VALUES (:uid, :bid, :jumlah, :tgl_pinjam, :tgl_kembali, 'menunggu persetujuan')
             ");
             $insert->execute([
                 'uid' => $userId,
                 'bid' => $barang_id,
+                'jumlah' => $jumlah,
                 'tgl_pinjam' => $tanggal_pinjam,
                 'tgl_kembali' => $tanggal_kembali !== '' ? $tanggal_kembali : null,
             ]);
-            flash('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan Admin KOMINFO.');
+            flash('success', 'Pengajuan peminjaman ' . $jumlah . ' unit berhasil dikirim. Menunggu persetujuan Admin KOMINFO.');
         }
         header('Location: index.php');
         exit;
@@ -67,16 +72,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'catat_admin' && $userRole === 'admin') {
         $peminjam_user_id = (int) ($_POST['user_id'] ?? 0);
         $barang_id = (int) ($_POST['barang_id'] ?? 0);
+        $jumlah = max(1, (int) ($_POST['jumlah'] ?? 1));
         $tanggal_pinjam = trim((string) ($_POST['tanggal_pinjam'] ?? date('Y-m-d')));
         $tanggal_kembali = trim((string) ($_POST['tanggal_kembali'] ?? ''));
 
-        // Cek stok barang
         $stmt = $pdo->prepare("
             SELECT b.id, b.nama_barang, b.jumlah,
                    COALESCE(p.dipinjam_count, 0) AS sedang_dipinjam
             FROM barang b
             LEFT JOIN (
-                SELECT barang_id, COUNT(*) AS dipinjam_count
+                SELECT barang_id, SUM(jumlah) AS dipinjam_count
                 FROM peminjaman
                 WHERE status = 'dipinjam'
                 GROUP BY barang_id
@@ -86,22 +91,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute(['id' => $barang_id]);
         $barang = $stmt->fetch();
 
+        $sisa = $barang ? max(0, $barang['jumlah'] - $barang['sedang_dipinjam']) : 0;
+
         if ($peminjam_user_id <= 0 || !$barang) {
             flash('error', 'Peminjam atau barang tidak valid.');
-        } elseif (($barang['jumlah'] - $barang['sedang_dipinjam']) <= 0) {
+        } elseif ($sisa <= 0) {
             flash('error', 'Stok barang habis.');
+        } elseif ($jumlah > $sisa) {
+            flash('error', 'Jumlah peminjaman (' . $jumlah . ' unit) melebihi sisa stok yang tersedia (' . $sisa . ' unit).');
         } else {
             $insert = $pdo->prepare("
-                INSERT INTO peminjaman (user_id, barang_id, tanggal_pinjam, tanggal_kembali, status)
-                VALUES (:uid, :bid, :tgl_pinjam, :tgl_kembali, 'dipinjam')
+                INSERT INTO peminjaman (user_id, barang_id, jumlah, tanggal_pinjam, tanggal_kembali, status)
+                VALUES (:uid, :bid, :jumlah, :tgl_pinjam, :tgl_kembali, 'dipinjam')
             ");
             $insert->execute([
                 'uid' => $peminjam_user_id,
                 'bid' => $barang_id,
+                'jumlah' => $jumlah,
                 'tgl_pinjam' => $tanggal_pinjam,
                 'tgl_kembali' => $tanggal_kembali !== '' ? $tanggal_kembali : null,
             ]);
-            flash('success', 'Peminjaman berhasil dicatat dengan status: Dipinjam.');
+            flash('success', 'Peminjaman ' . $jumlah . ' unit berhasil dicatat dengan status: Dipinjam.');
         }
         header('Location: index.php');
         exit;
@@ -111,13 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'setujui' && $userRole === 'admin') {
         $peminjaman_id = (int) ($_POST['peminjaman_id'] ?? 0);
 
-        // Cek stok kembali
         $stmt = $pdo->prepare("
-            SELECT p.barang_id, b.jumlah, COALESCE(dip.cnt, 0) AS dipinjam_count
+            SELECT p.barang_id, p.jumlah AS minta_jumlah, b.jumlah, COALESCE(dip.cnt, 0) AS dipinjam_count
             FROM peminjaman p
             JOIN barang b ON b.id = p.barang_id
             LEFT JOIN (
-                SELECT barang_id, COUNT(*) AS cnt FROM peminjaman WHERE status = 'dipinjam' GROUP BY barang_id
+                SELECT barang_id, SUM(jumlah) AS cnt FROM peminjaman WHERE status = 'dipinjam' GROUP BY barang_id
             ) dip ON dip.barang_id = p.barang_id
             WHERE p.id = :pid
         ");
@@ -126,12 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$cek) {
             flash('error', 'Data pengajuan tidak ditemukan.');
-        } elseif (($cek['jumlah'] - $cek['dipinjam_count']) <= 0) {
-            flash('error', 'Gagal menyetujui: Stok barang ini saat ini sudah habis dipinjam transaksi lain.');
+        } elseif (($cek['jumlah'] - $cek['dipinjam_count']) < $cek['minta_jumlah']) {
+            flash('error', 'Gagal menyetujui: Sisa stok tidak mencukupi untuk ' . $cek['minta_jumlah'] . ' unit.');
         } else {
             $up = $pdo->prepare("UPDATE peminjaman SET status = 'dipinjam' WHERE id = :id");
             $up->execute(['id' => $peminjaman_id]);
-            flash('success', 'Pengajuan peminjaman telah disetujui. Barang resmi berstatus dipinjam.');
+            flash('success', 'Pengajuan disetujui. Peralatan resmi berstatus dipinjam.');
         }
         header('Location: index.php');
         exit;
@@ -161,15 +170,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ============================================
 // DATA UNTUK FORM & TABEL
 // ============================================
-
-// Daftar barang dengan sisa stok
 $barangTersedia = $pdo->query("
     SELECT 
         b.id, b.nama_barang, b.kategori, b.kondisi, b.jumlah,
         GREATEST(0, b.jumlah - COALESCE(p.dipinjam_count, 0)) AS sisa_tersedia
     FROM barang b
     LEFT JOIN (
-        SELECT barang_id, COUNT(*) AS dipinjam_count
+        SELECT barang_id, SUM(jumlah) AS dipinjam_count
         FROM peminjaman
         WHERE status = 'dipinjam'
         GROUP BY barang_id
@@ -177,15 +184,13 @@ $barangTersedia = $pdo->query("
     ORDER BY b.nama_barang ASC
 ")->fetchAll();
 
-// Daftar users peminjam (untuk dropdown admin)
 $userList = [];
 if ($userRole === 'admin') {
     $userList = $pdo->query("SELECT id, nama, username FROM users WHERE status = 'aktif' ORDER BY nama ASC")->fetchAll();
 }
 
-// Data Pengajuan Menunggu Persetujuan
 $pengajuanStmt = $pdo->prepare("
-    SELECT p.id, u.nama AS nama_peminjam, b.nama_barang, b.kategori, p.tanggal_pinjam, p.tanggal_kembali, p.status, p.created_at
+    SELECT p.id, u.nama AS nama_peminjam, b.nama_barang, b.kategori, p.jumlah, p.tanggal_pinjam, p.tanggal_kembali, p.status, p.created_at
     FROM peminjaman p
     JOIN users u ON u.id = p.user_id
     JOIN barang b ON b.id = p.barang_id
@@ -199,10 +204,8 @@ if ($userRole === 'peminjam') {
 }
 $listPengajuan = $pengajuanStmt->fetchAll();
 
-// Data Barang Sedang Dipinjam (Aktif)
 $dipinjamStmt = $pdo->prepare("
-    SELECT p.id, u.nama AS nama_peminjam, b.nama_barang, b.kategori, p.tanggal_pinjam, p.tanggal_kembali, p.status,
-           DATEDIFF(CURDATE(), p.tanggal_pinjam) AS lama_hari
+    SELECT p.id, u.nama AS nama_peminjam, b.nama_barang, b.kategori, p.jumlah, p.tanggal_pinjam, p.tanggal_kembali, p.status
     FROM peminjaman p
     JOIN users u ON u.id = p.user_id
     JOIN barang b ON b.id = p.barang_id
@@ -216,7 +219,6 @@ if ($userRole === 'peminjam') {
 }
 $listDipinjam = $dipinjamStmt->fetchAll();
 
-// Preset barang dari URL (jika user klik Pinjam dari menu Data Barang)
 $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
 ?>
 <!doctype html>
@@ -224,49 +226,56 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($pageTitle) ?> | KOMINFO</title>
+    <title><?= e($pageTitle) ?> | SIMPEL MEDIA KOMINFO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
-<body class="dashboard-body">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <div class="app-shell">
+    <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-        <?php require __DIR__ . '/../includes/sidebar.php'; ?>
+    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
 
-        <main class="main-content">
+        <?php require __DIR__ . '/../includes/header.php'; ?>
 
-            <?php require __DIR__ . '/../includes/header.php'; ?>
+        <main class="flex-1 flex flex-col gap-6">
 
-            <!-- FORM PEMINJAMAN / PENGAJUAN -->
-            <section class="content-card" style="margin-top: 24px;">
-                <div class="section-heading">
+            <!-- FORM PENGAJUAN / PENCATATAN -->
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
+                <div class="flex items-center justify-between gap-4 mb-5">
                     <div>
-                        <span class="eyebrow"><?= $userRole === 'admin' ? 'PENCATATAN ADMIN' : 'FORMULIR PENGAJUAN' ?></span>
-                        <h3><?= $userRole === 'admin' ? 'Catat Peminjaman Barang' : 'Ajukan Peminjaman Peralatan' ?></h3>
-                        <p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">
+                            <?= $userRole === 'admin' ? 'PENCATATAN ADMIN' : 'FORMULIR PENGAJUAN' ?>
+                        </span>
+                        <h2 class="text-xl font-bold text-[#102b4e]">
+                            <?= $userRole === 'admin' ? 'Catat Peminjaman Peralatan' : 'Ajukan Peminjaman Peralatan' ?>
+                        </h2>
+                        <p class="text-xs text-slate-400">
                             <?= $userRole === 'admin' 
                                 ? 'Admin dapat langsung mencatat transaksi peminjaman atas nama pengguna.' 
-                                : 'Pilih barang multimedia yang ingin dipinjam untuk kegiatan operasional KOMINFO.' ?>
+                                : 'Pilih barang multimedia yang ingin dipinjam untuk keperluan liputan/dinas.' ?>
                         </p>
                     </div>
 
-                    <span class="status-badge badge-info">
-                        <?= $userRole === 'admin' ? 'Akses Admin' : 'Permintaan Peminjam' ?>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <?= $userRole === 'admin' ? 'Akses Administrator' : 'Pengajuan Pegawai' ?>
                     </span>
                 </div>
 
-                <form method="post" style="margin-top: 10px;">
+                <form method="post" class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="<?= $userRole === 'admin' ? 'catat_admin' : 'ajukan_peminjam' ?>">
 
-                    <div class="form-grid">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-<?= $userRole === 'admin' ? '5' : '4' ?> gap-3.5">
                         <?php if ($userRole === 'admin'): ?>
-                            <div class="form-field">
-                                <label>Pilih Peminjam (User) *</label>
-                                <select name="user_id" class="form-select" required>
-                                    <option value="">-- Pilih Peminjam --</option>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-slate-700">Peminjam (Pegawai) *</label>
+                                <select name="user_id" class="h-10 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
+                                    <option value="">-- Pilih Pegawai --</option>
                                     <?php foreach ($userList as $u): ?>
                                         <option value="<?= $u['id'] ?>">
                                             <?= e($u['nama']) ?> (<?= e($u['username']) ?>)
@@ -276,125 +285,135 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                             </div>
                         <?php endif; ?>
 
-                        <div class="form-field">
-                            <label>Pilih Peralatan Multimedia *</label>
-                            <select name="barang_id" class="form-select" required>
-                                <option value="">-- Pilih Barang --</option>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-700">Peralatan Multimedia *</label>
+                            <select name="barang_id" class="h-10 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
+                                <option value="">-- Pilih Peralatan --</option>
                                 <?php foreach ($barangTersedia as $bt): ?>
                                     <option 
                                         value="<?= $bt['id'] ?>"
                                         <?= $selectedBarangId === (int) $bt['id'] ? 'selected' : '' ?>
                                         <?= $bt['sisa_tersedia'] <= 0 ? 'disabled' : '' ?>
                                     >
-                                        <?= e($bt['nama_barang']) ?> - <?= e($bt['kategori']) ?> 
-                                        (Tersedia: <?= $bt['sisa_tersedia'] ?> unit, Kondisi: <?= e($bt['kondisi']) ?>)
+                                        <?= e($bt['nama_barang']) ?> (Sisa: <?= $bt['sisa_tersedia'] ?> unit)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
 
-                        <div class="form-field">
-                            <label>Tanggal Pinjam *</label>
-                            <input type="date" name="tanggal_pinjam" class="form-input" value="<?= date('Y-m-d') ?>" required>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-700">Jumlah Unit *</label>
+                            <input type="number" name="jumlah" value="1" min="1" class="h-10 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
                         </div>
 
-                        <div class="form-field">
-                            <label>Perkiraan Tanggal Pengembalian</label>
-                            <input type="date" name="tanggal_kembali" class="form-input" min="<?= date('Y-m-d') ?>">
-                            <span class="hint">Opsional (dapat ditentukan saat pengembalian)</span>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-700">Tgl. Pinjam *</label>
+                            <input type="date" name="tanggal_pinjam" value="<?= date('Y-m-d') ?>" class="h-10 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-700">Rencana Kembali *</label>
+                            <input type="date" name="tanggal_kembali" min="<?= date('Y-m-d') ?>" class="h-10 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
                         </div>
                     </div>
 
-                    <div style="margin-top: 14px; display: flex; justify-content: flex-end;">
-                        <button type="submit" class="btn-primary btn-sm">
-                            <i data-lucide="send"></i>
+                    <div class="flex items-center justify-end pt-2">
+                        <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            <i data-lucide="send" class="w-4 h-4"></i>
                             <span><?= $userRole === 'admin' ? 'Catat Peminjaman Sekarang' : 'Kirim Pengajuan Peminjaman' ?></span>
                         </button>
                     </div>
                 </form>
             </section>
 
-            <!-- DAFTAR PENGAJUAN MENUNGGU PERSETUJUAN -->
-            <section class="content-card">
-                <div class="section-heading">
+            <!-- TABEL PENGAJUAN MENUNGGU PERSETUJUAN -->
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
+                <div class="flex items-center justify-between gap-4 mb-5">
                     <div>
-                        <span class="eyebrow">VERIFIKASI</span>
-                        <h3>Pengajuan Menunggu Persetujuan</h3>
-                        <p>Pengajuan yang memerlukan tindak lanjut sebelum barang diserahkan.</p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-amber-600 uppercase">VERIFIKASI</span>
+                        <h3 class="text-base font-bold text-[#102b4e]">Pengajuan Menunggu Persetujuan</h3>
+                        <p class="text-xs text-slate-400">Pengajuan yang memerlukan persetujuan Admin KOMINFO sebelum barang diserahkan.</p>
                     </div>
 
-                    <span class="table-count"><?= count($listPengajuan) ?> permintaan</span>
+                    <span class="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-lg">
+                        <?= count($listPengajuan) ?> pengajuan
+                    </span>
                 </div>
 
-                <div class="table-scroll">
-                    <table class="data-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Peminjam</th>
-                                <th>Nama Barang</th>
-                                <th>Kategori</th>
-                                <th>Tgl. Pinjam</th>
-                                <th>Tgl. Rencana Kembali</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Aksi</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <th class="py-3 px-3 w-12">No.</th>
+                                <th class="py-3 px-3">Nama Peminjam</th>
+                                <th class="py-3 px-3">Peralatan</th>
+                                <th class="py-3 px-3">Kategori</th>
+                                <th class="py-3 px-3">Jumlah</th>
+                                <th class="py-3 px-3">Tgl. Pinjam</th>
+                                <th class="py-3 px-3">Rencana Kembali</th>
+                                <th class="py-3 px-3">Durasi</th>
+                                <th class="py-3 px-3">Status</th>
+                                <th class="py-3 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$listPengajuan): ?>
                                 <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i data-lucide="check-circle-2"></i>
-                                            <strong>Tidak ada antrean pengajuan</strong>
-                                            <span>Semua pengajuan peminjaman telah diproses.</span>
+                                    <td colspan="10" class="text-center py-8 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-1.5">
+                                            <i data-lucide="check-circle-2" class="w-6 h-6 text-emerald-500"></i>
+                                            <span class="font-bold text-xs">Semua antrean pengajuan telah diproses</span>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($listPengajuan as $i => $row): ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell"><?= e($row['nama_peminjam']) ?></td>
-                                        <td><?= e($row['nama_barang']) ?></td>
-                                        <td><?= e($row['kategori']) ?></td>
-                                        <td><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td>
-                                            <span class="status-badge badge-warning">Menunggu Persetujuan</span>
+                                    <tr class="hover:bg-slate-50/60 transition">
+                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
+                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
+                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($row['nama_barang']) ?></td>
+                                        <td class="py-3 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
+                                        <td class="py-3 px-3 font-bold text-blue-700 bg-blue-50/50"><?= (int) $row['jumlah'] ?> unit</td>
+                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-3 px-3 text-slate-500"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-3 px-3 font-semibold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-3 px-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Menunggu Persetujuan
+                                            </span>
                                         </td>
-                                        <td style="text-align: right;">
-                                            <div class="action-group" style="justify-content: flex-end;">
+                                        <td class="py-3 px-3 text-right">
+                                            <div class="inline-flex items-center gap-1.5 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
                                                     <!-- SETUJUI -->
-                                                    <form method="post" style="margin:0;">
+                                                    <form method="post" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="setujui">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="btn-success btn-sm" title="Setujui Peminjaman">
-                                                            <i data-lucide="check"></i>
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center gap-1 transition shadow-2xs" title="Setujui Peminjaman">
+                                                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
                                                             <span>Setujui</span>
                                                         </button>
                                                     </form>
 
                                                     <!-- TOLAK -->
-                                                    <form method="post" onsubmit="return confirm('Tolak permohonan peminjaman ini?');" style="margin:0;">
+                                                    <form method="post" onsubmit="return confirm('Tolak permohonan peminjaman ini?');" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="tolak">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="btn-danger btn-sm" title="Tolak Peminjaman">
-                                                            <i data-lucide="x"></i>
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center gap-1 transition" title="Tolak Peminjaman">
+                                                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
                                                             <span>Tolak</span>
                                                         </button>
                                                     </form>
                                                 <?php else: ?>
-                                                    <!-- PEMINJAM DAPAT MEMBATALKAN -->
-                                                    <form method="post" onsubmit="return confirm('Batalkan pengajuan ini?');" style="margin:0;">
+                                                    <!-- PEMINJAM BATALKAN -->
+                                                    <form method="post" onsubmit="return confirm('Batalkan pengajuan ini?');" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="batalkan_pengajuan">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="btn-danger btn-sm">
-                                                            <i data-lucide="x-circle"></i>
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 inline-flex items-center gap-1 transition">
+                                                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
                                                             <span>Batalkan</span>
                                                         </button>
                                                     </form>
@@ -409,60 +428,63 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                 </div>
             </section>
 
-            <!-- DAFTAR PEMINJAMAN AKTIF (SEDANG DIPINJAM) -->
-            <section class="content-card">
-                <div class="section-heading">
+            <!-- TABEL BARANG SEDANG DIPINJAM (AKTIF) -->
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
+                <div class="flex items-center justify-between gap-4 mb-5">
                     <div>
-                        <span class="eyebrow">STATUS LAPANGAN</span>
-                        <h3>Barang Sedang Dipinjam</h3>
-                        <p><?= $userRole === 'admin' ? 'Seluruh peralatan yang saat ini sedang dibawa oleh peminjam.' : 'Peralatan yang saat ini sedang Anda pinjam.' ?></p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">STATUS LAPANGAN</span>
+                        <h3 class="text-base font-bold text-[#102b4e]">Peralatan Sedang Berstatus Dipinjam</h3>
+                        <p class="text-xs text-slate-400">
+                            <?= $userRole === 'admin' ? 'Seluruh peralatan yang saat ini sedang dibawa oleh peminjam.' : 'Peralatan yang saat ini sedang Anda pinjam.' ?>
+                        </p>
                     </div>
 
-                    <a href="../pengembalian/index.php" class="btn-secondary btn-sm">
-                        <i data-lucide="arrow-right"></i>
+                    <a href="../pengembalian/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
                         <span>Ke Menu Pengembalian</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
 
-                <div class="table-scroll">
-                    <table class="data-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Peminjam</th>
-                                <th>Nama Barang</th>
-                                <th>Kategori</th>
-                                <th>Tanggal Pinjam</th>
-                                <th>Rencana Kembali</th>
-                                <th>Durasi Pinjam</th>
-                                <th>Status</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <th class="py-3 px-3 w-12">No.</th>
+                                <th class="py-3 px-3">Nama Peminjam</th>
+                                <th class="py-3 px-3">Peralatan</th>
+                                <th class="py-3 px-3">Kategori</th>
+                                <th class="py-3 px-3">Jumlah</th>
+                                <th class="py-3 px-3">Tanggal Pinjam</th>
+                                <th class="py-3 px-3">Rencana Kembali</th>
+                                <th class="py-3 px-3">Durasi</th>
+                                <th class="py-3 px-3">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$listDipinjam): ?>
                                 <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i data-lucide="inbox"></i>
-                                            <strong>Tidak ada barang yang sedang dipinjam</strong>
-                                            <span>Semua peralatan berada di tempat inventaris.</span>
+                                    <td colspan="9" class="text-center py-8 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-1.5">
+                                            <i data-lucide="inbox" class="w-6 h-6 text-slate-300"></i>
+                                            <span class="font-bold text-xs">Tidak ada barang yang sedang dipinjam</span>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($listDipinjam as $i => $row): ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell"><?= e($row['nama_peminjam']) ?></td>
-                                        <td><?= e($row['nama_barang']) ?></td>
-                                        <td><?= e($row['kategori']) ?></td>
-                                        <td><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td>
-                                            <strong><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?></strong> hari
-                                        </td>
-                                        <td>
-                                            <span class="status-badge badge-info">Sedang Dipinjam</span>
+                                    <tr class="hover:bg-slate-50/60 transition">
+                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
+                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
+                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($row['nama_barang']) ?></td>
+                                        <td class="py-3 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
+                                        <td class="py-3 px-3 font-bold text-blue-700 bg-blue-50/50"><?= (int) $row['jumlah'] ?> unit</td>
+                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-3 px-3 text-slate-500 font-medium"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-3 px-3 font-bold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-3 px-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                Sedang Dipinjam
+                                            </span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -472,13 +494,12 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                 </div>
             </section>
 
-            <!-- FOOTER -->
-            <?php require __DIR__ . '/../includes/footer.php'; ?>
-
         </main>
+
+        <?php require __DIR__ . '/../includes/footer.php'; ?>
+
     </div>
 
     <script src="../assets/js/script.js"></script>
 </body>
 </html>
-

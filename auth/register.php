@@ -1,21 +1,18 @@
 <?php
+declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-// CEK STATUS LOGIN
 if (is_logged_in()) {
     header('Location: ../dashboard/index.php');
     exit;
 }
 
-// INISIALISASI VARIABEL
 $errors = [];
 $nama = '';
 $username = '';
 
-// PROSES REGISTRASI
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     verify_csrf();
 
     $nama = trim((string) ($_POST['nama'] ?? ''));
@@ -23,296 +20,208 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
     $confirm = (string) ($_POST['confirmation'] ?? '');
 
-    // VALIDASI NAMA LENGKAP
     if (mb_strlen($nama) < 3 || mb_strlen($nama) > 150) {
         $errors[] = 'Nama lengkap wajib diisi (3–150 karakter).';
     }
 
-    // VALIDASI USERNAME
     if (!preg_match('/^[a-zA-Z0-9_.-]{4,50}$/', $username)) {
-        $errors[] = 'Username harus 4–50 karakter dan hanya boleh berisi huruf, angka, titik, garis bawah, atau tanda hubung.';
+        $errors[] = 'Username harus 4–50 karakter dan hanya boleh berisi huruf, angka, titik, strip, atau garis bawah.';
     }
 
-    // VALIDASI PASSWORD
     if (strlen($password) < 8) {
         $errors[] = 'Password minimal 8 karakter.';
     }
 
-    // VALIDASI KONFIRMASI PASSWORD
     if ($password !== $confirm) {
         $errors[] = 'Konfirmasi password tidak sama.';
     }
 
-    // CEK USERNAME DAN SIMPAN DATA
     if (!$errors) {
-
-        $q = $pdo->prepare(
-            'SELECT id FROM users WHERE username = :u LIMIT 1'
-        );
-
-        $q->execute([
-            'u' => $username
-        ]);
+        $q = $pdo->prepare('SELECT id FROM users WHERE username = :u LIMIT 1');
+        $q->execute(['u' => $username]);
 
         if ($q->fetch()) {
-
-            $errors[] = 'Username sudah digunakan.';
-
+            $errors[] = 'Username "' . $username . '" sudah digunakan.';
         } else {
-
             try {
-
-                $q = $pdo->prepare("
-                    INSERT INTO users (
-                        nama,
-                        username,
-                        password,
-                        role,
-                        status
-                    )
-                    VALUES (
-                        :n,
-                        :u,
-                        :p,
-                        \"peminjam\",
-                        \"aktif\"
-                    )
-                ");
-
+                $q = $pdo->prepare('INSERT INTO users (nama, username, password, role, status) VALUES (:n, :u, :p, "peminjam", "aktif")');
                 $q->execute([
                     'n' => $nama,
                     'u' => $username,
-                    'p' => password_hash($password, PASSWORD_DEFAULT)
+                    'p' => password_hash($password, PASSWORD_DEFAULT),
                 ]);
 
-                flash(
-                    'success',
-                    'Pendaftaran berhasil. Silakan login.'
-                );
-
+                flash('success', 'Pendaftaran berhasil. Silakan masuk menggunakan akun baru Anda.');
                 header('Location: login.php');
                 exit;
-
             } catch (PDOException $e) {
-
                 error_log($e->getMessage());
-
                 $errors[] = 'Pendaftaran gagal. Silakan coba kembali.';
             }
         }
     }
 }
-
 ?>
-
 <!doctype html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Daftar Akun | KOMINFO</title>
-
+    <title>Pendaftaran Akun | SIMPEL MEDIA KOMINFO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/style.css"
-    >
-
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4 sm:p-8">
 
-<body class="register-body">
+    <main class="w-full max-w-lg">
 
-    <main class="register-shell">
-
-        <!-- TOMBOL KEMBALI -->
-        <a class="back-link" href="login.php">
-            <i data-lucide="arrow-left"></i>
-            Kembali ke Login
+        <!-- KEMBALI KE LOGIN -->
+        <a href="login.php" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-700 transition mb-4">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Kembali ke Halaman Login</span>
         </a>
 
-        <section class="register-card">
+        <!-- KARTU FORM REGISTRASI -->
+        <section class="bg-white rounded-2xl border border-slate-100 shadow-xl p-6 sm:p-9">
 
-            <!-- LOGO INSTANSI -->
-            <div class="brand-logos register-logos">
-
-                <img
-                    src="../assets/images/logo-kominfo.png"
-                    alt="Logo KOMINFO"
-                    onerror="this.style.display='none'"
-                >
-
-                <img
-                    src="../assets/images/logo-pemda.png"
-                    alt="Logo Pemda"
-                    onerror="this.style.display='none'"
-                >
-
-                <span class="logo-fallback">
-                    <i data-lucide="landmark"></i>
-                    KOMINFO
-                </span>
-
+            <div class="flex items-center gap-3 mb-6">
+                <img src="../assets/images/logo-kominfo.png" alt="KOMINFO" class="w-9 h-9 object-contain" onerror="this.style.display='none'">
+                <img src="../assets/images/logo-sumut.png" alt="Sumut" class="w-8 h-8 object-contain" onerror="this.style.display='none'">
+                <div class="flex flex-col">
+                    <span class="font-extrabold text-[#102b4e] text-sm leading-tight">SIMPEL MEDIA</span>
+                    <span class="text-[9px] font-semibold text-slate-400">REGISTRASI PEGAWAI</span>
+                </div>
             </div>
 
-            <!-- JUDUL REGISTRASI -->
-            <span class="eyebrow">
-                REGISTRASI PENGGUNA
+            <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase block mb-1">
+                AKUN PEMINJAM MULTIMEDIA
             </span>
-
-            <h1>Buat Akun Peminjam</h1>
-
-            <p class="auth-description">
-                Daftarkan akun untuk menggunakan layanan peminjaman
-                barang multimedia.
+            <h1 class="text-2xl font-extrabold text-[#102b4e] tracking-tight mb-2">
+                Buat Akun Baru
+            </h1>
+            <p class="text-xs text-slate-500 leading-relaxed mb-6">
+                Daftarkan akun staf/pegawai untuk mengajukan peminjaman aset multimedia KOMINFO.
             </p>
 
-            <!-- PESAN ERROR -->
-            <?php foreach ($errors as $err): ?>
-
-                <div class="alert alert-error">
-                    <?= e($err) ?>
+            <!-- DAFTAR ERROR -->
+            <?php if ($errors): ?>
+                <div class="p-3.5 mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex flex-col gap-1">
+                    <?php foreach ($errors as $err): ?>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0 text-rose-600"></i>
+                            <span><?= e($err) ?></span>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
+            <?php endif; ?>
 
-            <?php endforeach; ?>
-
-            <!-- FORM REGISTRASI -->
-            <form
-                method="post"
-                class="auth-form"
-                id="registerForm"
-            >
-
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="<?= e(csrf_token()) ?>"
-                >
+            <!-- FORM -->
+            <form method="post" id="registerForm" class="flex flex-col gap-4">
+                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
 
                 <!-- NAMA LENGKAP -->
-                <label for="nama">
-                    Nama Lengkap
-                </label>
-
-                <div class="input-wrap">
-                    <i data-lucide="id-card"></i>
-
-                    <input
-                        id="nama"
-                        name="nama"
-                        value="<?= e($nama) ?>"
-                        maxlength="150"
-                        required
-                        placeholder="Masukkan nama lengkap"
-                    >
+                <div class="flex flex-col gap-1.5">
+                    <label for="nama" class="text-xs font-bold text-slate-700">Nama Lengkap Pegawai *</label>
+                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                        <i data-lucide="id-card" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input 
+                            type="text" 
+                            id="nama" 
+                            name="nama" 
+                            value="<?= e($nama) ?>" 
+                            maxlength="150"
+                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            placeholder="Contoh: Muhammad Raihan" 
+                            required
+                        >
+                    </div>
                 </div>
 
                 <!-- USERNAME -->
-                <label for="username">
-                    Username
-                </label>
-
-                <div class="input-wrap">
-                    <i data-lucide="user"></i>
-
-                    <input
-                        id="username"
-                        name="username"
-                        value="<?= e($username) ?>"
-                        minlength="4"
-                        maxlength="50"
-                        required
-                        placeholder="Buat username"
-                    >
+                <div class="flex flex-col gap-1.5">
+                    <label for="username" class="text-xs font-bold text-slate-700">Username *</label>
+                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            value="<?= e($username) ?>" 
+                            minlength="4"
+                            maxlength="50"
+                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            placeholder="raihan_kominfo" 
+                            required
+                        >
+                    </div>
                 </div>
 
                 <!-- PASSWORD -->
-                <label for="password">
-                    Password
-                </label>
-
-                <div class="input-wrap">
-                    <i data-lucide="lock-keyhole"></i>
-
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        minlength="8"
-                        required
-                        placeholder="Minimal 8 karakter"
-                    >
-
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        data-toggle-password="password"
-                    >
-                        <i data-lucide="eye"></i>
-                    </button>
+                <div class="flex flex-col gap-1.5">
+                    <label for="password" class="text-xs font-bold text-slate-700">Password (Min. 8 karakter) *</label>
+                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                        <i data-lucide="lock-keyhole" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            minlength="8"
+                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            placeholder="Minimal 8 karakter" 
+                            required
+                        >
+                        <button type="button" data-toggle-password="password" class="p-1 text-slate-400 hover:text-slate-600">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- KONFIRMASI PASSWORD -->
-                <label for="confirmation">
-                    Konfirmasi Password
-                </label>
-
-                <div class="input-wrap">
-                    <i data-lucide="shield-check"></i>
-
-                    <input
-                        id="confirmation"
-                        name="confirmation"
-                        type="password"
-                        required
-                        placeholder="Ulangi password"
-                    >
-
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        data-toggle-password="confirmation"
-                    >
-                        <i data-lucide="eye"></i>
-                    </button>
+                <div class="flex flex-col gap-1.5">
+                    <label for="confirmation" class="text-xs font-bold text-slate-700">Ulangi Password *</label>
+                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input 
+                            type="password" 
+                            id="confirmation" 
+                            name="confirmation" 
+                            minlength="8"
+                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            placeholder="Ketik ulang password" 
+                            required
+                        >
+                        <button type="button" data-toggle-password="confirmation" class="p-1 text-slate-400 hover:text-slate-600">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- INFORMASI ROLE -->
-                <p class="muted-small">
-                    Akun yang dibuat melalui halaman ini otomatis
-                    memiliki role <strong>Peminjam</strong>.
-                </p>
-
-                <!-- TOMBOL DAFTAR -->
-                <button
-                    class="btn-primary"
-                    type="submit"
+                <button 
+                    type="submit" 
+                    class="w-full h-11 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition duration-150 mt-3"
                 >
-                    <span>Daftar Akun</span>
-                    <i data-lucide="user-plus"></i>
+                    <span>Daftarkan Akun Sekarang</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
-
             </form>
 
-            <!-- LINK LOGIN -->
-            <p class="auth-switch">
-                Sudah punya akun?
-                <a href="login.php">Login</a>
+            <p class="text-center text-xs text-slate-500 mt-6">
+                Sudah memiliki akun? 
+                <a href="login.php" class="font-bold text-blue-700 hover:text-blue-900 transition">Masuk di sini</a>
             </p>
 
         </section>
 
-        <!-- FOOTER -->
-        <p class="register-footer">
-            &copy; 2026 Sistem Informasi Peminjaman Barang Multimedia KOMINFO
+        <p class="text-center text-[10px] text-slate-400 mt-6">
+            &copy; 2026 Dinas Komunikasi dan Informatika · Pemerintah Provinsi Sumatera Utara
         </p>
 
     </main>
 
     <script src="../assets/js/script.js"></script>
-
 </body>
 </html>

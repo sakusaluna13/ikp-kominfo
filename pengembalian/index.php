@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $userRole === 'admin') {
         if ($peminjaman_id <= 0) {
             flash('error', 'ID peminjaman tidak valid.');
         } else {
-            // Update status peminjaman menjadi 'dikembalikan'
             $stmt = $pdo->prepare("
                 UPDATE peminjaman
                 SET status = 'dikembalikan', tanggal_kembali = :tgl_kembali
@@ -40,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $userRole === 'admin') {
                 'id' => $peminjaman_id,
             ]);
 
-            // Jika kondisi barang diperbarui saat pengembalian
             if ($barang_id > 0 && in_array($kondisi_kembali, ['Baik', 'Rusak Ringan', 'Rusak Berat'], true)) {
                 $upBarang = $pdo->prepare('UPDATE barang SET kondisi = :kondisi WHERE id = :bid');
                 $upBarang->execute([
@@ -69,10 +67,10 @@ $sql = "
         b.nama_barang,
         b.kategori,
         b.kondisi AS kondisi_awal,
+        p.jumlah,
         p.tanggal_pinjam,
         p.tanggal_kembali,
-        p.status,
-        DATEDIFF(CURDATE(), p.tanggal_pinjam) AS lama_hari
+        p.status
     FROM peminjaman p
     JOIN users u ON u.id = p.user_id
     JOIN barang b ON b.id = p.barang_id
@@ -91,7 +89,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $listKembali = $stmt->fetchAll();
 
-// Riwayat pengembalian terbaru (7 hari terakhir / limit 5)
+// Riwayat pengembalian terbaru (limit 6)
 $riwayatKembaliStmt = $pdo->prepare("
     SELECT 
         p.id,
@@ -119,90 +117,99 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($pageTitle) ?> | KOMINFO</title>
+    <title><?= e($pageTitle) ?> | SIMPEL MEDIA KOMINFO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
-<body class="dashboard-body">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <div class="app-shell">
+    <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-        <?php require __DIR__ . '/../includes/sidebar.php'; ?>
+    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
 
-        <main class="main-content">
+        <?php require __DIR__ . '/../includes/header.php'; ?>
 
-            <?php require __DIR__ . '/../includes/header.php'; ?>
+        <main class="flex-1 flex flex-col gap-6">
 
             <!-- DAFTAR BARANG YANG PERLU DIKEMBALIKAN -->
-            <section class="content-card" style="margin-top: 24px;">
-                <div class="section-heading">
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
+                <div class="flex items-center justify-between gap-4 mb-5">
                     <div>
-                        <span class="eyebrow">MONITORING PENGEMBALIAN</span>
-                        <h3>Peralatan yang Sedang Dipinjam</h3>
-                        <p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-amber-600 uppercase">MONITORING PENGEMBALIAN</span>
+                        <h2 class="text-xl font-bold text-[#102b4e]">Peralatan yang Sedang Dipinjam</h2>
+                        <p class="text-xs text-slate-400">
                             <?= $userRole === 'admin' 
-                                ? 'Daftar barang multimedia yang saat ini masih berada di luar dan perlu dikonfirmasi saat kembali.' 
-                                : 'Peralatan yang sedang Anda gunakan. Serahkan kembali ke ruang multimedia jika pemakaian telah selesai.' ?>
+                                ? 'Daftar barang yang masih berada di luar. Klik Konfirmasi Kembali untuk memverifikasi fisik.' 
+                                : 'Peralatan yang sedang Anda gunakan. Serahkan kembali ke meja inventaris jika liputan telah selesai.' ?>
                         </p>
                     </div>
 
-                    <span class="table-count"><?= count($listKembali) ?> unit belum kembali</span>
+                    <span class="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-lg">
+                        <?= count($listKembali) ?> unit belum kembali
+                    </span>
                 </div>
 
-                <div class="table-scroll">
-                    <table class="data-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Peminjam</th>
-                                <th>Nama Barang</th>
-                                <th>Kategori</th>
-                                <th>Tanggal Pinjam</th>
-                                <th>Rencana Kembali</th>
-                                <th>Durasi Pinjam</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Aksi</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <th class="py-3 px-3 w-12">No.</th>
+                                <th class="py-3 px-3">Nama Peminjam</th>
+                                <th class="py-3 px-3">Peralatan</th>
+                                <th class="py-3 px-3">Kategori</th>
+                                <th class="py-3 px-3">Tanggal Pinjam</th>
+                                <th class="py-3 px-3">Rencana Kembali</th>
+                                <th class="py-3 px-3">Durasi</th>
+                                <th class="py-3 px-3">Status</th>
+                                <th class="py-3 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$listKembali): ?>
                                 <tr>
-                                    <td colspan="9">
-                                        <div class="empty-state">
-                                            <i data-lucide="package-check"></i>
-                                            <strong>Tidak ada barang yang sedang dipinjam</strong>
-                                            <span>Semua peralatan telah dikembalikan ke inventaris.</span>
+                                    <td colspan="9" class="text-center py-10 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-1.5">
+                                            <i data-lucide="package-check" class="w-7 h-7 text-emerald-500"></i>
+                                            <span class="font-bold text-xs">Semua peralatan telah dikembalikan ke inventaris</span>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($listKembali as $i => $row): ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell"><?= e($row['nama_peminjam']) ?></td>
-                                        <td><?= e($row['nama_barang']) ?></td>
-                                        <td><?= e($row['kategori']) ?></td>
-                                        <td><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td>
-                                            <strong><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?></strong> hari
+                                    <tr class="hover:bg-slate-50/60 transition">
+                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
+                                        <td class="py-3.5 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
+                                        <td class="py-3.5 px-3 font-medium text-slate-700">
+                                            <?= e($row['nama_barang']) ?>
+                                            <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md ml-1"><?= (int) $row['jumlah'] ?> unit</span>
                                         </td>
-                                        <td>
-                                            <span class="status-badge badge-warning">Sedang Dipinjam</span>
+                                        <td class="py-3.5 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
+                                        <td class="py-3.5 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-3.5 px-3 text-slate-500 font-medium"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-3.5 px-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Sedang Dipinjam
+                                            </span>
                                         </td>
-                                        <td style="text-align: right;">
+                                        <td class="py-3.5 px-3 text-right">
                                             <?php if ($userRole === 'admin'): ?>
                                                 <button
                                                     type="button"
-                                                    class="btn-success btn-sm"
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition"
                                                     onclick="bukaModalKembali(<?= htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8') ?>)"
                                                 >
-                                                    <i data-lucide="check-square"></i>
-                                                    <span>Konfirmasi Kembali</span>
+                                                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+                                                    <span>Konfirmasi Terima</span>
                                                 </button>
                                             <?php else: ?>
-                                                <span class="status-badge badge-neutral">Harap kembalikan ke Admin</span>
+                                                <span class="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-md">
+                                                    Harap serahkan ke Admin
+                                                </span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -214,56 +221,57 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
             </section>
 
             <!-- RIWAYAT PENGEMBALIAN TERAKHIR -->
-            <section class="content-card">
-                <div class="section-heading">
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
+                <div class="flex items-center justify-between gap-4 mb-5">
                     <div>
-                        <span class="eyebrow">LOG SELESAI</span>
-                        <h3>Pengembalian Terbaru</h3>
-                        <p>Catatan barang-barang yang telah selesai dikembalikan ke gudang inventaris.</p>
+                        <span class="text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase">LOG SELESAI</span>
+                        <h3 class="text-base font-bold text-[#102b4e]">Pengembalian Terbaru</h3>
+                        <p class="text-xs text-slate-400">Catatan peralatan yang telah selesai diperiksa dan dikembalikan ke gudang.</p>
                     </div>
 
-                    <a href="../riwayat/index.php" class="btn-outline btn-sm">
+                    <a href="../riwayat/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-blue-700 bg-white border border-slate-200 shadow-2xs transition">
                         <span>Lihat Semua Riwayat</span>
-                        <i data-lucide="arrow-right"></i>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
 
-                <div class="table-scroll">
-                    <table class="data-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">No.</th>
-                                <th>Nama Peminjam</th>
-                                <th>Nama Barang</th>
-                                <th>Tanggal Pinjam</th>
-                                <th>Tanggal Pengembalian</th>
-                                <th>Kondisi Terakhir</th>
-                                <th>Status</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <th class="py-3 px-3 w-12">No.</th>
+                                <th class="py-3 px-3">Nama Peminjam</th>
+                                <th class="py-3 px-3">Peralatan</th>
+                                <th class="py-3 px-3">Tanggal Pinjam</th>
+                                <th class="py-3 px-3">Tanggal Kembali</th>
+                                <th class="py-3 px-3">Kondisi Saat Kembali</th>
+                                <th class="py-3 px-3">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             <?php if (!$riwayatKembali): ?>
                                 <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i data-lucide="history"></i>
-                                            <strong>Belum ada transaksi pengembalian</strong>
-                                        </div>
+                                    <td colspan="7" class="text-center py-6 text-slate-400 text-xs">
+                                        Belum ada catatan pengembalian.
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($riwayatKembali as $i => $rk): ?>
-                                    <tr>
-                                        <td><?= $i + 1 ?></td>
-                                        <td class="name-cell"><?= e($rk['nama_peminjam']) ?></td>
-                                        <td><?= e($rk['nama_barang']) ?></td>
-                                        <td><?= date('d/m/Y', strtotime($rk['tanggal_pinjam'])) ?></td>
-                                        <td><?= $rk['tanggal_kembali'] ? date('d/m/Y', strtotime($rk['tanggal_kembali'])) : '—' ?></td>
-                                        <td>
-                                            <span class="status-badge badge-neutral"><?= e($rk['kondisi']) ?></span>
+                                    <tr class="hover:bg-slate-50/60 transition">
+                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
+                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($rk['nama_peminjam']) ?></td>
+                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($rk['nama_barang']) ?></td>
+                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($rk['tanggal_pinjam'])) ?></td>
+                                        <td class="py-3 px-3 text-slate-500"><?= $rk['tanggal_kembali'] ? date('d/m/Y', strtotime($rk['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-3 px-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                                                <?= e($rk['kondisi']) ?>
+                                            </span>
                                         </td>
-                                        <td>
-                                            <span class="status-badge badge-success">Dikembalikan</span>
+                                        <td class="py-3 px-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Dikembalikan
+                                            </span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -273,57 +281,61 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                 </div>
             </section>
 
-            <!-- FOOTER -->
-            <?php require __DIR__ . '/../includes/footer.php'; ?>
-
         </main>
+
+        <?php require __DIR__ . '/../includes/footer.php'; ?>
+
     </div>
 
     <?php if ($userRole === 'admin'): ?>
         <!-- MODAL KONFIRMASI PENGEMBALIAN -->
-        <div class="app-modal" id="modalPengembalian">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Konfirmasi Pengembalian Barang</h3>
-                    <button type="button" class="modal-close" data-modal-close>
-                        <i data-lucide="x"></i>
+        <div id="modalPengembalian" class="app-modal fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 transition-all">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                    <h3 class="text-base font-bold text-[#102b4e]">Konfirmasi Terima Barang</h3>
+                    <button type="button" data-modal-close class="text-slate-400 hover:text-slate-600 p-1">
+                        <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <form method="post" id="formPengembalian">
+                <form method="post" class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="proses_kembali">
                     <input type="hidden" name="peminjaman_id" id="kembali_peminjaman_id">
                     <input type="hidden" name="barang_id" id="kembali_barang_id">
 
-                    <div style="background: #f8fafc; border-radius: 10px; padding: 12px; margin-bottom: 14px;">
-                        <div style="font-size: 11px; color: #8292a5; margin-bottom: 4px;">Peminjam:</div>
-                        <div style="font-weight: 700; color: var(--navy); font-size: 13px;" id="kembali_peminjam_nama">—</div>
-
-                        <div style="font-size: 11px; color: #8292a5; margin-top: 8px; margin-bottom: 4px;">Barang:</div>
-                        <div style="font-weight: 700; color: var(--navy); font-size: 13px;" id="kembali_barang_nama">—</div>
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 flex flex-col gap-2">
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Peminjam:</span>
+                            <div class="font-bold text-xs text-slate-800" id="kembali_peminjam_nama">—</div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Peralatan:</span>
+                            <div class="font-bold text-xs text-[#102b4e]" id="kembali_barang_nama">—</div>
+                        </div>
                     </div>
 
-                    <div class="form-field">
-                        <label>Tanggal Pengembalian Fisik *</label>
-                        <input type="date" name="tanggal_kembali" class="form-input" value="<?= date('Y-m-d') ?>" required>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-700">Tanggal Pengembalian Fisik *</label>
+                        <input type="date" name="tanggal_kembali" value="<?= date('Y-m-d') ?>" class="h-10 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
                     </div>
 
-                    <div class="form-field">
-                        <label>Kondisi Barang Saat Kembali *</label>
-                        <select name="kondisi_kembali" id="kembali_kondisi" class="form-select" required>
-                            <option value="Baik">Baik (Normal / Tanpa Kerusakan)</option>
-                            <option value="Rusak Ringan">Rusak Ringan (Lecet / Masalah Minor)</option>
-                            <option value="Rusak Berat">Rusak Berat (Perlu Perbaikan / Rusak Total)</option>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-700">Kondisi Fisik Saat Kembali *</label>
+                        <select name="kondisi_kembali" id="kembali_kondisi" class="h-10 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" required>
+                            <option value="Baik">Baik (Normal / Lengkap)</option>
+                            <option value="Rusak Ringan">Rusak Ringan (Lecet / Kendala Minor)</option>
+                            <option value="Rusak Berat">Rusak Berat (Perlu Diservis / Rusak)</option>
                         </select>
-                        <span class="hint">Status kondisi barang di inventaris akan otomatis disesuaikan.</span>
+                        <span class="text-[10px] text-slate-400">Kondisi barang di inventaris akan otomatis disesuaikan.</span>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn-secondary btn-sm" data-modal-close>Batal</button>
-                        <button type="submit" class="btn-success btn-sm">
-                            <i data-lucide="check"></i>
-                            <span>Konfirmasi Barang Diterima</span>
+                    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 mt-2">
+                        <button type="button" data-modal-close class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition">
+                            Konfirmasi Barang Diterima
                         </button>
                     </div>
                 </form>
@@ -339,7 +351,8 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
             document.getElementById('kembali_kondisi').value = data.kondisi_awal || 'Baik';
 
             const modal = document.getElementById('modalPengembalian');
-            modal.classList.add('show');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
             if (window.lucide) lucide.createIcons();
         }
         </script>
@@ -348,4 +361,3 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
     <script src="../assets/js/script.js"></script>
 </body>
 </html>
-
