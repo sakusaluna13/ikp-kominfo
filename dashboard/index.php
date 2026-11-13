@@ -4,6 +4,10 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 
 require_login();
 
+$activePage = 'dashboard';
+$pageTitle = 'Dashboard';
+$pageSubtitle = 'SISTEM INFORMASI';
+
 // STATISTIK DASHBOARD
 $totalBarang = (int) $pdo
     ->query('SELECT COALESCE(SUM(jumlah), 0) FROM barang')
@@ -110,6 +114,41 @@ $rows = $q->fetchAll();
                 </div>
             </section>
 
+            <!-- AKSES CEPAT (SHORTCUTS) -->
+            <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
+                <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                    <a href="../barang/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="package"></i>
+                        <span>Kelola Barang</span>
+                    </a>
+                    <a href="../peminjaman/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="clipboard-list"></i>
+                        <span>Peminjaman Baru</span>
+                    </a>
+                    <a href="../pengembalian/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="package-check"></i>
+                        <span>Konfirmasi Kembali</span>
+                    </a>
+                    <a href="../laporan/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="printer"></i>
+                        <span>Cetak Laporan</span>
+                    </a>
+                <?php else: ?>
+                    <a href="../peminjaman/index.php" class="btn-primary btn-sm">
+                        <i data-lucide="send"></i>
+                        <span>Ajukan Peminjaman</span>
+                    </a>
+                    <a href="../barang/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="package"></i>
+                        <span>Katalog Peralatan</span>
+                    </a>
+                    <a href="../pengembalian/index.php" class="btn-secondary btn-sm" style="background: white; border: 1px solid #edf1f5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <i data-lucide="clock"></i>
+                        <span>Pinjaman Aktif Saya</span>
+                    </a>
+                <?php endif; ?>
+            </div>
+
             <!-- STATISTIK DASHBOARD -->
             <section class="stats-grid">
 
@@ -193,9 +232,15 @@ $rows = $q->fetchAll();
                         </p>
                     </div>
 
-                    <span class="table-count">
-                        <?= count($rows) ?> aktivitas
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="table-count">
+                            <?= count($rows) ?> aktivitas
+                        </span>
+                        <a href="../riwayat/index.php" class="btn-outline btn-sm">
+                            <span>Lihat Semua</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
 
                 <div class="table-scroll">

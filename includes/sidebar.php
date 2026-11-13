@@ -1,3 +1,7 @@
+<?php
+$currentPage = $activePage ?? '';
+$userRole = $_SESSION['user']['role'] ?? '';
+?>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="sidebar-logos">
@@ -8,7 +12,7 @@
             >
 
             <img
-                src="../assets/images/logo-pemda.png"
+                src="../assets/images/logo-sumut.png"
                 alt="Pemda"
                 onerror="this.style.display='none'"
             >
@@ -31,71 +35,40 @@
     <div class="sidebar-caption">MENU UTAMA</div>
 
     <nav class="sidebar-nav">
-        <a class="nav-link active" href="index.php">
+        <a class="nav-link <?= $currentPage === 'dashboard' ? 'active' : '' ?>" href="../dashboard/index.php">
             <i data-lucide="layout-dashboard"></i>
             <span>Dashboard</span>
         </a>
 
-        <a
-            class="nav-link disabled-link"
-            href="#"
-            aria-disabled="true"
-            title="Segera dikembangkan"
-        >
+        <a class="nav-link <?= $currentPage === 'barang' ? 'active' : '' ?>" href="../barang/index.php">
             <i data-lucide="package"></i>
             <span>Data Barang</span>
-            <small>Segera</small>
         </a>
 
-        <a
-            class="nav-link disabled-link"
-            href="#"
-            aria-disabled="true"
-        >
+        <a class="nav-link <?= $currentPage === 'peminjaman' ? 'active' : '' ?>" href="../peminjaman/index.php">
             <i data-lucide="clipboard-list"></i>
             <span>Peminjaman Barang</span>
-            <small>Segera</small>
         </a>
 
-        <a
-            class="nav-link disabled-link"
-            href="#"
-            aria-disabled="true"
-        >
+        <a class="nav-link <?= $currentPage === 'pengembalian' ? 'active' : '' ?>" href="../pengembalian/index.php">
             <i data-lucide="package-check"></i>
             <span>Pengembalian Barang</span>
-            <small>Segera</small>
         </a>
 
-        <a
-            class="nav-link disabled-link"
-            href="#"
-            aria-disabled="true"
-        >
+        <a class="nav-link <?= $currentPage === 'riwayat' ? 'active' : '' ?>" href="../riwayat/index.php">
             <i data-lucide="history"></i>
             <span>Riwayat Peminjaman</span>
-            <small>Segera</small>
         </a>
 
-        <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
-            <a
-                class="nav-link disabled-link"
-                href="#"
-                aria-disabled="true"
-            >
+        <?php if ($userRole === 'admin'): ?>
+            <a class="nav-link <?= $currentPage === 'laporan' ? 'active' : '' ?>" href="../laporan/index.php">
                 <i data-lucide="file-chart-column"></i>
                 <span>Laporan</span>
-                <small>Segera</small>
             </a>
 
-            <a
-                class="nav-link disabled-link"
-                href="#"
-                aria-disabled="true"
-            >
+            <a class="nav-link <?= $currentPage === 'users' ? 'active' : '' ?>" href="../users/index.php">
                 <i data-lucide="users"></i>
                 <span>Manajemen Pengguna</span>
-                <small>Segera</small>
             </a>
         <?php endif; ?>
     </nav>

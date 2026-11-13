@@ -20,8 +20,8 @@ $roleLabel = $_SESSION['user']['role'] === 'admin'
         </button>
 
         <div>
-            <span class="eyebrow">SISTEM INFORMASI</span>
-            <h1>Dashboard</h1>
+            <span class="eyebrow"><?= e($pageSubtitle ?? 'SISTEM INFORMASI') ?></span>
+            <h1><?= e($pageTitle ?? 'Dashboard') ?></h1>
         </div>
     </div>
 

@@ -191,4 +191,37 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.auth-content')?.prepend(el);
     }
 
+    // MODAL UMUM (GENERIC MODALS)
+    document.querySelectorAll('[data-modal-open]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modalId = btn.getAttribute('data-modal-open');
+            const target = document.getElementById(modalId);
+            if (target) {
+                target.classList.add('show');
+                if (window.lucide) lucide.createIcons();
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-modal-close]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = btn.closest('.app-modal');
+            modal?.classList.remove('show');
+        });
+    });
+
+    document.querySelectorAll('.app-modal').forEach(m => {
+        m.addEventListener('click', e => {
+            if (e.target === m) {
+                m.classList.remove('show');
+            }
+        });
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.app-modal.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
 });

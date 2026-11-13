@@ -13,3 +13,9 @@ function get_flash():?array{$f=$_SESSION['flash']??null;unset($_SESSION['flash']
 function is_logged_in():bool{return isset($_SESSION['user']['id']);}
 function require_login():void{if(!is_logged_in()){flash('error','Silakan login terlebih dahulu.');header('Location: ../auth/login.php');exit;}}
 function require_role(string ...$roles):void{require_login();if(!in_array($_SESSION['user']['role']??'', $roles,true)){http_response_code(403);exit('Akses ditolak.');}}
+function hitung_durasi(?string $tglPinjam, ?string $tglKembali): int {
+    if (!$tglPinjam) return 1;
+    $target = !empty($tglKembali) ? $tglKembali : date('Y-m-d');
+    $diff = (int) round((strtotime($target) - strtotime($tglPinjam)) / 86400);
+    return max(1, $diff);
+}

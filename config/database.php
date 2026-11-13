@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-$host='localhost'; $dbname='db_peminjaman_multimedia'; $dbuser='root'; $dbpass='';
+$host='localhost'; $dbname='db_peminjaman_multimedia3'; $dbuser='root'; $dbpass='Raihan110123041';
 try {
  $pdo=new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4",$dbuser,$dbpass,[
   PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
