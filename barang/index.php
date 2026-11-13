@@ -374,7 +374,10 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                 <option value="Aksesori Kamera">
                                 <option value="Audio">
                                 <option value="Pencahayaan">
+                                <option value="Drone & Aerial">
                                 <option value="Perangkat Streaming">
+                                <option value="Perangkat Liputan">
+                                <option value="Studio & Dekorasi">
                                 <option value="Laptop & Komputer">
                             </datalist>
                         </div>

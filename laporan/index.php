@@ -78,13 +78,69 @@ foreach ($rows as $r) {
     <style>
         body { font-family: 'DM Sans', sans-serif; }
         @media print {
+            @page {
+                size: landscape;
+                margin: 10mm 12mm;
+            }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            body { background: #fff !important; color: #000 !important; }
-            .md\:ml-64 { margin-left: 0 !important; padding: 0 20px !important; }
-            table { border-collapse: collapse !important; width: 100% !important; }
-            th, td { border: 1px solid #999 !important; padding: 6px 8px !important; font-size: 10pt !important; color: #000 !important; }
-            th { background: #eee !important; }
+            
+            html, body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 9pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: 0 !important;
+                height: auto !important;
+            }
+            .md\:ml-64, main, section {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: 0 !important;
+                height: auto !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+            .overflow-x-auto, .lg\:overflow-x-visible {
+                overflow: visible !important;
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            table { 
+                border-collapse: collapse !important; 
+                width: 100% !important; 
+                margin-top: 8px !important;
+                page-break-inside: auto !important; 
+                page-break-before: avoid !important;
+            }
+            tr { 
+                page-break-inside: avoid !important; 
+                page-break-after: auto !important; 
+            }
+            thead { 
+                display: table-header-group !important; 
+            }
+            tfoot { 
+                display: table-footer-group !important; 
+            }
+            th, td { 
+                border: 1px solid #000 !important; 
+                padding: 5px 6px !important; 
+                font-size: 8.5pt !important; 
+                color: #000 !important; 
+            }
+            th { 
+                background: #f1f5f9 !important; 
+                font-weight: bold !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
         }
         .print-only { display: none; }
     </style>
@@ -102,21 +158,22 @@ foreach ($rows as $r) {
         </div>
 
         <!-- KOP SURAT (HANYA MUNCUL SAAT CETAK) -->
-        <div class="print-only" style="margin-bottom: 20px;">
-            <div style="display:flex; align-items:center; gap:18px; border-bottom:3px double #000; padding-bottom:12px;">
+        <div class="print-only" style="margin-bottom: 10px;">
+            <div style="display:flex; align-items:center; gap:16px; border-bottom:3px double #000; padding-bottom:8px;">
                 <img src="../assets/images/logo-sumut.png" alt="Sumut" style="width:65px; height:65px; object-fit:contain;">
                 <div style="flex:1; text-align:center;">
-                    <div style="font-size:13pt; font-weight:800; text-transform:uppercase;">PEMERINTAH PROVINSI SUMATERA UTARA</div>
-                    <div style="font-size:12pt; font-weight:800;">DINAS KOMUNIKASI DAN INFORMATIKA</div>
-                    <div style="font-size:9pt; color:#333;">BIDANG PENGELOLAAN INFORMASI DAN KOMUNIKASI PUBLIK (IKP)</div>
+                    <div style="font-size:13.5pt; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">PEMERINTAH PROVINSI SUMATERA UTARA</div>
+                    <div style="font-size:12.5pt; font-weight:800; letter-spacing:0.5px;">DINAS KOMUNIKASI DAN INFORMATIKA</div>
+                    <div style="font-size:10pt; font-weight:700; color:#222;">BIDANG PENGELOLAAN INFORMASI DAN KOMUNIKASI PUBLIK (IKP)</div>
+                    <div style="font-size:11pt; font-weight:600; color:#111; margin-top:3px;">Jalan H.M. Said No. 27 Medan</div>
                 </div>
                 <img src="../assets/images/logo-kominfo.png" alt="KOMINFO" style="width:65px; height:65px; object-fit:contain;">
             </div>
-            <div style="text-align:center; margin-top:16px; margin-bottom:12px;">
-                <div style="font-size:12pt; font-weight:800; text-decoration:underline; text-transform:uppercase;">
+            <div style="text-align:center; margin-top:10px; margin-bottom:8px;">
+                <div style="font-size:11.5pt; font-weight:800; text-decoration:underline; text-transform:uppercase;">
                     LAPORAN REKAPITULASI PEMINJAMAN PERALATAN MULTIMEDIA
                 </div>
-                <div style="font-size:9pt; color:#333; margin-top:4px;">
+                <div style="font-size:9pt; color:#222; margin-top:3px;">
                     Periode: <?= date('d F Y', strtotime($startDate)) ?> s/d <?= date('d F Y', strtotime($endDate)) ?>
                 </div>
             </div>
@@ -206,22 +263,22 @@ foreach ($rows as $r) {
                     </span>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
+                <div class="w-full overflow-x-auto lg:overflow-x-visible">
+                    <table class="w-full text-left text-xs border border-slate-300 table-auto">
                         <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-10">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan Multimedia</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Tgl. Pinjam</th>
-                                <th class="py-3 px-3">Tgl. Kembali</th>
-                                <th class="py-3 px-3">Durasi</th>
-                                <th class="py-3 px-3">Kondisi</th>
-                                <th class="py-3 px-3">Status</th>
+                            <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold text-[11px]">
+                                <th class="py-2.5 px-3 border border-slate-300 w-12 text-center">No.</th>
+                                <th class="py-2.5 px-3 border border-slate-300">Nama Peminjam</th>
+                                <th class="py-2.5 px-3 border border-slate-300">Peralatan Multimedia</th>
+                                <th class="py-2.5 px-3 border border-slate-300">Kategori</th>
+                                <th class="py-2.5 px-3 border border-slate-300 text-center">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 border border-slate-300 text-center">Tgl. Kembali</th>
+                                <th class="py-2.5 px-3 border border-slate-300 text-center">Durasi</th>
+                                <th class="py-2.5 px-3 border border-slate-300">Kondisi</th>
+                                <th class="py-2.5 px-3 border border-slate-300 text-center">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-slate-200">
                             <?php if (!$rows): ?>
                                 <tr>
                                     <td colspan="9" class="text-center py-10 text-slate-400 text-xs">
@@ -230,31 +287,19 @@ foreach ($rows as $r) {
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($rows as $i => $r): ?>
-                                    <?php
-                                    $badge = match ($r['status']) {
-                                        'dipinjam' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                        'dikembalikan' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                        'ditolak' => 'bg-rose-50 text-rose-700 border-rose-200',
-                                        default => 'bg-blue-50 text-blue-700 border-blue-200',
-                                    };
-                                    ?>
-                                    <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-800"><?= e($r['nama_peminjam']) ?></td>
-                                        <td class="py-3.5 px-3 font-medium text-slate-700">
+                                    <tr class="hover:bg-slate-50 transition border-b border-slate-200">
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-600 text-center"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 font-semibold text-slate-900"><?= e($r['nama_peminjam']) ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-800">
                                             <?= e($r['nama_barang']) ?>
-                                            <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md ml-1"><?= (int) $r['jumlah'] ?> unit</span>
+                                            <span class="text-slate-600 font-normal">(<?= (int) $r['jumlah'] ?> unit)</span>
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= e($r['kategori']) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= e($r['kondisi']) ?></td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
-                                                <?= e(ucwords($r['status'])) ?>
-                                            </span>
-                                        </td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-700"><?= e($r['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-700 text-center whitespace-nowrap"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-700 text-center whitespace-nowrap"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 font-medium text-slate-800 text-center whitespace-nowrap"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-700"><?= e($r['kondisi']) ?></td>
+                                        <td class="py-2.5 px-3 border border-slate-300 text-slate-900 text-center font-medium"><?= e(ucwords($r['status'])) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -263,12 +308,12 @@ foreach ($rows as $r) {
                 </div>
 
                 <!-- TANDA TANGAN (HANYA DI CETAK) -->
-                <div class="print-only" style="margin-top: 50px; display: flex; justify-content: flex-end;">
-                    <div style="text-align: center; min-width: 240px; font-size: 10pt;">
+                <div class="print-only" style="margin-top: 25px; display: flex; justify-content: flex-end; page-break-inside: avoid;">
+                    <div style="text-align: center; min-width: 240px; font-size: 9.5pt;">
                         <p style="margin: 0;">Medan, <?= date('d F Y') ?></p>
-                        <p style="margin: 4px 0 70px;">Pengelola Inventaris Multimedia IKP,</p>
+                        <p style="margin: 4px 0 55px;">Pengelola Inventaris Multimedia IKP,</p>
                         <p style="margin: 0; font-weight: 800; text-decoration: underline;"><?= e($_SESSION['user']['nama']) ?></p>
-                        <p style="margin: 2px 0 0; font-size: 9pt; color: #333;">NIP. ........................................</p>
+                        <p style="margin: 2px 0 0; font-size: 8.5pt; color: #333;">NIP. ........................................</p>
                     </div>
                 </div>
 
