@@ -10,14 +10,14 @@ $pageSubtitle = 'PENGATURAN AKUN';
 
 $userId = (int) $_SESSION['user']['id'];
 
-// Pastikan kolom foto ada (jalankan sekali)
+// pastikan kolom foto profil tersedia
 try {
     $pdo->exec("ALTER TABLE users ADD COLUMN foto VARCHAR(255) NULL DEFAULT NULL");
 } catch (PDOException $e) {
-    // Kolom sudah ada, abaikan
+    // abaikan jika kolom sudah ada
 }
 
-// Ambil data user terkini
+// ambil data pengguna terkini
 $stmt = $pdo->prepare('SELECT id, nama, username, role, status, foto FROM users WHERE id = :id');
 $stmt->execute(['id' => $userId]);
 $user = $stmt->fetch();
@@ -28,7 +28,7 @@ if (!$user) {
     exit;
 }
 
-// PROSES POST
+// proses simpan perubahan profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
 
@@ -144,12 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <main class="flex-1 flex flex-col gap-6 max-w-2xl w-full mx-auto">
 
-            <!-- KARTU EDIT PROFIL -->
+            <!-- kartu edit profil -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs p-5 sm:p-7">
                 
-                <!-- HEADER & FOTO PROFIL -->
+                <!-- header dan foto profil -->
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-100">
-                    <!-- FOTO DENGAN TOMBOL KAMERA -->
+                    <!-- foto dengan tombol kamera -->
                     <div class="relative shrink-0">
                         <div class="w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center border-2 border-slate-200" id="photoPreviewWrap">
                             <?php if ($user['foto']): ?>
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
 
-                    <!-- IDENTITAS SINGKAT -->
+                    <!-- identitas singkat -->
                     <div class="text-center sm:text-left flex-1 min-w-0 pt-1">
                         <h2 class="text-lg sm:text-xl font-bold text-[#102b4e] truncate"><?= e($user['nama']) ?></h2>
                         <p class="text-xs text-slate-500 mt-0.5">@<?= e($user['username']) ?> · <?= ucfirst($user['role']) ?></p>
@@ -172,12 +172,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- FORM EDIT PROFIL -->
+                <!-- form edit profil -->
                 <form method="post" enctype="multipart/form-data" class="flex flex-col gap-5 pt-6">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="file" id="fotoInput" name="foto" accept="image/jpeg,image/png,image/webp" class="hidden">
 
-                    <!-- DATA UTAMA -->
+                    <!-- data utama -->
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col gap-1.5">
                             <label for="nama" class="text-xs font-bold text-slate-700">Nama Lengkap *</label>
@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- GANTI SANDI -->
+                    <!-- ganti sandi -->
                     <div class="border-t border-slate-100 pt-5 flex flex-col gap-4">
                         <div>
                             <h3 class="text-xs font-bold text-slate-700">Ganti Sandi</h3>
@@ -252,7 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- TOMBOL AKSI -->
+                    <!-- tombol aksi -->
                     <div class="flex items-center gap-3 pt-3">
                         <button 
                             type="submit" 

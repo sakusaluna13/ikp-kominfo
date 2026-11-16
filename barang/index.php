@@ -11,15 +11,13 @@ $pageSubtitle = 'MASTER INVENTARIS';
 
 $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 
-// ============================================
-// PROSES AKSI (ADMIN ONLY: TAMBAH, EDIT, HAPUS)
-// ============================================
+// proses simpan, edit, dan hapus barang
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
 
     $action = $_POST['action'] ?? '';
 
-    // TAMBAH BARANG
+    // tambah barang baru
     if ($action === 'tambah' && $userRole === 'admin') {
         $nama_barang = trim((string) ($_POST['nama_barang'] ?? ''));
         $kategori = trim((string) ($_POST['kategori'] ?? ''));
@@ -42,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // EDIT BARANG
+    // perbarui data barang
     if ($action === 'edit' && $userRole === 'admin') {
         $id = (int) ($_POST['id'] ?? 0);
         $nama_barang = trim((string) ($_POST['nama_barang'] ?? ''));
@@ -67,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // HAPUS BARANG
+    // hapus barang
     if ($action === 'hapus' && $userRole === 'admin') {
         $id = (int) ($_POST['id'] ?? 0);
 
@@ -89,9 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ============================================
-// FILTER & QUERY DATA
-// ============================================
+// pencarian dan filter data barang
 $search = trim((string) ($_GET['search'] ?? ''));
 $filterKategori = trim((string) ($_GET['kategori'] ?? ''));
 $filterKondisi = trim((string) ($_GET['kondisi'] ?? ''));
@@ -153,7 +149,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- Library Generate QR Code -->
+    <!-- pustaka qr code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
@@ -188,7 +184,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     <?php endif; ?>
                 </div>
 
-                <!-- FILTER & PENCARIAN -->
+                <!-- filter dan pencarian -->
                 <form method="get" class="flex flex-wrap items-center justify-between gap-2.5 mb-4 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100">
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         <input
@@ -232,7 +228,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </span>
                 </form>
 
-                <!-- TABEL DATA BARANG (COMPACT FIT - NO HORIZONTAL SCROLL) -->
+                <!-- tabel data barang -->
                 <div class="w-full overflow-hidden sm:overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse table-auto">
                         <thead>
@@ -292,7 +288,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                 <?= e($b['kondisi']) ?>
                                             </span>
                                         </td>
-                                        <!-- TOMBOL QR CODE -->
+                                        <!-- tombol qr code -->
                                         <td class="py-2 px-1 sm:py-2.5 sm:px-2 text-center">
                                             <button
                                                 type="button"
@@ -305,7 +301,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                         <td class="py-2 px-1.5 sm:py-2.5 sm:px-3 text-right">
                                             <div class="inline-flex items-center gap-1 sm:gap-1.5 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
-                                                    <!-- EDIT -->
+                                                    <!-- tombol edit -->
                                                     <button
                                                         type="button"
                                                         class="p-1 sm:px-2.5 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
@@ -315,7 +311,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                         <span class="hidden sm:inline">Edit</span>
                                                     </button>
 
-                                                    <!-- HAPUS -->
+                                                    <!-- tombol hapus -->
                                                     <form method="post" onsubmit="return confirm('Hapus barang <?= e($b['nama_barang']) ?>?');" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
@@ -352,7 +348,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
     </div>
 
     <?php if ($userRole === 'admin'): ?>
-        <!-- MODAL TAMBAH BARANG -->
+        <!-- modal tambah barang -->
         <div id="modalTambahBarang" class="app-modal fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 transition-all">
             <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
@@ -415,7 +411,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
             </div>
         </div>
 
-        <!-- MODAL EDIT BARANG -->
+        <!-- modal edit barang -->
         <div id="modalEditBarang" class="app-modal fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 transition-all">
             <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
@@ -486,10 +482,10 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
 
     <script src="../assets/js/script.js"></script>
 
-    <!-- MODAL QR CODE -->
+    <!-- modal qr code -->
     <div id="modalQRCode" class="app-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-            <!-- Header -->
+            <!-- bagian atas modal -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <div class="flex items-center gap-2">
                     <i data-lucide="qr-code" class="w-5 h-5 text-indigo-600"></i>
@@ -500,11 +496,11 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                 </button>
             </div>
 
-            <!-- Body -->
+            <!-- isi modal qr -->
             <div class="p-6 flex flex-col items-center gap-4">
                 <p class="text-sm font-semibold text-slate-700 text-center" id="qrNamaBarang"></p>
 
-                <!-- QR Canvas -->
+                <!-- gambar qr code -->
                 <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl shadow-inner">
                     <div id="qrCanvas"></div>
                 </div>
@@ -513,10 +509,10 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     Scan QR ini dengan HP untuk melihat<br>status & detail barang secara langsung
                 </p>
 
-                <!-- URL Link -->
+                <!-- tautan qr -->
                 <div class="w-full bg-slate-50 rounded-xl px-3 py-2.5 text-[11px] text-slate-500 font-mono break-all text-center" id="qrUrlText"></div>
 
-                <!-- Tombol Download -->
+                <!-- tombol aksi -->
                 <div class="flex gap-3 w-full">
                     <button onclick="downloadQR()"
                         class="flex-1 inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition text-xs">

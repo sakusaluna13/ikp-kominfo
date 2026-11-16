@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// KONFIGURASI DATABASE — IKP KOMINFO SUMUT
-// Sesuaikan nilai di bawah dengan kredensial hosting Anda
+// koneksi database
+// sesuaikan dengan database hosting atau lokal
 
 $host   = 'localhost';
 $dbname = 'db_peminjaman_multimedia3';

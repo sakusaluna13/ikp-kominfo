@@ -5,18 +5,18 @@ $currentPage = $activePage ?? '';
 $userRole = $_SESSION['user']['role'] ?? '';
 ?>
 
-<!-- SIDEBAR BACKDROP (MOBILE) -->
+<!-- latar belakang menu mobile -->
 <div 
     id="sidebarBackdrop" 
     class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden md:hidden transition-opacity"
 ></div>
 
-<!-- SIDEBAR ASIDE -->
+<!-- menu samping -->
 <aside 
     id="sidebar" 
     class="fixed inset-y-0 left-0 w-72 sm:w-64 bg-white border-r border-slate-200 z-50 transition-transform duration-300 -translate-x-full md:translate-x-0 flex flex-col p-4 shadow-xl md:shadow-sm"
 >
-    <!-- BRAND / LOGO -->
+    <!-- logo dan judul -->
     <div class="flex items-center justify-between gap-2.5 pb-4 border-b border-slate-100">
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="flex items-center gap-1.5 shrink-0">
@@ -40,7 +40,7 @@ $userRole = $_SESSION['user']['role'] ?? '';
             </div>
         </div>
 
-        <!-- MOBILE CLOSE BUTTON -->
+        <!-- tombol tutup menu mobile -->
         <button 
             type="button" 
             id="sidebarClose" 
@@ -51,12 +51,12 @@ $userRole = $_SESSION['user']['role'] ?? '';
         </button>
     </div>
 
-    <!-- CAPTION -->
+    <!-- judul kelompok menu -->
     <div class="px-3 text-[10px] font-extrabold tracking-wider text-slate-400 uppercase mt-4 mb-2">
         MENU UTAMA
     </div>
 
-    <!-- NAVIGATION LINKS -->
+    <!-- daftar menu -->
     <nav class="flex flex-col gap-1 flex-1 overflow-y-auto">
         <a 
             href="../dashboard/index.php" 
@@ -137,7 +137,7 @@ $userRole = $_SESSION['user']['role'] ?? '';
         <?php endif; ?>
     </nav>
 
-    <!-- SIDEBAR BOTTOM -->
+    <!-- bagian bawah menu -->
     <div class="pt-4 border-t border-slate-100 flex flex-col gap-2">
         <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 flex items-center gap-2.5">
             <i data-lucide="shield-check" class="w-5 h-5 text-blue-600 shrink-0"></i>
@@ -160,7 +160,7 @@ $userRole = $_SESSION['user']['role'] ?? '';
     </div>
 </aside>
 
-<!-- MODAL KONFIRMASI LOGOUT -->
+<!-- modal konfirmasi keluar -->
 <div 
     id="modalLogout" 
     class="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 transition-all"

@@ -12,9 +12,7 @@ $pageSubtitle = 'TRANSAKSI PENGEMBALIAN';
 $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 $userId = (int) $_SESSION['user']['id'];
 
-// ============================================
-// PROSES AKSI PENGEMBALIAN (ADMIN ONLY)
-// ============================================
+// proses konfirmasi pengembalian barang
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $userRole === 'admin') {
     verify_csrf();
 
@@ -54,9 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $userRole === 'admin') {
     }
 }
 
-// ============================================
-// DATA BARANG YANG SEDANG DIPINJAM
-// ============================================
+// ambil data barang yang sedang dipinjam
 $sql = "
     SELECT 
         p.id AS peminjaman_id,
@@ -137,7 +133,7 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <!-- DAFTAR BARANG YANG PERLU DIKEMBALIKAN -->
+            <!-- daftar barang yang perlu dikembalikan -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
@@ -226,7 +222,7 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                 </div>
             </section>
 
-            <!-- RIWAYAT PENGEMBALIAN TERAKHIR -->
+            <!-- riwayat pengembalian terakhir -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
@@ -300,7 +296,7 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
     </div>
 
     <?php if ($userRole === 'admin'): ?>
-        <!-- MODAL KONFIRMASI PENGEMBALIAN -->
+        <!-- modal konfirmasi pengembalian -->
         <div id="modalPengembalian" class="app-modal fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 transition-all">
             <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">

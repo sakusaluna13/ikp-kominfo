@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-// Hapus semua data sesi
+// hapus semua data sesi
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {

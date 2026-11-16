@@ -8,13 +8,13 @@ $roleLabel = ($_SESSION['user']['role'] ?? '') === 'admin' ? 'Administrator' : '
 $photoUrl = $_SESSION['user']['photo'] ?? '';
 ?>
 
-<!-- TOAST CONTAINER -->
+<!-- wadah notifikasi -->
 <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-[min(90vw,320px)] sm:w-80 pointer-events-none [&>*]:pointer-events-auto"></div>
 
-<!-- TOPBAR -->
+<!-- bilah atas -->
 <header class="h-14 sm:h-16 flex items-center justify-between border-b border-slate-200/80 gap-3 mb-4 sm:mb-6">
     <div class="flex items-center gap-2.5 min-w-0">
-        <!-- MOBILE HAMBURGER BUTTON -->
+        <!-- tombol menu mobile -->
         <button 
             type="button" 
             id="mobileMenu"
@@ -36,13 +36,13 @@ $photoUrl = $_SESSION['user']['photo'] ?? '';
     </div>
 
     <div class="flex items-center gap-3">
-        <!-- DATE CHIP -->
+        <!-- penampil tanggal -->
         <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-500 text-xs shadow-2xs">
             <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400"></i>
             <span id="currentDate"></span>
         </div>
 
-        <!-- PROFILE DROPDOWN -->
+        <!-- menu pengguna -->
         <div class="relative" id="profileDropdownWrap">
             <button 
                 type="button"
@@ -70,7 +70,7 @@ $photoUrl = $_SESSION['user']['photo'] ?? '';
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 mr-0.5 hidden sm:block shrink-0"></i>
             </button>
 
-            <!-- DROPDOWN MENU -->
+            <!-- pilihan profil -->
             <div 
                 id="profileDropdown" 
                 class="hidden absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100"
@@ -98,7 +98,7 @@ $photoUrl = $_SESSION['user']['photo'] ?? '';
     </div>
 </header>
 
-<!-- NOTIFIKASI FLASH -->
+<!-- notifikasi pesan -->
 <?php if ($msg): ?>
     <?php
     $alertStyle = match ($msg['type']) {

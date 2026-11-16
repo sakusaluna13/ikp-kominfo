@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. INISIALISASI LUCIDE ICONS
+    // inisialisasi icon lucide
     if (window.lucide) {
         lucide.createIcons();
     }
 
-    // 2. TOGGLE PASSWORD (LIHAT / SEMBUNYIKAN PASSWORD)
+    // toggle lihat/sembunyikan password
     document.querySelectorAll('[data-toggle-password]').forEach(btn => {
         btn.addEventListener('click', () => {
             const inputId = btn.getAttribute('data-toggle-password');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. SIDEBAR RESPONSIVE (MOBILE)
+    // sidebar responsif mobile
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
     const sidebarClose = document.getElementById('sidebarClose');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sidebar) return;
         sidebar.classList.remove('-translate-x-full');
         backdrop?.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden'); // prevent background scroll when sidebar open
+        document.body.classList.add('overflow-hidden'); // kunci scroll latar saat sidebar terbuka
     };
 
     const closeSidebar = () => {
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('overflow-hidden');
     };
 
-    // Bind all elements that can open sidebar
+    // tombol pembuka sidebar
     document.querySelectorAll('[data-open-sidebar], #mobileMenu').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarClose?.addEventListener('click', closeSidebar);
     backdrop?.addEventListener('click', closeSidebar);
 
-    // Auto close sidebar when mobile link is tapped
+    // tutup sidebar saat menu di mobile diklik
     sidebar?.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth < 768) {
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. MODAL DIALOG (TAILWIND TOGGLE HIDDEN / FLEX)
+    // kontrol buka modal
     document.querySelectorAll('[data-modal-open]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -70,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.classList.add('flex');
                 if (window.lucide) lucide.createIcons();
             }
-            // Tutup dropdown profil jika sedang terbuka
+            // tutup dropdown profil bila terbuka
             const profileDropdown = document.getElementById('profileDropdown');
             if (profileDropdown) profileDropdown.classList.add('hidden');
-            // Tutup mobile drawer jika sedang terbuka
+            // tutup sidebar mobile bila terbuka
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
             if (sidebar) sidebar.classList.add('-translate-x-full');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // TUTUP MODAL SAAT KLIK DI LUAR KARTU ATAU ESCAPE
+    // tutup modal saat klik area luar
     document.querySelectorAll('.app-modal').forEach(m => {
         m.addEventListener('click', e => {
             if (e.target === m) {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. TANGGAL HARI INI DI TOPBAR
+    // tampilkan tanggal hari ini di topbar
     const dateEl = document.getElementById('currentDate');
     if (dateEl) {
         dateEl.textContent = new Intl.DateTimeFormat('id-ID', {
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(new Date());
     }
 
-    // 6. NOTIFIKASI SETELAH LOGOUT
+    // notifikasi setelah logout
     if (new URLSearchParams(location.search).has('logged_out')) {
         const noticeEl = document.getElementById('logoutNotice');
         if (noticeEl) {
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 7. VALIDASI FORM LOGIN & REGISTRASI SEDERHANA
+    // validasi form login dan registrasi
     const loginForm = document.getElementById('loginForm');
     loginForm?.addEventListener('submit', e => {
         const u = loginForm.querySelector('[name=username]');
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 8. PROFILE DROPDOWN
+    // dropdown profil
     const profileBtn = document.getElementById('profileDropdownBtn');
     const profileDropdown = document.getElementById('profileDropdown');
     if (profileBtn && profileDropdown) {
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('click', () => profileDropdown.classList.add('hidden'));
     }
 
-    // 9. AUTO DISMISS FLASH MESSAGES
+    // hilangkan pesan flash secara otomatis
     const flashMsg = document.querySelector('[data-flash-message]');
     if (flashMsg) {
         setTimeout(() => {
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// TOAST NOTIFICATION SYSTEM
+// sistem notifikasi toast
 window.showToast = function(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;

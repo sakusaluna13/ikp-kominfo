@@ -9,9 +9,7 @@ $activePage = 'laporan';
 $pageTitle = 'Laporan Peminjaman';
 $pageSubtitle = 'REKAP & CETAK DOKUMEN';
 
-// ============================================
-// FILTER PERIODE & STATUS
-// ============================================
+// filter periode dan status laporan
 $startDate = trim((string) ($_GET['start_date'] ?? date('Y-m-01')));
 $endDate = trim((string) ($_GET['end_date'] ?? date('Y-m-d')));
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
@@ -157,7 +155,7 @@ foreach ($rows as $r) {
             <?php require __DIR__ . '/../includes/header.php'; ?>
         </div>
 
-        <!-- KOP SURAT (HANYA MUNCUL SAAT CETAK) -->
+        <!-- kop surat cetak dokumen -->
         <div class="print-only" style="margin-bottom: 10px;">
             <div style="display:flex; align-items:center; gap:16px; border-bottom:3px double #000; padding-bottom:8px;">
                 <img src="../assets/images/logo-sumut.png" alt="Sumut" style="width:65px; height:65px; object-fit:contain;">
@@ -181,7 +179,7 @@ foreach ($rows as $r) {
 
         <main class="flex-1 flex flex-col gap-6">
 
-            <!-- FILTER & OPSI CETAK (HANYA DI LAYAR) -->
+            <!-- filter laporan -->
             <section class="no-print bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
@@ -227,7 +225,7 @@ foreach ($rows as $r) {
                     </button>
                 </form>
 
-                <!-- RINGKASAN FILTER -->
+                <!-- ringkasan filter -->
                 <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-0.5">
                         <span class="text-[10px] font-bold text-slate-400">Total Data</span>
@@ -252,7 +250,7 @@ foreach ($rows as $r) {
                 </div>
             </section>
 
-            <!-- TABEL LAPORAN (TAMPIL DI LAYAR & CETAK) -->
+            <!-- tabel data laporan -->
             <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
                 <div class="no-print mb-4 flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500">
@@ -307,7 +305,7 @@ foreach ($rows as $r) {
                     </table>
                 </div>
 
-                <!-- TANDA TANGAN (HANYA DI CETAK) -->
+                <!-- tanda tangan lembar cetak -->
                 <div class="print-only" style="margin-top: 25px; display: flex; justify-content: flex-end; page-break-inside: avoid;">
                     <div style="text-align: center; min-width: 240px; font-size: 9.5pt;">
                         <p style="margin: 0;">Medan, <?= date('d F Y') ?></p>

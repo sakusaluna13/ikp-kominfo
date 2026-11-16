@@ -6,7 +6,7 @@ if(session_status()!==PHP_SESSION_ACTIVE){
 }
 require_once __DIR__.'/../config/database.php';
 
-// Auto-sync foto profil jika belum ada di session
+// sinkron foto profil jika belum ada di sesi
 if (isset($_SESSION['user']['id']) && !isset($_SESSION['user']['photo'])) {
     try {
         $st = $pdo->prepare('SELECT foto FROM users WHERE id = :id LIMIT 1');

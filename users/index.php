@@ -11,15 +11,13 @@ $pageSubtitle = 'PENGELOLAAN AKUN SISTEM';
 
 $currentAdminId = (int) $_SESSION['user']['id'];
 
-// ============================================
-// PROSES AKSI POST (ADMIN ONLY)
-// ============================================
+// proses simpan dan kelola data pengguna
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
 
     $action = $_POST['action'] ?? '';
 
-    // 1. TAMBAH PENGGUNA BARU
+    // tambah pengguna baru
     if ($action === 'tambah') {
         $nama = trim((string) ($_POST['nama'] ?? ''));
         $username = trim((string) ($_POST['username'] ?? ''));
@@ -55,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 2. TOGGLE STATUS (AKTIF / NONAKTIF)
+    // ubah status aktif atau nonaktif
     if ($action === 'toggle_status') {
         $id = (int) ($_POST['id'] ?? 0);
         $statusNow = (string) ($_POST['current_status'] ?? '');
@@ -72,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. UBAH ROLE
+    // ubah peran pengguna
     if ($action === 'ubah_role') {
         $id = (int) ($_POST['id'] ?? 0);
         $newRole = in_array($_POST['new_role'] ?? '', ['admin', 'peminjam'], true) ? $_POST['new_role'] : 'peminjam';
@@ -88,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 4. RESET PASSWORD
+    // atur ulang kata sandi
     if ($action === 'reset_password') {
         $id = (int) ($_POST['id'] ?? 0);
         $newPass = (string) ($_POST['new_password'] ?? '');
@@ -105,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 5. HAPUS PENGGUNA
+    // hapus pengguna
     if ($action === 'hapus') {
         $id = (int) ($_POST['id'] ?? 0);
 
@@ -127,9 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ============================================
-// DATA PENGGUNA
-// ============================================
+// data pengguna
 $search       = trim((string) ($_GET['search'] ?? ''));
 $filterRole   = trim((string) ($_GET['role'] ?? ''));
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
@@ -187,10 +183,10 @@ $userList = $stmt->fetchAll();
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <!-- CARD UTAMA -->
+            <!-- kartu daftar pengguna -->
             <div class="bg-white rounded-xl sm:rounded-2xl shadow-xs border border-slate-100 overflow-hidden mb-4">
 
-                <!-- Header Card -->
+                <!-- header kartu -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-5 border-b border-slate-100">
                     <div>
                         <p class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase mb-0.5">Hak Akses &amp; Akun</p>
@@ -205,7 +201,7 @@ $userList = $stmt->fetchAll();
                     </button>
                 </div>
 
-                <!-- FILTER FORM -->
+                <!-- formulir filter -->
                 <form method="get" class="flex flex-wrap items-center gap-2 p-3 border-b border-slate-100 bg-slate-50/60">
                     <input
                         type="text"
@@ -240,7 +236,7 @@ $userList = $stmt->fetchAll();
                     <span class="ml-auto text-[11px] text-slate-400 font-medium"><?= count($userList) ?> user</span>
                 </form>
 
-                <!-- TABEL -->
+                <!-- tabel data pengguna -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs border-collapse">
                         <thead>
@@ -310,7 +306,7 @@ $userList = $stmt->fetchAll();
                                             <?php if (!$isMe): ?>
                                                 <div class="inline-flex items-center justify-end gap-1">
 
-                                                    <!-- TOGGLE STATUS -->
+                                                    <!-- toggle status -->
                                                     <form method="post" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="toggle_status">
@@ -331,7 +327,7 @@ $userList = $stmt->fetchAll();
                                                         <?php endif; ?>
                                                     </form>
 
-                                                    <!-- RESET PASSWORD -->
+                                                    <!-- reset password -->
                                                     <button
                                                         type="button"
                                                         onclick="bukaResetPassword(<?= $u['id'] ?>, '<?= e($u['nama']) ?>')"
@@ -340,7 +336,7 @@ $userList = $stmt->fetchAll();
                                                         <i data-lucide="key" class="w-3.5 h-3.5"></i>
                                                     </button>
 
-                                                    <!-- HAPUS -->
+                                                    <!-- hapus akun -->
                                                     <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?')" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
@@ -372,7 +368,7 @@ $userList = $stmt->fetchAll();
 
     </div>
 
-    <!-- MODAL TAMBAH USER -->
+    <!-- modal tambah pengguna -->
     <div id="modalTambahUser" class="app-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -441,7 +437,7 @@ $userList = $stmt->fetchAll();
         </div>
     </div>
 
-    <!-- MODAL RESET PASSWORD -->
+    <!-- modal reset password -->
     <div id="modalResetPassword" class="app-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">

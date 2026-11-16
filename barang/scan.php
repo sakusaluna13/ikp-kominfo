@@ -11,9 +11,7 @@ $pageSubtitle = 'IDENTIFIKASI CEPAT';
 $userRole     = $_SESSION['user']['role'] ?? 'peminjam';
 $userId       = (int) $_SESSION['user']['id'];
 
-// ============================================
-// ENDPOINT AJAX: AMBIL DATA BARANG DARI QR
-// ============================================
+// ambil data barang dari kode qr
 if (isset($_GET['action']) && $_GET['action'] === 'get_item') {
     header('Content-Type: application/json; charset=utf-8');
 
@@ -66,9 +64,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_item') {
     exit;
 }
 
-// ============================================
-// PROSES PENGAJUAN LANGSUNG DARI FLOATING CARD
-// ============================================
+// simpan pengajuan pinjam dari hasil pindai
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajukan_scan') {
     verify_csrf();
 
@@ -171,10 +167,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             <div class="max-w-xl mx-auto space-y-3">
 
-                <!-- KARTU SCANNER UTAMA -->
+                <!-- area pemindai kamera -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     
-                    <!-- Header Card -->
+                    <!-- judul pemindai -->
                     <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
@@ -187,14 +183,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <!-- Input Upload Gambar QR -->
+                            <!-- unggah foto qr -->
                             <input type="file" id="inputQrFile" accept="image/*" class="hidden" onchange="prosesUploadGambar(event)">
                             <button type="button" onclick="document.getElementById('inputQrFile').click()" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition flex items-center gap-1.5" title="Unggah file foto QR">
                                 <i data-lucide="image" class="w-3.5 h-3.5 text-slate-400"></i>
                                 <span class="hidden sm:inline">Unggah Foto</span>
                             </button>
 
-                            <!-- Input ID Manual -->
+                            <!-- input id manual -->
                             <button type="button" onclick="bukaModalManual()" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition flex items-center gap-1.5">
                                 <i data-lucide="keyboard" class="w-3.5 h-3.5 text-slate-400"></i>
                                 <span class="hidden sm:inline">Input ID</span>
@@ -204,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
                     <div class="p-5">
 
-                        <!-- STATUS INDIKATOR & SENTER -->
+                        <!-- status kamera dan senter -->
                         <div class="flex items-center justify-between gap-2 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 mb-4">
                             <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
                                 <span id="scanStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
@@ -217,12 +213,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             </button>
                         </div>
 
-                        <!-- AREA KAMERA / VIEWFINDER -->
+                        <!-- tampilan kamera -->
                         <div class="relative w-full bg-slate-900 rounded-2xl overflow-hidden shadow-inner border border-slate-200 min-h-[300px] flex items-center justify-center">
                             
                             <div id="reader" class="w-full"></div>
 
-                            <!-- CARD IZIN KAMERA (JIKA BELUM DIIZINKAN) -->
+                            <!-- izin kamera -->
                             <div id="cameraPermissionPrompt" class="hidden absolute inset-0 z-20 bg-white/95 backdrop-blur-xs p-6 flex flex-col items-center justify-center text-center">
                                 <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
                                     <i data-lucide="camera" class="w-7 h-7"></i>
@@ -238,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             </div>
                         </div>
 
-                        <!-- TOMBOL KONTROL BAWAH -->
+                        <!-- tombol kontrol kamera -->
                         <div class="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100 flex-wrap">
                             <span class="text-[11px] text-slate-400 font-medium">Dekatkan QR Code ke kamera hingga fokus</span>
                             <div class="flex items-center gap-2">
@@ -264,29 +260,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     </div>
 
-    <!-- DIV HIDDEN UNTUK SCANNER FILE UPLOAD -->
+    <!-- pembaca file gambar tersembunyi -->
     <div id="file-scanner-temp" class="hidden"></div>
 
-    <!-- ============================================ -->
-    <!-- FLOATING CARD MENGAMBANG (BOTTOM SHEET / MODAL) -->
-    <!-- ============================================ -->
+    <!-- kartu hasil pindai -->
     <div id="floatingCardBackdrop" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all">
         <div id="floatingCard" class="bg-white text-slate-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transition-transform duration-200 transform translate-y-full sm:translate-y-0">
             
-            <!-- Handlebar (Mobile gesture bar) -->
+            <!-- penarik kartu mobile -->
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto my-3 sm:hidden"></div>
 
-            <!-- STATUS BANNER -->
+            <!-- status ketersediaan -->
             <div id="modalStatusBanner" class="bg-emerald-500 text-white px-5 py-3 flex items-center gap-2">
                 <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
                 <span id="modalStatusBannerText" class="font-bold text-sm">Tersedia untuk Dipinjam</span>
                 <span id="modalSisaTersediaBadge" class="ml-auto font-bold text-emerald-100 text-sm">0 unit</span>
             </div>
 
-            <!-- KONTEN INFO BARANG -->
+            <!-- rincian data barang -->
             <div class="p-5 max-h-[80vh] overflow-y-auto space-y-4">
                 
-                <!-- Info Header -->
+                <!-- nama dan kategori -->
                 <div class="flex items-start gap-3.5">
                     <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
                         <i data-lucide="package" class="w-7 h-7 text-slate-500"></i>
@@ -308,7 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </button>
                 </div>
 
-                <!-- 3 STATS BOX (IDENTIK DENGAN SCREENSHOT) -->
+                <!-- ringkasan stok unit -->
                 <div class="grid grid-cols-3 gap-2.5">
                     <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
                         <div id="statTotalUnit" class="text-xl font-extrabold text-slate-800">0</div>
@@ -324,22 +318,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </div>
                 </div>
 
-                <!-- FORM PENGAJUAN PINJAM -->
+                <!-- form pengajuan pinjam -->
                 <form id="formAjukanScan" method="post" action="scan.php" class="space-y-3.5 pt-1">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="ajukan_scan">
                     <input type="hidden" name="barang_id" id="modalInputBarangId" value="0">
 
-                    <!-- Pesan jika sudah ada pengajuan -->
+                    <!-- pemberitahuan pengajuan aktif -->
                     <div id="modalAlertSudahAda" class="hidden flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-semibold py-3 px-3.5 rounded-xl text-xs">
                         <i data-lucide="clock" class="w-4 h-4 shrink-0 text-amber-500"></i>
                         <span>Anda sudah memiliki pengajuan aktif untuk barang ini.</span>
                     </div>
 
-                    <!-- Input Fields (hanya tampil jika belum ada pengajuan dan stok > 0) -->
+                    <!-- input peminjaman -->
                     <div id="modalFormFields" class="space-y-3.5">
                         
-                        <!-- Stepper Jumlah -->
+                        <!-- atur jumlah pinjam -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">
                                 Jumlah Unit yang Dipinjam
@@ -352,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             <p id="modalMaxKet" class="text-[10px] text-slate-400 text-center mt-1">Maks. 0 unit tersedia</p>
                         </div>
 
-                        <!-- Tanggal Pengembalian -->
+                        <!-- tanggal rencana kembali -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">
                                 📅 Rencana Tanggal Pengembalian *
@@ -368,14 +362,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             >
                         </div>
 
-                        <!-- Tombol Submit -->
+                        <!-- tombol kirim pengajuan -->
                         <button type="submit" id="btnSubmitModal" class="w-full flex items-center justify-center gap-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold py-3 rounded-xl transition text-xs shadow-sm">
                             <i data-lucide="send" class="w-4 h-4"></i>
                             <span>Kirim Pengajuan Peminjaman</span>
                         </button>
                     </div>
 
-                    <!-- Tombol Tutup / Scan Ulang -->
+                    <!-- tombol batal -->
                     <button type="button" onclick="tutupFloatingCard()" class="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition text-center">
                         Batal &amp; Pindai Barang Lain
                     </button>
@@ -385,7 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
     </div>
 
-    <!-- MODAL INPUT ID MANUAL -->
+    <!-- modal input id manual -->
     <div id="modalManualInput" class="app-modal fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4">
         <div class="bg-white text-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -407,7 +401,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
     </div>
 
-    <!-- SCRIPT LOGIKA PEMINDAI & FLOATING CARD -->
+    <!-- logika pemindai dan kartu detail -->
     <script>
     let html5QrScanner = null;
     let isProcessing = false;

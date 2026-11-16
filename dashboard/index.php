@@ -9,9 +9,7 @@ $activePage = 'dashboard';
 $pageTitle = 'Dashboard';
 $pageSubtitle = 'SISTEM INFORMASI';
 
-// ============================================
-// STATISTIK DASHBOARD
-// ============================================
+// ringkasan statistik
 $totalBarang = (int) $pdo->query('SELECT COALESCE(SUM(jumlah), 0) FROM barang')->fetchColumn();
 
 $totalDipinjam = (int) $pdo->query("SELECT COALESCE(SUM(jumlah), 0) FROM peminjaman WHERE status = 'dipinjam'")->fetchColumn();
@@ -20,9 +18,7 @@ $totalPeminjaman = (int) $pdo->query('SELECT COUNT(*) FROM peminjaman')->fetchCo
 
 $totalTersedia = max(0, $totalBarang - $totalDipinjam);
 
-// ============================================
-// DATA PEMINJAMAN TERBARU (LIMIT 8)
-// ============================================
+// data transaksi peminjaman terbaru
 $sql = "
     SELECT
         p.id,
@@ -75,7 +71,7 @@ $rows = $q->fetchAll();
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <!-- BANNER SELAMAT DATANG -->
+            <!-- banner sambutan -->
             <section class="rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#102b4e] via-[#163d6b] to-[#1e4e85] text-white p-4 sm:p-6 flex items-center justify-between shadow-xs">
                 <div class="flex flex-col gap-0.5">
                     <span class="text-[9px] font-bold tracking-widest text-blue-200 uppercase">RINGKASAN SISTEM</span>
@@ -92,7 +88,7 @@ $rows = $q->fetchAll();
                 </div>
             </section>
 
-            <!-- GRID STATISTIK (COMPACT ON MOBILE) -->
+            <!-- ringkasan statistik -->
             <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-3 shadow-xs">
                     <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
@@ -139,7 +135,7 @@ $rows = $q->fetchAll();
                 </article>
             </section>
 
-            <!-- TABEL AKTIVITAS TERBARU -->
+            <!-- aktivitas peminjaman terbaru -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
@@ -192,16 +188,16 @@ $rows = $q->fetchAll();
                                         <td class="py-2 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
                                         <td class="py-2 px-1.5 sm:px-3 font-bold text-slate-800">
                                             <div class="truncate max-w-[110px] sm:max-w-none text-xs"><?= e($r['nama_peminjam']) ?></div>
-                                            <div class="text-[9px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></div>
+                                            <div class="text-[9px] text-slate-400 font-normal sm:hidden"><?= $r['tanggal_pinjam'] ? date('d/m/Y', strtotime($r['tanggal_pinjam'])) : '—' ?></div>
                                         </td>
                                         <td class="py-2 px-1.5 sm:px-3 font-medium text-slate-700">
                                             <div class="truncate max-w-[120px] sm:max-w-none text-xs"><?= e($r['nama_barang']) ?></div>
                                             <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $r['jumlah'] ?> unit</span>
                                         </td>
                                         <td class="py-2 px-3 text-slate-500 hidden md:table-cell"><?= e($r['kategori']) ?></td>
-                                        <td class="py-2 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2 px-3 text-slate-500 hidden sm:table-cell"><?= $r['tanggal_pinjam'] ? date('d/m/Y', strtotime($r['tanggal_pinjam'])) : '—' ?></td>
                                         <td class="py-2 px-3 text-slate-500 hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-2 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'] ?? null, $r['tanggal_kembali'] ?? null) ?> hari</td>
                                         <td class="py-2 px-1.5 sm:px-3 text-right sm:text-left">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $badge ?>">
                                                 <?= e(ucwords($r['status'])) ?>

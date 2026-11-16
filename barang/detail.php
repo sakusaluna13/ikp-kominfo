@@ -6,9 +6,7 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 $id = (int) ($_GET['id'] ?? 0);
 if ($id <= 0) { header('Location: ../dashboard/index.php'); exit; }
 
-// ============================================
-// PROSES PENGAJUAN LANGSUNG
-// ============================================
+// proses pengajuan pinjam langsung
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     verify_csrf();
 
@@ -55,9 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     exit;
 }
 
-// ============================================
-// AMBIL DATA BARANG
-// ============================================
+// data barang dan status ketersediaan
 $stmt = $pdo->prepare("
     SELECT
         b.id, b.nama_barang, b.kategori, b.jumlah, b.kondisi, b.created_at,
@@ -136,7 +132,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- HEADER -->
+    <!-- bilah atas -->
     <div class="bg-[#102b4e] text-white px-4 py-3 flex items-center gap-3 shadow-lg sticky top-0 z-10">
         <div class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center">
             <i data-lucide="scan-qr-code" class="w-5 h-5"></i>
@@ -154,7 +150,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
 
     <div class="max-w-lg mx-auto p-4 space-y-4 pb-10">
 
-        <!-- FLASH MESSAGE -->
+        <!-- pesan notifikasi -->
         <?php if ($flashMsg): ?>
             <div class="flex items-center gap-2 text-sm font-semibold px-4 py-3 rounded-xl mt-2
                 <?= $flashType === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200' ?>">
@@ -163,10 +159,10 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
             </div>
         <?php endif; ?>
 
-        <!-- KARTU BARANG -->
+        <!-- kartu informasi barang -->
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
 
-            <!-- Status Banner -->
+            <!-- status ketersediaan -->
             <?php if ($statusTersedia): ?>
                 <div class="bg-emerald-500 text-white px-5 py-3 flex items-center gap-2">
                     <i data-lucide="check-circle-2" class="w-5 h-5"></i>
@@ -180,7 +176,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
                 </div>
             <?php endif; ?>
 
-            <!-- Info -->
+            <!-- rincian barang -->
             <div class="p-5">
                 <div class="flex items-start gap-4">
                     <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
@@ -200,7 +196,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
                     </div>
                 </div>
 
-                <!-- Stats -->
+                <!-- ringkasan unit -->
                 <div class="grid grid-cols-3 gap-3 mt-5">
                     <div class="bg-slate-50 rounded-xl p-3 text-center">
                         <div class="text-2xl font-bold text-slate-800"><?= (int)$barang['jumlah'] ?></div>
@@ -216,7 +212,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
                     </div>
                 </div>
 
-                <!-- FORM PINJAM -->
+                <!-- formulir pinjam -->
                 <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] !== 'admin'): ?>
                     <?php if ($sudahAda): ?>
                         <div class="mt-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-semibold py-3 px-4 rounded-xl text-sm">
@@ -230,7 +226,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
 
                             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Form Pengajuan Peminjaman</p>
 
-                            <!-- Jumlah -->
+                            <!-- jumlah unit -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5">Jumlah Unit yang Dipinjam</label>
                                 <div class="flex items-center gap-3">
@@ -245,7 +241,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
                                 <p class="text-[11px] text-slate-400 mt-1 text-center">Maks. <?= (int)$barang['sisa_tersedia'] ?> unit tersedia</p>
                             </div>
 
-                            <!-- Tanggal Kembali -->
+                            <!-- tanggal rencana pengembalian -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5">📅 Tanggal Rencana Pengembalian</label>
                                 <input type="date" name="tanggal_kembali"
@@ -276,7 +272,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
             </div>
         </div>
 
-        <!-- SEDANG DIPINJAM OLEH -->
+        <!-- peminjam saat ini -->
         <?php if ($peminjaman): ?>
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
@@ -305,7 +301,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
             </div>
         <?php endif; ?>
 
-        <!-- RIWAYAT -->
+        <!-- riwayat transaksi barang -->
         <?php if ($riwayatList): ?>
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">

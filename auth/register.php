@@ -79,15 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main class="w-full max-w-lg my-4">
 
-        <!-- KEMBALI KE LOGIN -->
+        <!-- tombol kembali -->
         <a href="login.php" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-700 transition mb-3">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             <span>Kembali ke Halaman Login</span>
         </a>
 
-        <!-- KARTU FORM REGISTRASI -->
+        <!-- kartu pendaftaran -->
         <section class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/60 p-6 sm:p-9">
 
+            <!-- logo dan judul -->
             <div class="flex items-center gap-3 mb-6 pb-5 border-b border-slate-100">
                 <div class="flex items-center gap-2 shrink-0">
                     <img 
@@ -123,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </p>
             </div>
 
-            <!-- DAFTAR ERROR -->
+            <!-- pesan error -->
             <?php if ($errors): ?>
                 <div class="p-3.5 mb-5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs font-semibold flex flex-col gap-1.5 shadow-2xs">
                     <?php foreach ($errors as $err): ?>
@@ -135,11 +136,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <!-- FORM -->
+            <!-- formulir pendaftaran -->
             <form method="post" id="registerForm" class="flex flex-col gap-4">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
 
-                <!-- NAMA LENGKAP -->
+                <!-- nama lengkap -->
                 <div class="flex flex-col gap-1.5">
                     <label for="nama" class="text-xs font-bold text-slate-700">Nama Lengkap Pegawai *</label>
                     <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
@@ -157,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- USERNAME -->
+                <!-- username -->
                 <div class="flex flex-col gap-1.5">
                     <label for="username" class="text-xs font-bold text-slate-700">Username *</label>
                     <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
@@ -176,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- PASSWORD -->
+                <!-- password -->
                 <div class="flex flex-col gap-1.5">
                     <label for="password" class="text-xs font-bold text-slate-700">Password (Min. 8 karakter) *</label>
                     <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
@@ -196,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- KONFIRMASI PASSWORD -->
+                <!-- konfirmasi password -->
                 <div class="flex flex-col gap-1.5">
                     <label for="confirmation" class="text-xs font-bold text-slate-700">Ulangi Password *</label>
                     <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">

@@ -70,7 +70,7 @@ $notice = get_flash();
 
     <div class="min-h-screen flex flex-col lg:grid lg:grid-cols-2">
 
-        <!-- MOBILE VISUAL HERO HEADER (MUNCUL DI LAYAR HP & TABLET) -->
+        <!-- banner visual mobile -->
         <header class="relative lg:hidden w-full h-52 sm:h-64 overflow-hidden bg-[#102b4e] flex flex-col justify-between p-6 text-white shrink-0">
             <img 
                 src="../assets/images/foto-kominfo.png" 
@@ -101,11 +101,11 @@ $notice = get_flash();
             </div>
         </header>
 
-        <!-- PANEL FORM LOGIN (KIRI DESKTOP / MELENGKUNG DI BAWAH HERO MOBILE) -->
+        <!-- panel form login -->
         <main class="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 -mt-6 sm:-mt-8 lg:mt-0 relative z-20">
             <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-9 shadow-2xl lg:shadow-xl shadow-slate-300/50 lg:shadow-slate-200/60 border border-slate-100 mb-6 lg:mb-0">
 
-                <!-- BRAND LOGO -->
+                <!-- logo dan judul -->
                 <div class="flex items-center gap-3 mb-6 pb-5 border-b border-slate-100">
                     <div class="flex items-center gap-2 shrink-0">
                         <img 
@@ -128,7 +128,7 @@ $notice = get_flash();
                     </div>
                 </div>
 
-                <!-- HEADING & BADGE -->
+                <!-- judul sambutan -->
                 <div class="mb-5">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200/60 text-[10px] font-extrabold text-blue-700 tracking-wider uppercase mb-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
@@ -142,7 +142,7 @@ $notice = get_flash();
                     </p>
                 </div>
 
-                <!-- NOTIFIKASI LOGOUT / NOTICE -->
+                <!-- notifikasi keluar -->
                 <div id="logoutNotice" class="hidden p-3.5 mb-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold items-center gap-2.5 shadow-2xs">
                     <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                         <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
@@ -168,7 +168,7 @@ $notice = get_flash();
                     </div>
                 <?php endif; ?>
 
-                <!-- FORM LOGIN -->
+                <!-- formulir login -->
                 <form method="post" id="loginForm" class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
 
@@ -242,7 +242,7 @@ $notice = get_flash();
             </div>
         </main>
 
-        <!-- PANEL VISUAL BRANDING (KANAN DESKTOP) -->
+        <!-- panel visual samping desktop -->
         <aside class="hidden lg:flex relative overflow-hidden bg-[#102b4e] text-white p-12 flex-col justify-between">
             <img 
                 src="../assets/images/foto-kominfo.png" 

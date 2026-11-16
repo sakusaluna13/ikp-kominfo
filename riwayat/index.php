@@ -12,9 +12,7 @@ $pageSubtitle = 'HISTORI TRANSAKSI';
 $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 $userId = (int) $_SESSION['user']['id'];
 
-// ============================================
-// FILTER & QUERY PENCARIAN
-// ============================================
+// filter dan query pencarian riwayat
 $search = trim((string) ($_GET['search'] ?? ''));
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
 $startDate = trim((string) ($_GET['start_date'] ?? ''));
@@ -107,7 +105,7 @@ foreach ($rows as $r) {
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <!-- STATISTIK RINGKASAN -->
+            <!-- statistik ringkasan -->
             <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-2.5 sm:gap-4 shadow-xs">
                     <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
@@ -154,7 +152,7 @@ foreach ($rows as $r) {
                 </article>
             </section>
 
-            <!-- KONTEN TABEL RIWAYAT -->
+            <!-- tabel histori riwayat -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
@@ -175,7 +173,7 @@ foreach ($rows as $r) {
                     <?php endif; ?>
                 </div>
 
-                <!-- FORM FILTER PENCARIAN -->
+                <!-- form filter pencarian -->
                 <form method="get" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100">
                     <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
                         <input
@@ -231,7 +229,7 @@ foreach ($rows as $r) {
                     </span>
                 </form>
 
-                <!-- TABEL DATA -->
+                <!-- tabel data transaksi -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>

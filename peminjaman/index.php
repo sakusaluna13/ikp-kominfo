@@ -12,15 +12,13 @@ $pageSubtitle = 'TRANSAKSI PEMINJAMAN';
 $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 $userId = (int) $_SESSION['user']['id'];
 
-// ============================================
-// PROSES AKSI POST
-// ============================================
+// proses simpan dan kelola aksi peminjaman
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
 
     $action = $_POST['action'] ?? '';
 
-    // 1. AJUKAN PEMINJAMAN (OLEH PEMINJAM)
+    // ajukan peminjaman oleh peminjam
     if ($action === 'ajukan_peminjam') {
         $barang_id = (int) ($_POST['barang_id'] ?? 0);
         $jumlah = max(1, (int) ($_POST['jumlah'] ?? 1));
@@ -68,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 2. CATAT PEMINJAMAN LANGSUNG (OLEH ADMIN)
+    // catat peminjaman langsung oleh admin
     if ($action === 'catat_admin' && $userRole === 'admin') {
         $peminjam_user_id = (int) ($_POST['user_id'] ?? 0);
         $barang_id = (int) ($_POST['barang_id'] ?? 0);
@@ -117,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. ADMIN: SETUJUI PEMINJAMAN
+    // persetujuan peminjaman oleh admin
     if ($action === 'setujui' && $userRole === 'admin') {
         $peminjaman_id = (int) ($_POST['peminjaman_id'] ?? 0);
 
@@ -146,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 4. ADMIN: TOLAK PEMINJAMAN
+    // tolak pengajuan peminjaman
     if ($action === 'tolak' && $userRole === 'admin') {
         $peminjaman_id = (int) ($_POST['peminjaman_id'] ?? 0);
         $up = $pdo->prepare("UPDATE peminjaman SET status = 'ditolak' WHERE id = :id");
@@ -156,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 5. PEMINJAM: BATALKAN PENGAJUAN
+    // batalkan pengajuan oleh peminjam
     if ($action === 'batalkan_pengajuan') {
         $peminjaman_id = (int) ($_POST['peminjaman_id'] ?? 0);
         $del = $pdo->prepare("DELETE FROM peminjaman WHERE id = :id AND user_id = :uid AND status = 'menunggu persetujuan'");
@@ -167,9 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ============================================
-// DATA UNTUK FORM & TABEL
-// ============================================
+// data untuk form dan tabel
 $barangTersedia = $pdo->query("
     SELECT 
         b.id, b.nama_barang, b.kategori, b.kondisi, b.jumlah,
@@ -245,7 +241,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <!-- FORM PENGAJUAN / PENCATATAN -->
+            <!-- form pengajuan atau pencatatan -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-2">
                 <div class="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
                     <div>
@@ -322,7 +318,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                 </form>
             </section>
 
-            <!-- TABEL PENGAJUAN MENUNGGU PERSETUJUAN -->
+            <!-- tabel pengajuan menunggu persetujuan -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
@@ -387,7 +383,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                         <td class="py-2 px-1.5 sm:px-3 text-right">
                                             <div class="inline-flex items-center gap-1 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
-                                                    <!-- SETUJUI -->
+                                                    <!-- setujui -->
                                                     <form method="post" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="setujui">
@@ -398,7 +394,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                         </button>
                                                     </form>
 
-                                                    <!-- TOLAK -->
+                                                    <!-- tolak -->
                                                     <form method="post" onsubmit="return confirm('Tolak permohonan peminjaman ini?');" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="tolak">
@@ -409,7 +405,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                         </button>
                                                     </form>
                                                 <?php else: ?>
-                                                    <!-- PEMINJAM BATALKAN -->
+                                                    <!-- batalkan pengajuan -->
                                                     <form method="post" onsubmit="return confirm('Batalkan pengajuan ini?');" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="batalkan_pengajuan">
@@ -430,7 +426,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                 </div>
             </section>
 
-            <!-- TABEL BARANG SEDANG DIPINJAM (AKTIF) -->
+            <!-- tabel barang sedang dipinjam -->
             <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
