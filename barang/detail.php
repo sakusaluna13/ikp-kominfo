@@ -126,7 +126,7 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($barang['nama_barang']) ?> — SIMPEL MEDIA</title>
+    <title><?= e($barang['nama_barang']) ?> — IKP KOMINFO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -142,8 +142,8 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
             <i data-lucide="scan-qr-code" class="w-5 h-5"></i>
         </div>
         <div>
-            <div class="font-bold text-sm">SIMPEL MEDIA</div>
-            <div class="text-[10px] text-blue-200 tracking-wider">KOMINFO · Inventaris</div>
+            <div class="font-bold text-sm">IKP KOMINFO</div>
+            <div class="text-[10px] text-blue-200 tracking-wider">Inventaris Multimedia</div>
         </div>
         <?php if (isset($_SESSION['user'])): ?>
             <a href="../barang/index.php" class="ml-auto text-xs text-blue-200 hover:text-white flex items-center gap-1">
@@ -337,8 +337,8 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
         <?php endif; ?>
 
         <div class="text-center text-xs text-slate-400 pt-2">
-            <p>SIMPEL MEDIA — Sistem Inventaris & Peminjaman Multimedia</p>
-            <p class="mt-0.5">Dinas Komunikasi dan Informatika</p>
+            <p>IKP KOMINFO — Sistem Inventaris Multimedia</p>
+            <p class="mt-0.5">Dinas Komunikasi dan Informatika Provinsi Sumatera Utara</p>
         </div>
 
     </div>

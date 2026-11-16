@@ -72,8 +72,7 @@ CREATE TABLE peminjaman (
 -- ------------------------------------------------------------
 INSERT INTO users (id, nama, username, password, role, status) VALUES
 (1, 'Administrator KOMINFO', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'aktif'),
-(2, 'Han Junnwo', 'hanjunnwo', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'peminjam', 'aktif'),
-(3, 'Pengguna Contoh', 'peminjam1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'peminjam', 'aktif');
+(2, 'Staf Peminjam', 'staf01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'peminjam', 'aktif');
 
 -- ------------------------------------------------------------
 -- DATA AWAL 15 BARANG
@@ -99,6 +98,6 @@ INSERT INTO barang (id, nama_barang, kategori, jumlah, kondisi) VALUES
 -- DATA CONTOH TRANSAKSI
 -- ------------------------------------------------------------
 INSERT INTO peminjaman (user_id, barang_id, jumlah, tanggal_pinjam, tanggal_kembali, status) VALUES
-(3, 2, 1, '2026-11-05', '2026-11-07', 'dikembalikan'),
-(3, 1, 1, '2026-11-10', NULL, 'dipinjam');
+(2, 2, 1, '2026-11-05', '2026-11-07', 'dikembalikan'),
+(2, 1, 1, '2026-11-10', NULL, 'dipinjam');
 

@@ -85,8 +85,12 @@ $photoUrl = $_SESSION['user']['photo'] ?? '';
                     <span>Edit Profil</span>
                 </a>
                 <div class="border-t border-slate-100 my-1"></div>
-                <button type="button" data-modal-open="logoutModal" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                <button 
+                    type="button" 
+                    onclick="bukaModalLogout(event)"
+                    class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
+                >
+                    <i data-lucide="log-out" class="w-4 h-4 text-rose-600"></i>
                     <span>Keluar Akun</span>
                 </button>
             </div>

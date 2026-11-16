@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. MODAL DIALOG (TAILWIND TOGGLE HIDDEN / FLEX)
     document.querySelectorAll('[data-modal-open]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const modalId = btn.getAttribute('data-modal-open');
             const target = document.getElementById(modalId);
             if (target) {
@@ -69,6 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.classList.add('flex');
                 if (window.lucide) lucide.createIcons();
             }
+            // Tutup dropdown profil jika sedang terbuka
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) profileDropdown.classList.add('hidden');
+            // Tutup mobile drawer jika sedang terbuka
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar) sidebar.classList.add('-translate-x-full');
+            if (backdrop) backdrop.classList.add('hidden');
         });
     });
 

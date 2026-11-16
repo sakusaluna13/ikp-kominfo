@@ -14,38 +14,40 @@ $userRole = $_SESSION['user']['role'] ?? '';
 <!-- SIDEBAR ASIDE -->
 <aside 
     id="sidebar" 
-    class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transition-transform duration-300 -translate-x-full md:translate-x-0 flex flex-col p-4 shadow-xl md:shadow-sm"
+    class="fixed inset-y-0 left-0 w-72 sm:w-64 bg-white border-r border-slate-200 z-50 transition-transform duration-300 -translate-x-full md:translate-x-0 flex flex-col p-4 shadow-xl md:shadow-sm"
 >
     <!-- BRAND / LOGO -->
-    <div class="flex items-center gap-3 pb-5 border-b border-slate-100">
-        <div class="flex items-center gap-1.5 shrink-0">
-            <img 
-                src="../assets/images/logo-kominfo.png" 
-                alt="KOMINFO" 
-                class="w-8 h-8 object-contain"
-                onerror="this.style.display='none'"
-            >
-            <img 
-                src="../assets/images/logo-sumut.png" 
-                alt="Pemda Sumut" 
-                class="w-8 h-8 object-contain"
-                onerror="this.style.display='none'"
-            >
-        </div>
+    <div class="flex items-center justify-between gap-2.5 pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div class="flex items-center gap-1.5 shrink-0">
+                <img 
+                    src="../assets/images/logo-kominfo.png" 
+                    alt="KOMINFO" 
+                    class="h-7 w-auto object-contain"
+                    onerror="this.style.display='none'"
+                >
+                <img 
+                    src="../assets/images/logo-sumut.png" 
+                    alt="Pemda Sumut" 
+                    class="h-8 w-auto object-contain"
+                    onerror="this.style.display='none'"
+                >
+            </div>
 
-        <div class="flex flex-col min-w-0">
-            <span class="font-bold text-sm tracking-tight text-[#102b4e] leading-tight">SIMPEL MEDIA</span>
-            <span class="text-[9px] font-semibold text-slate-400 tracking-wider">KOMINFO · INVENTARIS</span>
+            <div class="flex flex-col min-w-0">
+                <span class="font-extrabold text-sm tracking-tight text-[#102b4e] leading-tight truncate">IKP KOMINFO</span>
+                <span class="text-[9px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">Inventaris Multimedia</span>
+            </div>
         </div>
 
         <!-- MOBILE CLOSE BUTTON -->
         <button 
             type="button" 
             id="sidebarClose" 
-            class="ml-auto md:hidden text-slate-400 hover:text-slate-600 p-1"
+            class="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0 cursor-pointer"
             aria-label="Tutup menu"
         >
-            <i data-lucide="x" class="w-5 h-5"></i>
+            <i data-lucide="x" class="w-4 h-4"></i>
         </button>
     </div>
 
@@ -145,51 +147,72 @@ $userRole = $_SESSION['user']['role'] ?? '';
             </div>
         </div>
 
-        <form action="../auth/logout.php" method="post" id="logoutForm">
-            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+        <div class="w-full pt-1">
             <button 
-                type="button" 
-                data-modal-open="logoutModal" 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition"
+                type="button"
+                onclick="bukaModalLogout(event)"
+                class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition active:scale-95 cursor-pointer"
             >
-                <i data-lucide="log-out" class="w-4 h-4 shrink-0"></i>
-                <span>Keluar Akun</span>
+                <i data-lucide="log-out" class="w-4 h-4 text-white"></i>
+                <span class="text-white font-bold">Keluar Akun</span>
             </button>
-        </form>
+        </div>
     </div>
 </aside>
 
 <!-- MODAL KONFIRMASI LOGOUT -->
 <div 
-    id="logoutModal" 
-    class="app-modal fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 transition-all"
-    aria-hidden="true"
+    id="modalLogout" 
+    class="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 transition-all"
+    onclick="if(event.target===this) tutupModalLogout()"
 >
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl text-center animate-in fade-in zoom-in-95 duration-150">
-        <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3">
-            <i data-lucide="log-out" class="w-6 h-6"></i>
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center animate-in fade-in zoom-in-95 duration-150 border border-slate-100">
+        <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3.5">
+            <i data-lucide="log-out" class="w-7 h-7 text-rose-600"></i>
         </div>
 
-        <h3 class="text-base font-bold text-[#102b4e] mb-1">Konfirmasi Logout</h3>
-        <p class="text-xs text-slate-500 mb-5 leading-relaxed">
-            Apakah Anda yakin ingin keluar dari akun ini?
+        <h3 class="text-base font-bold text-[#102b4e] mb-1.5">Konfirmasi Logout</h3>
+        <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+            Apakah Anda yakin ingin keluar dari akun sistem inventaris ini?
         </p>
 
-        <div class="flex items-center justify-center gap-2.5">
+        <div class="grid grid-cols-2 gap-3">
             <button 
                 type="button" 
-                data-modal-close 
-                class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                onclick="tutupModalLogout()"
+                class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
             >
                 Batal
             </button>
-            <button 
-                type="button" 
-                onclick="document.getElementById('logoutForm')?.submit();" 
-                class="px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition"
+            <a 
+                href="../auth/logout.php" 
+                class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition inline-flex items-center justify-center gap-1.5"
             >
-                Ya, Logout
-            </button>
+                <i data-lucide="log-out" class="w-3.5 h-3.5 text-white"></i>
+                <span class="text-white">Ya, Logout</span>
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+function bukaModalLogout(e) {
+    if (e) e.preventDefault();
+    const m = document.getElementById('modalLogout');
+    if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+    }
+}
+function tutupModalLogout() {
+    const m = document.getElementById('modalLogout');
+    if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') tutupModalLogout();
+});
+</script>

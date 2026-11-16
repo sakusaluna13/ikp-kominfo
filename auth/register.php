@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pendaftaran Akun | SIMPEL MEDIA KOMINFO</title>
+    <title>Pendaftaran Akun | IKP KOMINFO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -75,44 +75,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4 sm:p-8">
+<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50/30 text-slate-800 min-h-screen flex items-center justify-center p-4 sm:p-8">
 
-    <main class="w-full max-w-lg">
+    <main class="w-full max-w-lg my-4">
 
         <!-- KEMBALI KE LOGIN -->
-        <a href="login.php" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-700 transition mb-4">
+        <a href="login.php" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-700 transition mb-3">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             <span>Kembali ke Halaman Login</span>
         </a>
 
         <!-- KARTU FORM REGISTRASI -->
-        <section class="bg-white rounded-2xl border border-slate-100 shadow-xl p-6 sm:p-9">
+        <section class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/60 p-6 sm:p-9">
 
-            <div class="flex items-center gap-3 mb-6">
-                <img src="../assets/images/logo-kominfo.png" alt="KOMINFO" class="w-9 h-9 object-contain" onerror="this.style.display='none'">
-                <img src="../assets/images/logo-sumut.png" alt="Sumut" class="w-8 h-8 object-contain" onerror="this.style.display='none'">
-                <div class="flex flex-col">
-                    <span class="font-extrabold text-[#102b4e] text-sm leading-tight">SIMPEL MEDIA</span>
-                    <span class="text-[9px] font-semibold text-slate-400">REGISTRASI PEGAWAI</span>
+            <div class="flex items-center gap-3 mb-6 pb-5 border-b border-slate-100">
+                <div class="flex items-center gap-2 shrink-0">
+                    <img 
+                        src="../assets/images/logo-kominfo.png" 
+                        alt="KOMINFO" 
+                        class="h-8 sm:h-9 w-auto object-contain" 
+                        onerror="this.style.display='none'"
+                    >
+                    <img 
+                        src="../assets/images/logo-sumut.png" 
+                        alt="Pemda Sumut" 
+                        class="h-9 sm:h-10 w-auto object-contain" 
+                        onerror="this.style.display='none'"
+                    >
+                </div>
+                <div class="h-8 w-px bg-slate-200/80"></div>
+                <div class="flex flex-col min-w-0">
+                    <span class="font-extrabold text-[#102b4e] text-base leading-tight tracking-tight">IKP KOMINFO</span>
+                    <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase whitespace-nowrap">Registrasi Pegawai</span>
                 </div>
             </div>
 
-            <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase block mb-1">
-                AKUN PEMINJAM MULTIMEDIA
-            </span>
-            <h1 class="text-2xl font-extrabold text-[#102b4e] tracking-tight mb-2">
-                Buat Akun Baru
-            </h1>
-            <p class="text-xs text-slate-500 leading-relaxed mb-6">
-                Daftarkan akun staf/pegawai untuk mengajukan peminjaman aset multimedia KOMINFO.
-            </p>
+            <div class="mb-5">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200/60 text-[10px] font-extrabold text-blue-700 tracking-wider uppercase mb-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    Akun Peminjam Multimedia
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-[#102b4e] tracking-tight">
+                    Buat Akun Baru
+                </h1>
+                <p class="text-xs text-slate-500 leading-relaxed mt-1">
+                    Daftarkan akun staf/pegawai untuk mengajukan peminjaman aset multimedia Bidang IKP KOMINFO.
+                </p>
+            </div>
 
             <!-- DAFTAR ERROR -->
             <?php if ($errors): ?>
-                <div class="p-3.5 mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex flex-col gap-1">
+                <div class="p-3.5 mb-5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs font-semibold flex flex-col gap-1.5 shadow-2xs">
                     <?php foreach ($errors as $err): ?>
                         <div class="flex items-center gap-2">
-                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0 text-rose-600"></i>
+                            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-600"></i>
                             <span><?= e($err) ?></span>
                         </div>
                     <?php endforeach; ?>
@@ -126,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- NAMA LENGKAP -->
                 <div class="flex flex-col gap-1.5">
                     <label for="nama" class="text-xs font-bold text-slate-700">Nama Lengkap Pegawai *</label>
-                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                    <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
                         <i data-lucide="id-card" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         <input 
                             type="text" 
@@ -134,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             name="nama" 
                             value="<?= e($nama) ?>" 
                             maxlength="150"
-                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            class="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" 
                             placeholder="Masukkan nama lengkap" 
                             required
                         >
@@ -144,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- USERNAME -->
                 <div class="flex flex-col gap-1.5">
                     <label for="username" class="text-xs font-bold text-slate-700">Username *</label>
-                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                    <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
                         <i data-lucide="user" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         <input 
                             type="text" 
@@ -153,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             value="<?= e($username) ?>" 
                             minlength="4"
                             maxlength="50"
-                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            class="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" 
                             placeholder="Masukkan username" 
                             required
                         >
@@ -163,18 +179,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- PASSWORD -->
                 <div class="flex flex-col gap-1.5">
                     <label for="password" class="text-xs font-bold text-slate-700">Password (Min. 8 karakter) *</label>
-                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                    <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
                         <i data-lucide="lock-keyhole" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         <input 
                             type="password" 
                             id="password" 
                             name="password" 
                             minlength="8"
-                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                            placeholder="Masukkan sandi (min. 8 karakter)" 
+                            class="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" 
+                            placeholder="Masukkan sandi" 
                             required
                         >
-                        <button type="button" data-toggle-password="password" class="p-1 text-slate-400 hover:text-slate-600">
+                        <button type="button" data-toggle-password="password" class="p-1.5 text-slate-400 hover:text-slate-600 transition cursor-pointer" aria-label="Lihat password">
                             <i data-lucide="eye" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -183,18 +199,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- KONFIRMASI PASSWORD -->
                 <div class="flex flex-col gap-1.5">
                     <label for="confirmation" class="text-xs font-bold text-slate-700">Ulangi Password *</label>
-                    <div class="flex items-center gap-3 px-3.5 h-11 bg-white border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition shadow-2xs">
+                    <div class="flex items-center gap-3 px-3.5 h-12 bg-slate-50/60 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100/60 transition shadow-2xs">
                         <i data-lucide="shield-check" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         <input 
                             type="password" 
                             id="confirmation" 
                             name="confirmation" 
                             minlength="8"
-                            class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
+                            class="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" 
                             placeholder="Ulangi sandi" 
                             required
                         >
-                        <button type="button" data-toggle-password="confirmation" class="p-1 text-slate-400 hover:text-slate-600">
+                        <button type="button" data-toggle-password="confirmation" class="p-1.5 text-slate-400 hover:text-slate-600 transition cursor-pointer" aria-label="Lihat password">
                             <i data-lucide="eye" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -202,22 +218,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button 
                     type="submit" 
-                    class="w-full h-11 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition duration-150 mt-3"
+                    class="w-full h-12 bg-[#102b4e] hover:bg-[#1a3d6b] active:scale-[0.99] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-950/20 hover:shadow-lg transition duration-150 mt-2 cursor-pointer"
                 >
                     <span>Daftarkan Akun Sekarang</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </form>
 
-            <p class="text-center text-xs text-slate-500 mt-6">
+            <p class="text-center text-xs text-slate-500 mt-5">
                 Sudah memiliki akun? 
-                <a href="login.php" class="font-bold text-blue-700 hover:text-blue-900 transition">Masuk di sini</a>
+                <a href="login.php" class="font-bold text-blue-700 hover:text-blue-900 hover:underline transition">Masuk di sini</a>
             </p>
 
         </section>
 
         <p class="text-center text-[10px] text-slate-400 mt-6">
-            &copy; 2026 Dinas Komunikasi dan Informatika · Pemerintah Provinsi Sumatera Utara
+            &copy; 2026 Bidang IKP Dinas KOMINFO Provinsi Sumatera Utara
         </p>
 
     </main>

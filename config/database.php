@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// KONFIGURASI DATABASE — SIMPEL MEDIA KOMINFO SUMUT
+// KONFIGURASI DATABASE — IKP KOMINFO SUMUT
 // Sesuaikan nilai di bawah dengan kredensial hosting Anda
 
 $host   = 'localhost';
