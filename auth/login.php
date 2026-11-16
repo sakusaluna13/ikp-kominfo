@@ -20,9 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '') {
         $error = 'Username dan password wajib diisi.';
     } else {
-        $query = $pdo->prepare('SELECT id, nama, username, password, role, status FROM users WHERE username = :username LIMIT 1');
-        $query->execute(['username' => $username]);
-        $user = $query->fetch();
+        try {
+            $query = $pdo->prepare('SELECT id, nama, username, password, role, status, foto FROM users WHERE username = :username LIMIT 1');
+            $query->execute(['username' => $username]);
+            $user = $query->fetch();
+        } catch (PDOException $e) {
+            $query = $pdo->prepare('SELECT id, nama, username, password, role, status FROM users WHERE username = :username LIMIT 1');
+            $query->execute(['username' => $username]);
+            $user = $query->fetch();
+        }
 
         if ($user && $user['status'] === 'aktif' && password_verify($password, $user['password'])) {
             session_regenerate_id(true);
@@ -33,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'username' => $user['username'],
                 'role'     => $user['role'],
                 'status'   => $user['status'],
+                'photo'    => $user['foto'] ?? '',
             ];
 
             flash('success', 'Login berhasil. Selamat datang, ' . $user['nama'] . '!');

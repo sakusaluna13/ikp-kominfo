@@ -8,13 +8,13 @@ $userRole = $_SESSION['user']['role'] ?? '';
 <!-- SIDEBAR BACKDROP (MOBILE) -->
 <div 
     id="sidebarBackdrop" 
-    class="fixed inset-0 bg-slate-900/40 z-30 hidden md:hidden transition-opacity"
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden md:hidden transition-opacity"
 ></div>
 
 <!-- SIDEBAR ASIDE -->
 <aside 
     id="sidebar" 
-    class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-40 transition-transform duration-200 -translate-x-full md:translate-x-0 flex flex-col p-4 shadow-sm"
+    class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transition-transform duration-300 -translate-x-full md:translate-x-0 flex flex-col p-4 shadow-xl md:shadow-sm"
 >
     <!-- BRAND / LOGO -->
     <div class="flex items-center gap-3 pb-5 border-b border-slate-100">
@@ -78,7 +78,6 @@ $userRole = $_SESSION['user']['role'] ?? '';
         >
             <i data-lucide="scan-qr-code" class="w-4 h-4 shrink-0 <?= $currentPage === 'scan' ? 'text-indigo-700' : 'text-slate-400' ?>"></i>
             <span>Scan QR Barang</span>
-            <span class="ml-auto text-[9px] font-bold bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full">NEW</span>
         </a>
 
         <a 
@@ -103,6 +102,14 @@ $userRole = $_SESSION['user']['role'] ?? '';
         >
             <i data-lucide="history" class="w-4 h-4 shrink-0 <?= $currentPage === 'riwayat' ? 'text-blue-700' : 'text-slate-400' ?>"></i>
             <span>Riwayat Peminjaman</span>
+        </a>
+
+        <a 
+            href="../profile/index.php" 
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition <?= $currentPage === 'profile' ? 'bg-blue-50 text-blue-900 font-bold shadow-xs' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' ?>"
+        >
+            <i data-lucide="user-circle" class="w-4 h-4 shrink-0 <?= $currentPage === 'profile' ? 'text-blue-700' : 'text-slate-400' ?>"></i>
+            <span>Profil Saya</span>
         </a>
 
         <?php if ($userRole === 'admin'): ?>

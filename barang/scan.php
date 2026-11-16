@@ -97,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     }
 
-    if (empty($tglKembali) || $tglKembali <= $tglPinjam) {
-        flash('error', 'Tanggal rencana pengembalian harus setelah hari ini.');
+    if (empty($tglKembali) || $tglKembali < $tglPinjam) {
+        flash('error', 'Tanggal rencana pengembalian tidak boleh sebelum hari ini.');
         header('Location: scan.php');
         exit;
     }
@@ -139,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body { font-family: 'DM Sans', sans-serif; }
         #reader { width: 100% !important; border: none !important; }
@@ -151,13 +152,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 min-h-screen flex flex-col">
+    <div class="md:ml-64 min-h-screen flex flex-col px-3 sm:px-6 pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 p-4 md:p-6 space-y-4">
+        <main class="flex-1 space-y-3">
 
-            <div class="max-w-xl mx-auto space-y-4">
+            <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
+                <a href="../dashboard/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition shadow-2xs">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>Kembali ke Dashboard</span>
+                </a>
+                <button type="button" data-open-sidebar class="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition shadow-2xs">
+                    <i data-lucide="menu" class="w-3.5 h-3.5"></i>
+                    <span>Buka Menu</span>
+                </button>
+            </div>
+
+            <div class="max-w-xl mx-auto space-y-3">
 
                 <!-- KARTU SCANNER UTAMA -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -693,6 +705,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         tutupModalManual();
         ambilDataBarang(id);
     }
+
+    // Pastikan kamera dimatikan jika berpindah halaman
+    window.addEventListener('pagehide', () => {
+        if (html5QrScanner) {
+            try { html5QrScanner.stop(); } catch(e) {}
+        }
+    });
     </script>
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>

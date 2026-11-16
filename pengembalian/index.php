@@ -95,6 +95,7 @@ $riwayatKembaliStmt = $pdo->prepare("
         p.id,
         u.nama AS nama_peminjam,
         b.nama_barang,
+        p.jumlah,
         p.tanggal_pinjam,
         p.tanggal_kembali,
         b.kondisi
@@ -123,33 +124,34 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 flex flex-col gap-6">
+        <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
             <!-- DAFTAR BARANG YANG PERLU DIKEMBALIKAN -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4 mb-5">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-amber-600 uppercase">MONITORING PENGEMBALIAN</span>
-                        <h2 class="text-xl font-bold text-[#102b4e]">Peralatan yang Sedang Dipinjam</h2>
-                        <p class="text-xs text-slate-400">
+                        <h2 class="text-base sm:text-xl font-bold text-[#102b4e]">Peralatan Sedang Dipinjam</h2>
+                        <p class="text-xs text-slate-400 hidden sm:block">
                             <?= $userRole === 'admin' 
                                 ? 'Daftar barang yang masih berada di luar. Klik Konfirmasi Kembali untuk memverifikasi fisik.' 
                                 : 'Peralatan yang sedang Anda gunakan. Serahkan kembali ke meja inventaris jika liputan telah selesai.' ?>
                         </p>
                     </div>
 
-                    <span class="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-lg">
-                        <?= count($listKembali) ?> unit belum kembali
+                    <span class="text-[11px] sm:text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg shrink-0">
+                        <?= count($listKembali) ?> belum kembali
                     </span>
                 </div>
 
@@ -157,23 +159,23 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Tanggal Pinjam</th>
-                                <th class="py-3 px-3">Rencana Kembali</th>
-                                <th class="py-3 px-3">Durasi</th>
-                                <th class="py-3 px-3">Status</th>
-                                <th class="py-3 px-3 text-right">Aksi</th>
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peminjam</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Kembali</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Durasi</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Status</th>
+                                <th class="py-2.5 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <?php if (!$listKembali): ?>
                                 <tr>
-                                    <td colspan="9" class="text-center py-10 text-slate-400">
+                                    <td colspan="9" class="text-center py-8 text-slate-400">
                                         <div class="flex flex-col items-center justify-center gap-1.5">
-                                            <i data-lucide="package-check" class="w-7 h-7 text-emerald-500"></i>
+                                            <i data-lucide="package-check" class="w-6 h-6 text-emerald-500"></i>
                                             <span class="font-bold text-xs">Semua peralatan telah dikembalikan ke inventaris</span>
                                         </div>
                                     </td>
@@ -181,34 +183,38 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                             <?php else: ?>
                                 <?php foreach ($listKembali as $i => $row): ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
-                                        <td class="py-3.5 px-3 font-medium text-slate-700">
-                                            <?= e($row['nama_barang']) ?>
-                                            <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md ml-1"><?= (int) $row['jumlah'] ?> unit</span>
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none"><?= e($row['nama_peminjam']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></div>
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500 font-medium"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                                Sedang Dipinjam
+                                        <td class="py-2.5 px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($row['nama_barang']) ?></div>
+                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $row['jumlah'] ?> unit</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden md:table-cell"><?= e($row['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2.5 px-3 hidden sm:table-cell">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Dipinjam
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-3 text-right">
+                                        <td class="py-2.5 px-3 text-right">
                                             <?php if ($userRole === 'admin'): ?>
                                                 <button
                                                     type="button"
-                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition"
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 !text-white shadow-2xs transition"
                                                     onclick="bukaModalKembali(<?= htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8') ?>)"
                                                 >
-                                                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
-                                                    <span>Konfirmasi Terima</span>
+                                                    <i data-lucide="check-square" class="w-3.5 h-3.5 !text-white"></i>
+                                                    <span class="hidden sm:inline !text-white">Konfirmasi Terima</span>
+                                                    <span class="sm:hidden !text-white">Terima</span>
                                                 </button>
                                             <?php else: ?>
-                                                <span class="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-md">
-                                                    Harap serahkan ke Admin
+                                                <span class="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
+                                                    Serahkan ke Admin
                                                 </span>
                                             <?php endif; ?>
                                         </td>
@@ -221,16 +227,16 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
             </section>
 
             <!-- RIWAYAT PENGEMBALIAN TERAKHIR -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
-                <div class="flex items-center justify-between gap-4 mb-5">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
+                <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase">LOG SELESAI</span>
-                        <h3 class="text-base font-bold text-[#102b4e]">Pengembalian Terbaru</h3>
-                        <p class="text-xs text-slate-400">Catatan peralatan yang telah selesai diperiksa dan dikembalikan ke gudang.</p>
+                        <h3 class="text-sm sm:text-base font-bold text-[#102b4e]">Pengembalian Terbaru</h3>
+                        <p class="text-xs text-slate-400 hidden sm:block">Catatan peralatan yang telah selesai diperiksa dan dikembalikan ke gudang.</p>
                     </div>
 
-                    <a href="../riwayat/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-blue-700 bg-white border border-slate-200 shadow-2xs transition">
-                        <span>Lihat Semua Riwayat</span>
+                    <a href="../riwayat/index.php" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-blue-700 bg-white border border-slate-200 shadow-2xs transition">
+                        <span>Semua Riwayat</span>
                         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
@@ -239,13 +245,13 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan</th>
-                                <th class="py-3 px-3">Tanggal Pinjam</th>
-                                <th class="py-3 px-3">Tanggal Kembali</th>
-                                <th class="py-3 px-3">Kondisi Saat Kembali</th>
-                                <th class="py-3 px-3">Status</th>
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peminjam</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Kembali</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kondisi</th>
+                                <th class="py-2.5 px-3 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -258,19 +264,25 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                             <?php else: ?>
                                 <?php foreach ($riwayatKembali as $i => $rk): ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($rk['nama_peminjam']) ?></td>
-                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($rk['nama_barang']) ?></td>
-                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($rk['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3 px-3 text-slate-500"><?= $rk['tanggal_kembali'] ? date('d/m/Y', strtotime($rk['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3 px-3">
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none"><?= e($rk['nama_peminjam']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= $rk['tanggal_kembali'] ? date('d/m/Y', strtotime($rk['tanggal_kembali'])) : '—' ?></div>
+                                        </td>
+                                        <td class="py-2.5 px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($rk['nama_barang']) ?></div>
+                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) ($rk['jumlah'] ?? 1) ?> unit</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($rk['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= $rk['tanggal_kembali'] ? date('d/m/Y', strtotime($rk['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 hidden md:table-cell">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
                                                 <?= e($rk['kondisi']) ?>
                                             </span>
                                         </td>
-                                        <td class="py-3 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                Dikembalikan
+                                        <td class="py-2.5 px-3 text-right">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Kembali
                                             </span>
                                         </td>
                                     </tr>

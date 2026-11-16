@@ -44,6 +44,47 @@
 .modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:20px;border-top:1px solid #edf1f5;padding-top:14px}
 
 /* Print Styles */
+/* ====================================================
+   CLEAN RESPONSIVE STYLES
+   ==================================================== */
+
+/* Smooth compact tables */
+.table-compact th, .table-compact td {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+/* Ensure no horizontal window scrolling on mobile */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Custom minimal scrollbar for tables */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+/* Ensure crisp white text and icons on primary buttons and badges */
+.text-white, a.text-white, button.text-white,
+.\!text-white, a.\!text-white, button.\!text-white {
+  color: #ffffff !important;
+}
+.text-white svg, a.text-white svg, button.text-white svg,
+.\!text-white svg, a.\!text-white svg, button.\!text-white svg,
+.text-white [data-lucide], a.text-white [data-lucide], button.text-white [data-lucide] {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+.text-white span, a.text-white span, button.text-white span,
+.\!text-white span, a.\!text-white span, button.\!text-white span {
+  color: #ffffff !important;
+}
+
 @media print{
   .sidebar, .topbar, .dashboard-footer, .filter-bar, .btn-primary, .btn-sm, .action-group, .mobile-menu, .sidebar-backdrop, .no-print{display:none !important}
   .main-content{margin-left:0 !important;padding:0 !important}

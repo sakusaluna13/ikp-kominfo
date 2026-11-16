@@ -1,0 +1,16 @@
+Options -Indexes
+php_flag display_errors off
+php_flag log_errors on
+
+# Keamanan: sembunyikan file sensitif
+<FilesMatch "\.(sql|md|env|log)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Default index
+DirectoryIndex index.php
+
+# Charset
+AddDefaultCharset UTF-8
+

@@ -94,72 +94,73 @@ foreach ($rows as $r) {
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 flex flex-col gap-6">
+        <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
             <!-- STATISTIK RINGKASAN -->
-            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
-                    <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                        <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+                <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-2.5 sm:gap-4 shadow-xs">
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="clipboard-list" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-[11px] font-bold text-slate-400">Total Transaksi</span>
-                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countTotal ?></strong>
-                        <small class="text-[10px] text-slate-400">Sesuai filter pencarian</small>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400">Total</span>
+                        <strong class="text-base sm:text-2xl font-extrabold text-[#102b4e]"><?= $countTotal ?></strong>
+                        <small class="text-[9px] text-slate-400 hidden sm:block">Sesuai filter</small>
                     </div>
                 </article>
 
-                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
-                    <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                        <i data-lucide="check-check" class="w-5 h-5"></i>
+                <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-2.5 sm:gap-4 shadow-xs">
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="check-check" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-[11px] font-bold text-slate-400">Selesai Kembali</span>
-                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countKembali ?></strong>
-                        <small class="text-[10px] text-slate-400">Peralatan dikembalikan</small>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400">Kembali</span>
+                        <strong class="text-base sm:text-2xl font-extrabold text-[#102b4e]"><?= $countKembali ?></strong>
+                        <small class="text-[9px] text-slate-400 hidden sm:block">Selesai</small>
                     </div>
                 </article>
 
-                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
-                    <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                        <i data-lucide="clock" class="w-5 h-5"></i>
+                <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-2.5 sm:gap-4 shadow-xs">
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="clock" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-[11px] font-bold text-slate-400">Sedang Berjalan</span>
-                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countDipinjam ?></strong>
-                        <small class="text-[10px] text-slate-400">Masih berstatus dipinjam</small>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400">Dipinjam</span>
+                        <strong class="text-base sm:text-2xl font-extrabold text-[#102b4e]"><?= $countDipinjam ?></strong>
+                        <small class="text-[9px] text-slate-400 hidden sm:block">Berjalan</small>
                     </div>
                 </article>
 
-                <article class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center gap-4 shadow-xs">
-                    <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                        <i data-lucide="x-circle" class="w-5 h-5"></i>
+                <article class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 p-3 sm:p-5 flex items-center gap-2.5 sm:gap-4 shadow-xs">
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="x-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-[11px] font-bold text-slate-400">Ditolak / Dibatalkan</span>
-                        <strong class="text-2xl font-extrabold text-[#102b4e]"><?= $countDitolak ?></strong>
-                        <small class="text-[10px] text-slate-400">Pengajuan tidak disetujui</small>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400">Ditolak</span>
+                        <strong class="text-base sm:text-2xl font-extrabold text-[#102b4e]"><?= $countDitolak ?></strong>
+                        <small class="text-[9px] text-slate-400 hidden sm:block">Dibatalkan</small>
                     </div>
                 </article>
             </section>
 
             <!-- KONTEN TABEL RIWAYAT -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">REKAPITULASI</span>
-                        <h2 class="text-xl font-bold text-[#102b4e]">Histori Semua Peminjaman</h2>
-                        <p class="text-xs text-slate-400">
+                        <h2 class="text-base sm:text-xl font-bold text-[#102b4e]">Histori Peminjaman</h2>
+                        <p class="text-xs text-slate-400 hidden sm:block">
                             <?= $userRole === 'admin' 
                                 ? 'Seluruh rekam jejak transaksi peminjaman aset multimedia KOMINFO.' 
                                 : 'Rekam jejak peminjaman peralatan yang pernah Anda ajukan.' ?>
@@ -167,64 +168,64 @@ foreach ($rows as $r) {
                     </div>
 
                     <?php if ($userRole === 'admin'): ?>
-                        <a href="../laporan/index.php" class="inline-flex items-center gap-2 px-4 py-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-sm transition">
-                            <i data-lucide="printer" class="w-4 h-4"></i>
+                        <a href="../laporan/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-xs transition self-start sm:self-auto">
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
                             <span>Cetak Laporan</span>
                         </a>
                     <?php endif; ?>
                 </div>
 
                 <!-- FORM FILTER PENCARIAN -->
-                <form method="get" class="flex flex-wrap items-center justify-between gap-3 mb-6 p-3 bg-slate-50/80 rounded-xl border border-slate-100">
-                    <div class="flex flex-wrap items-center gap-2.5">
+                <form method="get" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100">
+                    <div class="flex flex-wrap items-center gap-2">
                         <input
                             type="text"
                             name="search"
-                            class="h-9 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 min-w-[200px]"
-                            placeholder="Cari peminjam atau barang..."
+                            class="h-8 sm:h-9 px-3 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 w-full sm:w-48"
+                            placeholder="Cari peminjam / barang..."
                             value="<?= e($search) ?>"
                         >
 
-                        <select name="status" class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        <select name="status" class="h-8 sm:h-9 px-2.5 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500">
                             <option value="">Semua Status</option>
-                            <option value="menunggu persetujuan" <?= $filterStatus === 'menunggu persetujuan' ? 'selected' : '' ?>>Menunggu Persetujuan</option>
-                            <option value="dipinjam" <?= $filterStatus === 'dipinjam' ? 'selected' : '' ?>>Sedang Dipinjam</option>
+                            <option value="menunggu persetujuan" <?= $filterStatus === 'menunggu persetujuan' ? 'selected' : '' ?>>Menunggu</option>
+                            <option value="dipinjam" <?= $filterStatus === 'dipinjam' ? 'selected' : '' ?>>Dipinjam</option>
                             <option value="dikembalikan" <?= $filterStatus === 'dikembalikan' ? 'selected' : '' ?>>Dikembalikan</option>
                             <option value="ditolak" <?= $filterStatus === 'ditolak' ? 'selected' : '' ?>>Ditolak</option>
                         </select>
 
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-1 text-xs">
                             <input
                                 type="date"
                                 name="start_date"
-                                class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="h-8 sm:h-9 px-2 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
                                 value="<?= e($startDate) ?>"
                                 title="Tanggal Mulai"
                             >
-                            <span class="text-xs text-slate-400">s/d</span>
+                            <span class="text-slate-400">-</span>
                             <input
                                 type="date"
                                 name="end_date"
-                                class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="h-8 sm:h-9 px-2 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
                                 value="<?= e($endDate) ?>"
                                 title="Tanggal Akhir"
                             >
                         </div>
 
-                        <button type="submit" class="h-9 px-3.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+                        <button type="submit" class="h-8 sm:h-9 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg sm:rounded-xl flex items-center gap-1 transition">
                             <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                            <span>Terapkan</span>
+                            <span>Filter</span>
                         </button>
 
                         <?php if ($search !== '' || $filterStatus !== '' || $startDate !== '' || $endDate !== ''): ?>
-                            <a href="index.php" class="h-9 px-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-xl flex items-center transition">
+                            <a href="index.php" class="h-8 sm:h-9 px-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-lg sm:rounded-xl flex items-center transition">
                                 Reset
                             </a>
                         <?php endif; ?>
                     </div>
 
-                    <span class="text-xs font-semibold text-slate-500">
-                        Total <strong><?= count($rows) ?></strong> catatan
+                    <span class="text-[11px] sm:text-xs font-semibold text-slate-500">
+                        Total: <strong><?= count($rows) ?></strong> data
                     </span>
                 </form>
 
@@ -233,22 +234,22 @@ foreach ($rows as $r) {
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Tgl. Pinjam</th>
-                                <th class="py-3 px-3">Tgl. Pengembalian</th>
-                                <th class="py-3 px-3">Durasi</th>
-                                <th class="py-3 px-3">Status</th>
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peminjam</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Kembali</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Durasi</th>
+                                <th class="py-2.5 px-3 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <?php if (!$rows): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-10 text-slate-400">
-                                        <div class="flex flex-col items-center justify-center gap-2">
-                                            <i data-lucide="archive" class="w-7 h-7 text-slate-300"></i>
+                                    <td colspan="8" class="text-center py-8 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-1.5">
+                                            <i data-lucide="archive" class="w-6 h-6 text-slate-300"></i>
                                             <span class="font-bold text-xs">Tidak ada catatan transaksi ditemukan</span>
                                         </div>
                                     </td>
@@ -265,18 +266,21 @@ foreach ($rows as $r) {
                                     };
                                     ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-800"><?= e($r['nama_peminjam']) ?></td>
-                                        <td class="py-3.5 px-3 font-medium text-slate-700">
-                                            <?= e($r['nama_barang']) ?>
-                                            <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md ml-1"><?= (int) $r['jumlah'] ?> unit</span>
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none"><?= e($r['nama_peminjam']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></div>
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= e($r['kategori']) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500 font-medium"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
+                                        <td class="py-2.5 px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($r['nama_barang']) ?></div>
+                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $r['jumlah'] ?> unit</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden md:table-cell"><?= e($r['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2.5 px-3 text-right">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
                                                 <?= e(ucwords($r['status'])) ?>
                                             </span>
                                         </td>

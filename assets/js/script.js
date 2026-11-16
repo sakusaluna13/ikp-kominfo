@@ -23,22 +23,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. SIDEBAR RESPONSIVE (MOBILE)
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
-    const mobileMenu = document.getElementById('mobileMenu');
     const sidebarClose = document.getElementById('sidebarClose');
 
     const openSidebar = () => {
-        sidebar?.classList.remove('-translate-x-full');
+        if (!sidebar) return;
+        sidebar.classList.remove('-translate-x-full');
         backdrop?.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden'); // prevent background scroll when sidebar open
     };
 
     const closeSidebar = () => {
-        sidebar?.classList.add('-translate-x-full');
+        if (!sidebar) return;
+        sidebar.classList.add('-translate-x-full');
         backdrop?.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     };
 
-    mobileMenu?.addEventListener('click', openSidebar);
+    // Bind all elements that can open sidebar
+    document.querySelectorAll('[data-open-sidebar], #mobileMenu').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openSidebar();
+        });
+    });
+
     sidebarClose?.addEventListener('click', closeSidebar);
     backdrop?.addEventListener('click', closeSidebar);
+
+    // Auto close sidebar when mobile link is tapped
+    sidebar?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                closeSidebar();
+            }
+        });
+    });
 
     // 4. MODAL DIALOG (TAILWIND TOGGLE HIDDEN / FLEX)
     document.querySelectorAll('[data-modal-open]').forEach(btn => {
@@ -136,4 +155,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 8. PROFILE DROPDOWN
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    if (profileBtn && profileDropdown) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            if (window.lucide) lucide.createIcons();
+        });
+        document.addEventListener('click', () => profileDropdown.classList.add('hidden'));
+    }
+
+    // 9. AUTO DISMISS FLASH MESSAGES
+    const flashMsg = document.querySelector('[data-flash-message]');
+    if (flashMsg) {
+        setTimeout(() => {
+            flashMsg.style.transition = 'opacity 0.5s';
+            flashMsg.style.opacity = '0';
+            setTimeout(() => flashMsg.remove(), 500);
+        }, 4000);
+    }
+
 });
+
+// TOAST NOTIFICATION SYSTEM
+window.showToast = function(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const colors = {
+        success: 'bg-emerald-500',
+        error: 'bg-rose-500',
+        warning: 'bg-amber-500',
+        info: 'bg-blue-500'
+    };
+    const icons = {
+        success: 'check-circle',
+        error: 'alert-triangle',
+        warning: 'alert-circle',
+        info: 'info'
+    };
+    const toast = document.createElement('div');
+    toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl text-white text-xs font-semibold shadow-lg ${colors[type] || colors.info} translate-y-2 opacity-0 transition-all duration-300`;
+    toast.innerHTML = `<i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0"></i><span>${message}</span><button onclick="this.parentElement.remove()" class="ml-auto pl-2 opacity-70 hover:opacity-100"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>`;
+    container.appendChild(toast);
+    if (window.lucide) lucide.createIcons({nodes: [toast]});
+    requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+    });
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+};

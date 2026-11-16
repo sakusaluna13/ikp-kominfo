@@ -174,93 +174,94 @@ $userList = $stmt->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800">
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 min-h-screen flex flex-col">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 p-4 md:p-6 space-y-6">
+        <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
             <!-- CARD UTAMA -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-xs border border-slate-100 overflow-hidden mb-4">
 
                 <!-- Header Card -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 border-b border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-5 border-b border-slate-100">
                     <div>
-                        <p class="text-xs font-bold tracking-widest text-blue-600 uppercase mb-1">Hak Akses &amp; Akun</p>
-                        <h3 class="text-lg font-bold text-slate-800">Daftar Pengguna Sistem</h3>
-                        <p class="text-sm text-slate-500 mt-0.5">Kelola hak akses administrator dan akun staf peminjam multimedia.</p>
+                        <p class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase mb-0.5">Hak Akses &amp; Akun</p>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-800">Daftar Pengguna Sistem</h3>
+                        <p class="text-xs text-slate-400 hidden sm:block">Kelola hak akses administrator dan akun staf peminjam multimedia.</p>
                     </div>
                     <button type="button"
                         data-modal-open="modalTambahUser"
-                        class="inline-flex items-center gap-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                        Tambah Pengguna
+                        class="inline-flex items-center gap-1.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors whitespace-nowrap self-start sm:self-auto">
+                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                        <span>Tambah Pengguna</span>
                     </button>
                 </div>
 
                 <!-- FILTER FORM -->
-                <form method="get" class="flex flex-wrap items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/60">
+                <form method="get" class="flex flex-wrap items-center gap-2 p-3 border-b border-slate-100 bg-slate-50/60">
                     <input
                         type="text"
                         name="search"
-                        class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-56 bg-white"
-                        placeholder="Cari nama atau username..."
+                        class="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-48 bg-white"
+                        placeholder="Cari nama / username..."
                         value="<?= e($search) ?>"
                     >
 
-                    <select name="role" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                        <option value="">Semua Peran (Role)</option>
+                    <select name="role" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Semua Peran</option>
                         <option value="admin" <?= $filterRole === 'admin' ? 'selected' : '' ?>>Admin</option>
                         <option value="peminjam" <?= $filterRole === 'peminjam' ? 'selected' : '' ?>>Peminjam</option>
                     </select>
 
-                    <select name="status" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select name="status" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                         <option value="">Semua Status</option>
                         <option value="aktif" <?= $filterStatus === 'aktif' ? 'selected' : '' ?>>Aktif</option>
                         <option value="nonaktif" <?= $filterStatus === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
                     </select>
 
-                    <button type="submit" class="inline-flex items-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-                        <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter
+                    <button type="submit" class="inline-flex items-center gap-1 bg-slate-700 hover:bg-slate-800 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                        <i data-lucide="filter" class="w-3 h-3"></i> Filter
                     </button>
 
                     <?php if ($search !== '' || $filterRole !== '' || $filterStatus !== ''): ?>
-                        <a href="index.php" class="inline-flex items-center gap-1.5 border border-slate-300 hover:bg-slate-100 text-slate-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                        <a href="index.php" class="inline-flex items-center border border-slate-300 hover:bg-slate-100 text-slate-600 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors">
                             Reset
                         </a>
                     <?php endif; ?>
 
-                    <span class="ml-auto text-xs text-slate-400 font-medium"><?= count($userList) ?> akun terdaftar</span>
+                    <span class="ml-auto text-[11px] text-slate-400 font-medium"><?= count($userList) ?> user</span>
                 </form>
 
                 <!-- TABEL -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-xs border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-slate-100 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="px-4 py-3 w-10">No.</th>
-                                <th class="px-4 py-3">Nama Lengkap</th>
-                                <th class="px-4 py-3">Username</th>
-                                <th class="px-4 py-3">Peran (Role)</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Total Pinjam</th>
-                                <th class="px-4 py-3">Terdaftar Sejak</th>
-                                <th class="px-4 py-3 text-right">Aksi</th>
+                            <tr class="bg-slate-50 border-b border-slate-100 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Pengguna</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Username</th>
+                                <th class="py-2.5 px-3">Peran</th>
+                                <th class="py-2.5 px-3">Status</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Total Pinjam</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Terdaftar</th>
+                                <th class="py-2.5 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <?php if (!$userList): ?>
                                 <tr>
-                                    <td colspan="8" class="px-4 py-14 text-center">
-                                        <div class="flex flex-col items-center gap-2 text-slate-400">
-                                            <i data-lucide="users" class="w-10 h-10 opacity-30"></i>
-                                            <p class="font-semibold">Tidak ada pengguna ditemukan</p>
+                                    <td colspan="8" class="px-4 py-10 text-center">
+                                        <div class="flex flex-col items-center gap-1.5 text-slate-400">
+                                            <i data-lucide="users" class="w-8 h-8 opacity-30"></i>
+                                            <p class="font-semibold text-xs">Tidak ada pengguna ditemukan</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -268,46 +269,49 @@ $userList = $stmt->fetchAll();
                                 <?php foreach ($userList as $i => $u): ?>
                                     <?php $isMe = ((int) $u['id'] === $currentAdminId); ?>
                                     <tr class="hover:bg-slate-50/80 transition-colors">
-                                        <td class="px-4 py-3 text-slate-400 text-xs"><?= $i + 1 ?></td>
-                                        <td class="px-4 py-3 font-semibold text-slate-800">
-                                            <?= e($u['nama']) ?>
-                                            <?php if ($isMe): ?>
-                                                <span class="ml-1.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">(Anda)</span>
-                                            <?php endif; ?>
+                                        <td class="py-2.5 px-3 text-slate-400 text-xs hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-semibold text-slate-800">
+                                            <div class="truncate max-w-[130px] sm:max-w-none">
+                                                <?= e($u['nama']) ?>
+                                                <?php if ($isMe): ?>
+                                                    <span class="ml-1 text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.2 rounded">(Anda)</span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 font-mono sm:hidden">@<?= e($u['username']) ?></div>
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <code class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-mono"><?= e($u['username']) ?></code>
+                                        <td class="py-2.5 px-3 hidden md:table-cell">
+                                            <code class="bg-slate-100 text-slate-600 text-xs px-1.5 py-0.5 rounded font-mono"><?= e($u['username']) ?></code>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="py-2.5 px-3">
                                             <?php if ($u['role'] === 'admin'): ?>
-                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
-                                                    <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                                                    Admin
                                                 </span>
                                             <?php else: ?>
-                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
-                                                    <i data-lucide="user" class="w-3 h-3"></i> Peminjam
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                                    Peminjam
                                                 </span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="py-2.5 px-3">
                                             <?php if ($u['status'] === 'aktif'): ?>
-                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span> Aktif
                                                 </span>
                                             <?php else: ?>
-                                                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-rose-50 text-rose-700 px-2.5 py-1 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-rose-400 inline-block"></span> Nonaktif
                                                 </span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="px-4 py-3 text-slate-600"><?= (int) $u['total_transaksi'] ?> kali</td>
-                                        <td class="px-4 py-3 text-slate-500 text-xs"><?= date('d/m/Y', strtotime($u['created_at'])) ?></td>
-                                        <td class="px-4 py-3">
+                                        <td class="py-2.5 px-3 text-slate-600 hidden md:table-cell"><?= (int) $u['total_transaksi'] ?>x</td>
+                                        <td class="py-2.5 px-3 text-slate-500 text-xs hidden lg:table-cell"><?= date('d/m/Y', strtotime($u['created_at'])) ?></td>
+                                        <td class="py-2.5 px-3 text-right">
                                             <?php if (!$isMe): ?>
-                                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                                <div class="inline-flex items-center justify-end gap-1">
 
                                                     <!-- TOGGLE STATUS -->
-                                                    <form method="post" class="m-0">
+                                                    <form method="post" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="toggle_status">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -315,16 +319,14 @@ $userList = $stmt->fetchAll();
                                                         <?php if ($u['status'] === 'aktif'): ?>
                                                             <button type="submit"
                                                                 title="Nonaktifkan Akun"
-                                                                class="inline-flex items-center gap-1 text-xs font-medium bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                                class="p-1.5 rounded-lg text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors">
                                                                 <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
-                                                                <span class="hidden sm:inline">Nonaktifkan</span>
                                                             </button>
                                                         <?php else: ?>
                                                             <button type="submit"
                                                                 title="Aktifkan Akun"
-                                                                class="inline-flex items-center gap-1 text-xs font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                                class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors">
                                                                 <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-                                                                <span class="hidden sm:inline">Aktifkan</span>
                                                             </button>
                                                         <?php endif; ?>
                                                     </form>
@@ -334,25 +336,25 @@ $userList = $stmt->fetchAll();
                                                         type="button"
                                                         onclick="bukaResetPassword(<?= $u['id'] ?>, '<?= e($u['nama']) ?>')"
                                                         title="Reset Password"
-                                                        class="inline-flex items-center gap-1 text-xs font-medium bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                        class="p-1.5 rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
                                                         <i data-lucide="key" class="w-3.5 h-3.5"></i>
                                                     </button>
 
                                                     <!-- HAPUS -->
-                                                    <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?')" class="m-0">
+                                                    <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?')" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                                         <button type="submit"
                                                             title="Hapus Akun"
-                                                            class="inline-flex items-center gap-1 text-xs font-medium bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                                                            class="p-1.5 rounded-lg text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors">
                                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                                         </button>
                                                     </form>
 
                                                 </div>
                                             <?php else: ?>
-                                                <span class="text-xs text-slate-400 italic text-right block">Akun Aktif</span>
+                                                <span class="text-[10px] text-slate-400 italic">Akun Anda</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>

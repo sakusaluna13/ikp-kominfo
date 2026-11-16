@@ -151,7 +151,7 @@ foreach ($rows as $r) {
         <?php require __DIR__ . '/../includes/sidebar.php'; ?>
     </div>
 
-    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <div class="no-print">
             <?php require __DIR__ . '/../includes/header.php'; ?>

@@ -152,6 +152,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <!-- Library Generate QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
@@ -160,26 +161,26 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 flex flex-col gap-6">
+        <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                     <div>
-                        <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">INVENTARIS MULTIMEDIA</span>
-                        <h2 class="text-xl font-bold text-[#102b4e]">Daftar Peralatan Multimedia</h2>
-                        <p class="text-xs text-slate-400">Kelola dan pantau stok aset multimedia Bidang IKP KOMINFO.</p>
+                        <span class="text-[9px] font-bold tracking-widest text-blue-600 uppercase">INVENTARIS</span>
+                        <h2 class="text-base sm:text-xl font-bold text-[#102b4e]">Daftar Peralatan Multimedia</h2>
+                        <p class="text-xs text-slate-400 hidden sm:block">Kelola dan pantau stok aset multimedia Bidang IKP KOMINFO.</p>
                     </div>
 
                     <?php if ($userRole === 'admin'): ?>
                         <button 
                             type="button" 
                             data-modal-open="modalTambahBarang"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-sm transition"
+                            class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-xs transition"
                         >
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span>Tambah Barang</span>
@@ -188,17 +189,17 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                 </div>
 
                 <!-- FILTER & PENCARIAN -->
-                <form method="get" class="flex flex-wrap items-center justify-between gap-3 mb-6 p-3 bg-slate-50/80 rounded-xl border border-slate-100">
-                    <div class="flex flex-wrap items-center gap-2.5">
+                <form method="get" class="flex flex-wrap items-center justify-between gap-2.5 mb-4 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100">
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         <input
                             type="text"
                             name="search"
-                            class="h-9 px-3.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 min-w-[200px]"
-                            placeholder="Cari nama atau kategori..."
+                            class="h-8 sm:h-9 px-3 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 flex-1 sm:w-48"
+                            placeholder="Cari peralatan..."
                             value="<?= e($search) ?>"
                         >
 
-                        <select name="kategori" class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        <select name="kategori" class="h-8 sm:h-9 px-2.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500">
                             <option value="">Semua Kategori</option>
                             <?php foreach ($kategoriList as $kat): ?>
                                 <option value="<?= e($kat) ?>" <?= $filterKategori === $kat ? 'selected' : '' ?>>
@@ -207,54 +208,53 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                             <?php endforeach; ?>
                         </select>
 
-                        <select name="kondisi" class="h-9 px-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                            <option value="">Semua Kondisi</option>
+                        <select name="kondisi" class="h-8 sm:h-9 px-2.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="">Kondisi</option>
                             <option value="Baik" <?= $filterKondisi === 'Baik' ? 'selected' : '' ?>>Baik</option>
                             <option value="Rusak Ringan" <?= $filterKondisi === 'Rusak Ringan' ? 'selected' : '' ?>>Rusak Ringan</option>
                             <option value="Rusak Berat" <?= $filterKondisi === 'Rusak Berat' ? 'selected' : '' ?>>Rusak Berat</option>
                         </select>
 
-                        <button type="submit" class="h-9 px-3.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+                        <button type="submit" class="h-8 sm:h-9 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg flex items-center gap-1 transition">
                             <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                            <span>Filter</span>
+                            <span class="hidden sm:inline">Filter</span>
                         </button>
 
                         <?php if ($search !== '' || $filterKategori !== '' || $filterKondisi !== ''): ?>
-                            <a href="index.php" class="h-9 px-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-xl flex items-center transition">
+                            <a href="index.php" class="h-8 sm:h-9 px-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold text-xs rounded-lg flex items-center transition">
                                 Reset
                             </a>
                         <?php endif; ?>
                     </div>
 
-                    <span class="text-xs font-semibold text-slate-500">
-                        Total <strong><?= count($barangList) ?></strong> unit
+                    <span class="text-[11px] font-semibold text-slate-400 ml-auto">
+                        Total <strong><?= count($barangList) ?></strong> barang
                     </span>
                 </form>
 
-                <!-- TABEL DATA BARANG -->
-                <div class="overflow-x-auto">
+                <!-- TABEL DATA BARANG (COMPACT RESPONSIVE) -->
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peralatan</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Total Stok</th>
-                                <th class="py-3 px-3">Sedang Dipinjam</th>
-                                <th class="py-3 px-3">Tersedia</th>
-                                <th class="py-3 px-3">Kondisi Fisik</th>
-                                <th class="py-3 px-3 text-center">QR</th>
-                                <th class="py-3 px-3 text-right">Aksi</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider bg-slate-50/50 sm:bg-transparent">
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Total Stok</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Dipinjam</th>
+                                <th class="py-2.5 px-3">Tersedia</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Kondisi</th>
+                                <th class="py-2.5 px-2 text-center">QR</th>
+                                <th class="py-2.5 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <?php if (!$barangList): ?>
                                 <tr>
-                                    <td colspan="9" class="text-center py-12 text-slate-400">
-                                        <div class="flex flex-col items-center justify-center gap-2">
-                                            <i data-lucide="package-open" class="w-8 h-8 text-slate-300"></i>
+                                    <td colspan="9" class="text-center py-10 text-slate-400">
+                                        <div class="flex flex-col items-center justify-center gap-1.5">
+                                            <i data-lucide="package-open" class="w-7 h-7 text-slate-300"></i>
                                             <span class="font-bold text-xs">Tidak ada data peralatan ditemukan</span>
-                                            <span class="text-[11px]">Silakan ubah filter pencarian atau tambahkan barang baru.</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -271,32 +271,38 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                         : 'bg-rose-50 text-rose-700 border-rose-200';
                                     ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3.5 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-800 text-[13px]"><?= e($b['nama_barang']) ?></td>
-                                        <td class="py-3.5 px-3 text-slate-500 font-medium"><?= e($b['kategori']) ?></td>
-                                        <td class="py-3.5 px-3 font-bold text-slate-700"><?= number_format((float) $b['jumlah'], 0, ',', '.') ?> unit</td>
-                                        <td class="py-3.5 px-3 text-slate-500"><?= (int) $b['sedang_dipinjam'] ?> unit</td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $tersediaBadge ?>">
-                                                <?= (int) $b['sisa_tersedia'] ?> unit
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[130px] sm:max-w-none text-xs sm:text-[13px]"><?= e($b['nama_barang']) ?></div>
+                                            <div class="flex items-center gap-1.5 mt-0.5 sm:hidden">
+                                                <span class="text-[10px] text-slate-400 font-normal"><?= e($b['kategori']) ?></span>
+                                                <span class="text-[9px] px-1 rounded font-semibold <?= $kondisiBadge ?>"><?= e($b['kondisi']) ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 font-medium hidden md:table-cell"><?= e($b['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-700 hidden lg:table-cell"><?= number_format((float) $b['jumlah'], 0, ',', '.') ?> unit</td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= (int) $b['sedang_dipinjam'] ?> unit</td>
+                                        <td class="py-2.5 px-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $tersediaBadge ?>">
+                                                <?= (int) $b['sisa_tersedia'] ?> <span class="hidden sm:inline ml-0.5">unit</span>
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-3">
+                                        <td class="py-2.5 px-3 hidden sm:table-cell">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $kondisiBadge ?>">
                                                 <?= e($b['kondisi']) ?>
                                             </span>
                                         </td>
                                         <!-- TOMBOL QR CODE -->
-                                        <td class="py-3.5 px-3 text-center">
+                                        <td class="py-2.5 px-2 text-center">
                                             <button
                                                 type="button"
                                                 onclick="bukaModalQR(<?= $b['id'] ?>, '<?= e($b['nama_barang']) ?>')"
                                                 title="Lihat QR Code"
-                                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition">
-                                                <i data-lucide="qr-code" class="w-4 h-4"></i>
+                                                class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition">
+                                                <i data-lucide="qr-code" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                                             </button>
                                         </td>
-                                        <td class="py-3.5 px-3 text-right">
+                                        <td class="py-2.5 px-3 text-right">
                                             <div class="inline-flex items-center gap-1.5 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
                                                     <!-- EDIT -->
@@ -320,9 +326,9 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                     </form>
                                                 <?php else: ?>
                                                     <?php if ($b['sisa_tersedia'] > 0): ?>
-                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#102b4e] hover:bg-[#1a3d6b] text-white inline-flex items-center gap-1 shadow-2xs transition">
-                                                            <span>Pinjam</span>
-                                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 !text-white inline-flex items-center gap-1 shadow-2xs transition">
+                                                            <span class="!text-white font-bold">Pinjam</span>
+                                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 !text-white"></i>
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-md">Habis</span>

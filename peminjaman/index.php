@@ -232,37 +232,33 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="md:ml-64 px-4 sm:px-8 min-h-screen flex flex-col transition-all">
+    <div class="md:ml-64 px-3 sm:px-8 min-h-screen flex flex-col transition-all pb-6">
 
         <?php require __DIR__ . '/../includes/header.php'; ?>
 
-        <main class="flex-1 flex flex-col gap-6">
+        <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
             <!-- FORM PENGAJUAN / PENCATATAN -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4 mb-5">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-2">
+                <div class="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
                     <div>
-                        <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">
+                        <span class="text-[9px] font-bold tracking-widest text-blue-600 uppercase">
                             <?= $userRole === 'admin' ? 'PENCATATAN ADMIN' : 'FORMULIR PENGAJUAN' ?>
                         </span>
-                        <h2 class="text-xl font-bold text-[#102b4e]">
-                            <?= $userRole === 'admin' ? 'Catat Peminjaman Peralatan' : 'Ajukan Peminjaman Peralatan' ?>
+                        <h2 class="text-base sm:text-lg font-bold text-[#102b4e]">
+                            <?= $userRole === 'admin' ? 'Catat Peminjaman' : 'Ajukan Peminjaman Peralatan' ?>
                         </h2>
-                        <p class="text-xs text-slate-400">
-                            <?= $userRole === 'admin' 
-                                ? 'Admin dapat langsung mencatat transaksi peminjaman atas nama pengguna.' 
-                                : 'Pilih barang multimedia yang ingin dipinjam untuk keperluan liputan/dinas.' ?>
-                        </p>
                     </div>
 
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                        <?= $userRole === 'admin' ? 'Akses Administrator' : 'Pengajuan Pegawai' ?>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <?= $userRole === 'admin' ? 'Akses Admin' : 'Pegawai' ?>
                     </span>
                 </div>
 
@@ -318,9 +314,9 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                     </div>
 
                     <div class="flex items-center justify-end pt-2">
-                        <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs rounded-xl shadow-sm transition">
-                            <i data-lucide="send" class="w-4 h-4"></i>
-                            <span><?= $userRole === 'admin' ? 'Catat Peminjaman Sekarang' : 'Kirim Pengajuan Peminjaman' ?></span>
+                        <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-xl shadow-xs transition">
+                            <i data-lucide="send" class="w-4 h-4 !text-white"></i>
+                            <span class="!text-white"><?= $userRole === 'admin' ? 'Catat Peminjaman Sekarang' : 'Kirim Pengajuan Peminjaman' ?></span>
                         </button>
                     </div>
                 </form>
@@ -340,20 +336,20 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                     </span>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Jumlah</th>
-                                <th class="py-3 px-3">Tgl. Pinjam</th>
-                                <th class="py-3 px-3">Rencana Kembali</th>
-                                <th class="py-3 px-3">Durasi</th>
-                                <th class="py-3 px-3">Status</th>
-                                <th class="py-3 px-3 text-right">Aksi</th>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider bg-slate-50/50 sm:bg-transparent">
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peminjam</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Jumlah</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Kembali</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Durasi</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Status</th>
+                                <th class="py-2.5 px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -369,30 +365,36 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                             <?php else: ?>
                                 <?php foreach ($listPengajuan as $i => $row): ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
-                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($row['nama_barang']) ?></td>
-                                        <td class="py-3 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
-                                        <td class="py-3 px-3 font-bold text-blue-700 bg-blue-50/50"><?= (int) $row['jumlah'] ?> unit</td>
-                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3 px-3 text-slate-500"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3 px-3 font-semibold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-3 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                                Menunggu Persetujuan
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none"><?= e($row['nama_peminjam']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></div>
+                                        </td>
+                                        <td class="py-2.5 px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($row['nama_barang']) ?></div>
+                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $row['jumlah'] ?> unit</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden md:table-cell"><?= e($row['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-blue-700 bg-blue-50/50 hidden sm:table-cell"><?= (int) $row['jumlah'] ?> unit</td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2.5 px-3 hidden sm:table-cell">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Menunggu
                                             </span>
                                         </td>
-                                        <td class="py-3 px-3 text-right">
-                                            <div class="inline-flex items-center gap-1.5 justify-end">
+                                        <td class="py-2.5 px-3 text-right">
+                                            <div class="inline-flex items-center gap-1 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
                                                     <!-- SETUJUI -->
                                                     <form method="post" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="setujui">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center gap-1 transition shadow-2xs" title="Setujui Peminjaman">
-                                                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                                            <span>Setujui</span>
+                                                        <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 !text-white inline-flex items-center gap-1 transition shadow-2xs" title="Setujui">
+                                                            <i data-lucide="check" class="w-3.5 h-3.5 !text-white"></i>
+                                                            <span class="hidden sm:inline !text-white">Setujui</span>
                                                         </button>
                                                     </form>
 
@@ -401,9 +403,9 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="tolak">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center gap-1 transition" title="Tolak Peminjaman">
+                                                        <button type="submit" class="px-2 py-1 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 inline-flex items-center gap-1 transition" title="Tolak">
                                                             <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                                                            <span>Tolak</span>
+                                                            <span class="hidden sm:inline">Tolak</span>
                                                         </button>
                                                     </form>
                                                 <?php else: ?>
@@ -412,9 +414,9 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="batalkan_pengajuan">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
-                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 inline-flex items-center gap-1 transition">
+                                                        <button type="submit" class="px-2 py-1 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 inline-flex items-center gap-1 transition">
                                                             <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
-                                                            <span>Batalkan</span>
+                                                            <span>Batal</span>
                                                         </button>
                                                     </form>
                                                 <?php endif; ?>
@@ -429,18 +431,18 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
             </section>
 
             <!-- TABEL BARANG SEDANG DIPINJAM (AKTIF) -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
-                <div class="flex items-center justify-between gap-4 mb-5">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
+                <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">STATUS LAPANGAN</span>
-                        <h3 class="text-base font-bold text-[#102b4e]">Peralatan Sedang Berstatus Dipinjam</h3>
-                        <p class="text-xs text-slate-400">
+                        <h3 class="text-sm sm:text-base font-bold text-[#102b4e]">Peralatan Sedang Dipinjam</h3>
+                        <p class="text-xs text-slate-400 hidden sm:block">
                             <?= $userRole === 'admin' ? 'Seluruh peralatan yang saat ini sedang dibawa oleh peminjam.' : 'Peralatan yang saat ini sedang Anda pinjam.' ?>
                         </p>
                     </div>
 
-                    <a href="../pengembalian/index.php" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
-                        <span>Ke Menu Pengembalian</span>
+                    <a href="../pengembalian/index.php" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+                        <span>Pengembalian</span>
                         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
@@ -449,15 +451,15 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="py-3 px-3 w-12">No.</th>
-                                <th class="py-3 px-3">Nama Peminjam</th>
-                                <th class="py-3 px-3">Peralatan</th>
-                                <th class="py-3 px-3">Kategori</th>
-                                <th class="py-3 px-3">Jumlah</th>
-                                <th class="py-3 px-3">Tanggal Pinjam</th>
-                                <th class="py-3 px-3">Rencana Kembali</th>
-                                <th class="py-3 px-3">Durasi</th>
-                                <th class="py-3 px-3">Status</th>
+                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2.5 px-3">Peminjam</th>
+                                <th class="py-2.5 px-3">Peralatan</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Jumlah</th>
+                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2.5 px-3 hidden lg:table-cell">Kembali</th>
+                                <th class="py-2.5 px-3 hidden md:table-cell">Durasi</th>
+                                <th class="py-2.5 px-3 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -473,17 +475,23 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                             <?php else: ?>
                                 <?php foreach ($listDipinjam as $i => $row): ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3 px-3 text-slate-400"><?= $i + 1 ?></td>
-                                        <td class="py-3 px-3 font-bold text-slate-800"><?= e($row['nama_peminjam']) ?></td>
-                                        <td class="py-3 px-3 font-medium text-slate-700"><?= e($row['nama_barang']) ?></td>
-                                        <td class="py-3 px-3 text-slate-500"><?= e($row['kategori']) ?></td>
-                                        <td class="py-3 px-3 font-bold text-blue-700 bg-blue-50/50"><?= (int) $row['jumlah'] ?> unit</td>
-                                        <td class="py-3 px-3 text-slate-500"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
-                                        <td class="py-3 px-3 text-slate-500 font-medium"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-3 px-3 font-bold text-slate-700"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-3 px-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                                                Sedang Dipinjam
+                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none"><?= e($row['nama_peminjam']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></div>
+                                        </td>
+                                        <td class="py-2.5 px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($row['nama_barang']) ?></div>
+                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $row['jumlah'] ?> unit</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden md:table-cell"><?= e($row['kategori']) ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-blue-700 bg-blue-50/50 hidden sm:table-cell"><?= (int) $row['jumlah'] ?> unit</td>
+                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2.5 px-3 text-right">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                Dipinjam
                                             </span>
                                         </td>
                                     </tr>

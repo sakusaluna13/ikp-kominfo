@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
 
     if ($barangId !== $id) {
         flash('error', 'Data tidak valid.');
-    } elseif (empty($tglKembali) || $tglKembali <= $tglPinjam) {
-        flash('error', 'Tanggal kembali harus setelah hari ini.');
+    } elseif (empty($tglKembali) || $tglKembali < $tglPinjam) {
+        flash('error', 'Tanggal kembali tidak boleh sebelum tanggal pinjam.');
     } else {
         // Hitung stok tersedia saat ini
         $cekStok = $pdo->prepare("
