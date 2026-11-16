@@ -203,7 +203,7 @@ $rows = $q->fetchAll();
                                         <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
                                         <td class="py-2.5 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
                                         <td class="py-2.5 px-3 text-right sm:text-left">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $badge ?>">
                                                 <?= e(ucwords($r['status'])) ?>
                                             </span>
                                         </td>
@@ -216,37 +216,37 @@ $rows = $q->fetchAll();
             </section>
 
             <!-- INFORMASI PENGGUNA SAAT INI -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6 mb-4">
-                <div class="flex items-center justify-between gap-4 mb-4">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6 mb-4">
+                <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">AKUN</span>
-                        <h3 class="text-base font-bold text-[#102b4e]">Informasi Pengguna Masuk</h3>
+                        <h3 class="text-sm sm:text-base font-bold text-[#102b4e]">Informasi Pengguna</h3>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap shrink-0">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         Akun Aktif
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Nama Lengkap</span>
-                        <strong class="text-xs text-slate-800"><?= e($_SESSION['user']['nama']) ?></strong>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+                    <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Nama Lengkap</span>
+                        <strong class="text-xs sm:text-sm text-slate-800 truncate"><?= e($_SESSION['user']['nama']) ?></strong>
                     </div>
 
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Username</span>
-                        <code class="text-xs text-slate-800 font-mono"><?= e($_SESSION['user']['username']) ?></code>
+                    <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Username</span>
+                        <strong class="text-xs sm:text-sm text-slate-800 truncate font-semibold"><?= e($_SESSION['user']['username']) ?></strong>
                     </div>
 
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Peran (Role)</span>
-                        <strong class="text-xs text-slate-800"><?= ucfirst($_SESSION['user']['role']) ?></strong>
+                    <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Peran (Role)</span>
+                        <strong class="text-xs sm:text-sm text-slate-800"><?= ucfirst($_SESSION['user']['role']) ?></strong>
                     </div>
 
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Instansi</span>
-                        <strong class="text-xs text-slate-800">KOMINFO Prov. Sumut</strong>
+                    <div class="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Instansi</span>
+                        <strong class="text-xs sm:text-sm text-slate-800 truncate">KOMINFO Prov. Sumut</strong>
                     </div>
                 </div>
             </section>

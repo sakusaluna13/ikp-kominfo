@@ -197,7 +197,7 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                                         <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
                                         <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
                                         <td class="py-2.5 px-3 hidden sm:table-cell">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
                                                 Dipinjam
                                             </span>
                                         </td>
@@ -281,7 +281,7 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                                             </span>
                                         </td>
                                         <td class="py-2.5 px-3 text-right">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
                                                 Kembali
                                             </span>
                                         </td>

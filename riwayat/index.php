@@ -177,16 +177,16 @@ foreach ($rows as $r) {
 
                 <!-- FORM FILTER PENCARIAN -->
                 <form method="get" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100">
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
                         <input
                             type="text"
                             name="search"
-                            class="h-8 sm:h-9 px-3 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 w-full sm:w-48"
+                            class="col-span-2 sm:col-span-1 h-8 sm:h-9 px-3 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 w-full sm:w-48"
                             placeholder="Cari peminjam / barang..."
                             value="<?= e($search) ?>"
                         >
 
-                        <select name="status" class="h-8 sm:h-9 px-2.5 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500">
+                        <select name="status" class="col-span-2 sm:col-span-1 h-8 sm:h-9 px-2 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500">
                             <option value="">Semua Status</option>
                             <option value="menunggu persetujuan" <?= $filterStatus === 'menunggu persetujuan' ? 'selected' : '' ?>>Menunggu</option>
                             <option value="dipinjam" <?= $filterStatus === 'dipinjam' ? 'selected' : '' ?>>Dipinjam</option>
@@ -194,34 +194,36 @@ foreach ($rows as $r) {
                             <option value="ditolak" <?= $filterStatus === 'ditolak' ? 'selected' : '' ?>>Ditolak</option>
                         </select>
 
-                        <div class="flex items-center gap-1 text-xs">
+                        <div class="col-span-2 sm:col-span-1 flex items-center gap-1 text-xs w-full sm:w-auto">
                             <input
                                 type="date"
                                 name="start_date"
-                                class="h-8 sm:h-9 px-2 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
+                                class="flex-1 sm:w-28 h-8 sm:h-9 px-2 text-[11px] sm:text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
                                 value="<?= e($startDate) ?>"
                                 title="Tanggal Mulai"
                             >
-                            <span class="text-slate-400">-</span>
+                            <span class="text-slate-400 shrink-0">–</span>
                             <input
                                 type="date"
                                 name="end_date"
-                                class="h-8 sm:h-9 px-2 text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
+                                class="flex-1 sm:w-28 h-8 sm:h-9 px-2 text-[11px] sm:text-xs bg-white border border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500"
                                 value="<?= e($endDate) ?>"
                                 title="Tanggal Akhir"
                             >
                         </div>
 
-                        <button type="submit" class="h-8 sm:h-9 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg sm:rounded-xl flex items-center gap-1 transition">
-                            <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                            <span>Filter</span>
-                        </button>
+                        <div class="col-span-2 sm:col-span-1 flex items-center gap-1.5">
+                            <button type="submit" class="flex-1 sm:flex-none h-8 sm:h-9 px-3 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-lg sm:rounded-xl flex items-center justify-center gap-1 transition">
+                                <i data-lucide="filter" class="w-3.5 h-3.5 !text-white"></i>
+                                <span class="!text-white">Filter</span>
+                            </button>
 
-                        <?php if ($search !== '' || $filterStatus !== '' || $startDate !== '' || $endDate !== ''): ?>
-                            <a href="index.php" class="h-8 sm:h-9 px-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-lg sm:rounded-xl flex items-center transition">
-                                Reset
-                            </a>
-                        <?php endif; ?>
+                            <?php if ($search !== '' || $filterStatus !== '' || $startDate !== '' || $endDate !== ''): ?>
+                                <a href="index.php" class="h-8 sm:h-9 px-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs rounded-lg sm:rounded-xl flex items-center justify-center transition">
+                                    Reset
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <span class="text-[11px] sm:text-xs font-semibold text-slate-500">
@@ -280,8 +282,17 @@ foreach ($rows as $r) {
                                         <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
                                         <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
                                         <td class="py-2.5 px-3 text-right">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $badge ?>">
-                                                <?= e(ucwords($r['status'])) ?>
+                                            <?php
+                                            $statusLabel = match ($r['status']) {
+                                                'menunggu persetujuan' => 'Menunggu',
+                                                'dipinjam' => 'Dipinjam',
+                                                'dikembalikan' => 'Kembali',
+                                                'ditolak' => 'Ditolak',
+                                                default => ucwords($r['status'])
+                                            };
+                                            ?>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 <?= $badge ?>">
+                                                <?= e($statusLabel) ?>
                                             </span>
                                         </td>
                                     </tr>

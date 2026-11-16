@@ -85,6 +85,11 @@ html, body {
   color: #ffffff !important;
 }
 
+/* Badges, tags, and pills never wrap text onto multiple lines */
+.rounded-full, [class*="rounded-full"] {
+  white-space: nowrap !important;
+}
+
 @media print{
   .sidebar, .topbar, .dashboard-footer, .filter-bar, .btn-primary, .btn-sm, .action-group, .mobile-menu, .sidebar-backdrop, .no-print{display:none !important}
   .main-content{margin-left:0 !important;padding:0 !important}

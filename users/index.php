@@ -274,32 +274,32 @@ $userList = $stmt->fetchAll();
                                             <div class="truncate max-w-[130px] sm:max-w-none">
                                                 <?= e($u['nama']) ?>
                                                 <?php if ($isMe): ?>
-                                                    <span class="ml-1 text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.2 rounded">(Anda)</span>
+                                                    <span class="ml-1 text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.2 rounded whitespace-nowrap">(Anda)</span>
                                                 <?php endif; ?>
                                             </div>
-                                            <div class="text-[10px] text-slate-400 font-mono sm:hidden">@<?= e($u['username']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-medium sm:hidden">@<?= e($u['username']) ?></div>
                                         </td>
                                         <td class="py-2.5 px-3 hidden md:table-cell">
-                                            <code class="bg-slate-100 text-slate-600 text-xs px-1.5 py-0.5 rounded font-mono"><?= e($u['username']) ?></code>
+                                            <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-md font-medium"><?= e($u['username']) ?></span>
                                         </td>
                                         <td class="py-2.5 px-3">
                                             <?php if ($u['role'] === 'admin'): ?>
-                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                     Admin
                                                 </span>
                                             <?php else: ?>
-                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                     Peminjam
                                                 </span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="py-2.5 px-3">
                                             <?php if ($u['status'] === 'aktif'): ?>
-                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span> Aktif
                                                 </span>
                                             <?php else: ?>
-                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full">
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-rose-400 inline-block"></span> Nonaktif
                                                 </span>
                                             <?php endif; ?>

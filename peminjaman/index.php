@@ -313,25 +313,25 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end pt-2">
-                        <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-xl shadow-xs transition">
-                            <i data-lucide="send" class="w-4 h-4 !text-white"></i>
-                            <span class="!text-white"><?= $userRole === 'admin' ? 'Catat Peminjaman Sekarang' : 'Kirim Pengajuan Peminjaman' ?></span>
+                    <div class="flex items-center justify-end pt-1">
+                        <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-xl shadow-xs transition whitespace-nowrap">
+                            <i data-lucide="send" class="w-3.5 h-3.5 !text-white"></i>
+                            <span class="!text-white whitespace-nowrap"><?= $userRole === 'admin' ? 'Catat Peminjaman' : 'Kirim Pengajuan' ?></span>
                         </button>
                     </div>
                 </form>
             </section>
 
             <!-- TABEL PENGAJUAN MENUNGGU PERSETUJUAN -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4 mb-5">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-extrabold tracking-widest text-amber-600 uppercase">VERIFIKASI</span>
-                        <h3 class="text-base font-bold text-[#102b4e]">Pengajuan Menunggu Persetujuan</h3>
-                        <p class="text-xs text-slate-400">Pengajuan yang memerlukan persetujuan Admin KOMINFO sebelum barang diserahkan.</p>
+                        <h3 class="text-sm sm:text-base font-bold text-[#102b4e]">Pengajuan Menunggu Persetujuan</h3>
+                        <p class="text-xs text-slate-400 hidden sm:block">Pengajuan yang memerlukan persetujuan Admin KOMINFO sebelum barang diserahkan.</p>
                     </div>
 
-                    <span class="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-lg">
+                    <span class="text-[11px] sm:text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg whitespace-nowrap shrink-0">
                         <?= count($listPengajuan) ?> pengajuan
                     </span>
                 </div>
@@ -380,7 +380,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                         <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
                                         <td class="py-2.5 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
                                         <td class="py-2.5 px-3 hidden sm:table-cell">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
                                                 Menunggu
                                             </span>
                                         </td>
@@ -490,7 +490,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                         <td class="py-2.5 px-3 text-slate-500 font-medium hidden lg:table-cell"><?= $row['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
                                         <td class="py-2.5 px-3 font-bold text-slate-700 hidden md:table-cell"><?= hitung_durasi($row['tanggal_pinjam'], $row['tanggal_kembali']) ?> hari</td>
                                         <td class="py-2.5 px-3 text-right">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 whitespace-nowrap">
                                                 Dipinjam
                                             </span>
                                         </td>

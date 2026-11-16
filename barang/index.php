@@ -283,12 +283,12 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                         <td class="py-2.5 px-3 font-bold text-slate-700 hidden lg:table-cell"><?= number_format((float) $b['jumlah'], 0, ',', '.') ?> unit</td>
                                         <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= (int) $b['sedang_dipinjam'] ?> unit</td>
                                         <td class="py-2.5 px-3">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $tersediaBadge ?>">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $tersediaBadge ?>">
                                                 <?= (int) $b['sisa_tersedia'] ?> <span class="hidden sm:inline ml-0.5">unit</span>
                                             </span>
                                         </td>
                                         <td class="py-2.5 px-3 hidden sm:table-cell">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $kondisiBadge ?>">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $kondisiBadge ?>">
                                                 <?= e($b['kondisi']) ?>
                                             </span>
                                         </td>

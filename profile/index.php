@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             type="text" 
                             name="username" 
                             value="<?= e($user['username']) ?>"
-                            class="h-11 px-4 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition font-mono"
+                            class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
                             required
                         >
                         <span class="text-[10px] text-slate-400">4–50 karakter, huruf/angka/titik/strip saja.</span>
@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input 
                                     type="password" 
                                     name="password"
-                                    class="h-11 px-4 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                                    class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
                                     placeholder="Min. 8 karakter"
                                 >
                             </div>
@@ -228,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input 
                                     type="password" 
                                     name="confirm_password"
-                                    class="h-11 px-4 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                                    class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
                                     placeholder="Ulangi password baru"
                                 >
                             </div>
@@ -236,12 +236,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <!-- TOMBOL -->
-                    <div class="flex items-center gap-3 pt-2">
-                        <button type="submit" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-sm rounded-xl shadow-sm transition">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                            <span>Simpan Perubahan</span>
+                    <div class="flex items-center gap-2.5 pt-2">
+                        <button type="submit" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition whitespace-nowrap">
+                            <i data-lucide="save" class="w-4 h-4 !text-white"></i>
+                            <span class="!text-white whitespace-nowrap">Simpan Perubahan</span>
                         </button>
-                        <a href="../dashboard/index.php" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition">
+                        <a href="../dashboard/index.php" class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition whitespace-nowrap">
                             Batal
                         </a>
                     </div>
