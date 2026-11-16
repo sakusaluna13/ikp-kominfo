@@ -167,7 +167,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
 
         <main class="flex-1 flex flex-col gap-4 sm:gap-6">
 
-            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-4 sm:p-6">
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs p-3 sm:p-6">
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                     <div>
@@ -232,20 +232,20 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </span>
                 </form>
 
-                <!-- TABEL DATA BARANG (COMPACT RESPONSIVE) -->
-                <div class="overflow-x-auto -mx-4 sm:mx-0">
-                    <table class="w-full text-left text-xs border-collapse">
+                <!-- TABEL DATA BARANG (COMPACT FIT - NO HORIZONTAL SCROLL) -->
+                <div class="w-full overflow-hidden sm:overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse table-auto">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider bg-slate-50/50 sm:bg-transparent">
-                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
-                                <th class="py-2.5 px-3">Peralatan</th>
-                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
-                                <th class="py-2.5 px-3 hidden lg:table-cell">Total Stok</th>
-                                <th class="py-2.5 px-3 hidden lg:table-cell">Dipinjam</th>
-                                <th class="py-2.5 px-3">Tersedia</th>
-                                <th class="py-2.5 px-3 hidden sm:table-cell">Kondisi</th>
-                                <th class="py-2.5 px-2 text-center">QR</th>
-                                <th class="py-2.5 px-3 text-right">Aksi</th>
+                                <th class="py-2 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2 px-1.5 sm:px-3">Peralatan</th>
+                                <th class="py-2 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2 px-3 hidden lg:table-cell">Total Stok</th>
+                                <th class="py-2 px-3 hidden lg:table-cell">Dipinjam</th>
+                                <th class="py-2 px-1 sm:px-3 text-center sm:text-left">Tersedia</th>
+                                <th class="py-2 px-3 hidden sm:table-cell">Kondisi</th>
+                                <th class="py-2 px-1 sm:px-2 text-center w-8 sm:w-12">QR</th>
+                                <th class="py-2 px-1.5 sm:px-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -272,19 +272,19 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                     ?>
                                     <tr class="hover:bg-slate-50/60 transition">
                                         <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
-                                        <td class="py-2.5 px-3 font-bold text-slate-800">
-                                            <div class="truncate max-w-[130px] sm:max-w-none text-xs sm:text-[13px]"><?= e($b['nama_barang']) ?></div>
-                                            <div class="flex items-center gap-1.5 mt-0.5 sm:hidden">
-                                                <span class="text-[10px] text-slate-400 font-normal"><?= e($b['kategori']) ?></span>
-                                                <span class="text-[9px] px-1 rounded font-semibold <?= $kondisiBadge ?>"><?= e($b['kondisi']) ?></span>
+                                        <td class="py-2 px-1.5 sm:py-2.5 sm:px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[120px] sm:max-w-none text-xs sm:text-[13px]"><?= e($b['nama_barang']) ?></div>
+                                            <div class="flex items-center gap-1 mt-0.5 sm:hidden text-[9px]">
+                                                <span class="text-slate-400 truncate max-w-[65px]"><?= e($b['kategori']) ?></span>
+                                                <span class="px-1 py-0.2 rounded font-semibold whitespace-nowrap text-[8.5px] <?= $kondisiBadge ?>"><?= e($b['kondisi']) ?></span>
                                             </div>
                                         </td>
                                         <td class="py-2.5 px-3 text-slate-500 font-medium hidden md:table-cell"><?= e($b['kategori']) ?></td>
                                         <td class="py-2.5 px-3 font-bold text-slate-700 hidden lg:table-cell"><?= number_format((float) $b['jumlah'], 0, ',', '.') ?> unit</td>
                                         <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= (int) $b['sedang_dipinjam'] ?> unit</td>
-                                        <td class="py-2.5 px-3">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $tersediaBadge ?>">
-                                                <?= (int) $b['sisa_tersedia'] ?> <span class="hidden sm:inline ml-0.5">unit</span>
+                                        <td class="py-2 px-1 sm:py-2.5 sm:px-3 text-center sm:text-left">
+                                            <span class="inline-flex items-center justify-center min-w-[20px] h-5 sm:min-w-0 sm:h-auto px-1 sm:px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $tersediaBadge ?>">
+                                                <?= (int) $b['sisa_tersedia'] ?><span class="hidden sm:inline ml-0.5">unit</span>
                                             </span>
                                         </td>
                                         <td class="py-2.5 px-3 hidden sm:table-cell">
@@ -293,26 +293,26 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                             </span>
                                         </td>
                                         <!-- TOMBOL QR CODE -->
-                                        <td class="py-2.5 px-2 text-center">
+                                        <td class="py-2 px-1 sm:py-2.5 sm:px-2 text-center">
                                             <button
                                                 type="button"
                                                 onclick="bukaModalQR(<?= $b['id'] ?>, '<?= e($b['nama_barang']) ?>')"
                                                 title="Lihat QR Code"
-                                                class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition">
-                                                <i data-lucide="qr-code" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                                class="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition">
+                                                <i data-lucide="qr-code" class="w-3 h-3 sm:w-4 sm:h-4"></i>
                                             </button>
                                         </td>
-                                        <td class="py-2.5 px-3 text-right">
-                                            <div class="inline-flex items-center gap-1.5 justify-end">
+                                        <td class="py-2 px-1.5 sm:py-2.5 sm:px-3 text-right">
+                                            <div class="inline-flex items-center gap-1 sm:gap-1.5 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
                                                     <!-- EDIT -->
                                                     <button
                                                         type="button"
-                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
+                                                        class="p-1 sm:px-2.5 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
                                                         onclick="editBarang(<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>)"
                                                     >
                                                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                                                        <span>Edit</span>
+                                                        <span class="hidden sm:inline">Edit</span>
                                                     </button>
 
                                                     <!-- HAPUS -->
@@ -320,18 +320,18 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
                                                         <input type="hidden" name="id" value="<?= $b['id'] ?>">
-                                                        <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Hapus Barang">
-                                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                        <button type="submit" class="p-1 sm:p-1.5 rounded-md sm:rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Hapus Barang">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                                                         </button>
                                                     </form>
                                                 <?php else: ?>
                                                     <?php if ($b['sisa_tersedia'] > 0): ?>
-                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#102b4e] hover:bg-[#1a3d6b] !text-white inline-flex items-center gap-1 shadow-2xs transition">
+                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold bg-[#102b4e] hover:bg-[#1a3d6b] !text-white inline-flex items-center gap-1 shadow-2xs transition whitespace-nowrap">
                                                             <span class="!text-white font-bold">Pinjam</span>
-                                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 !text-white"></i>
+                                                            <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5 !text-white"></i>
                                                         </a>
                                                     <?php else: ?>
-                                                        <span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-md">Habis</span>
+                                                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md whitespace-nowrap">Habis</span>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
                                             </div>

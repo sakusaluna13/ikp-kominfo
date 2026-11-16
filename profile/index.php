@@ -145,29 +145,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <main class="flex-1 flex flex-col gap-6 max-w-2xl w-full mx-auto">
 
             <!-- HEADER PROFIL -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-6 flex flex-col sm:flex-row items-center gap-6">
-                <!-- FOTO PROFIL -->
-                <div class="relative shrink-0">
-                    <div class="w-24 h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border-4 border-white shadow-md" id="photoPreviewWrap">
-                        <?php if ($user['foto']): ?>
-                            <img id="photoPreview" src="<?= e($user['foto']) ?>?v=<?= time() ?>" class="w-full h-full object-cover" alt="Foto Profil">
-                        <?php else: ?>
-                            <span id="photoInitial" class="text-3xl font-extrabold text-blue-700"><?= e(strtoupper(substr($user['nama'], 0, 1))) ?></span>
-                            <img id="photoPreview" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
-                        <?php endif; ?>
-                    </div>
-                    <label for="fotoInput" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#102b4e] text-white flex items-center justify-center cursor-pointer hover:bg-[#1a3d6b] shadow transition">
-                        <i data-lucide="camera" class="w-4 h-4"></i>
-                    </label>
+            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
+                <!-- BANNER ATAS -->
+                <div class="h-24 sm:h-28 bg-gradient-to-r from-[#102b4e] to-[#1a4a7a] relative">
+                    <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
                 </div>
 
-                <div class="text-center sm:text-left">
-                    <h2 class="text-xl font-extrabold text-[#102b4e]"><?= e($user['nama']) ?></h2>
-                    <p class="text-xs text-slate-400 mt-0.5">@<?= e($user['username']) ?> · <?= ucfirst($user['role']) ?></p>
-                    <span class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        Akun Aktif
-                    </span>
+                <!-- INFO PROFIL -->
+                <div class="px-5 pb-5">
+                    <!-- FOTO & NAMA -->
+                    <div class="flex flex-col sm:flex-row sm:items-end gap-3 -mt-10 sm:-mt-12">
+                        <!-- FOTO -->
+                        <div class="relative shrink-0 self-center sm:self-auto">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border-4 border-white shadow-lg" id="photoPreviewWrap">
+                                <?php if ($user['foto']): ?>
+                                    <img id="photoPreview" src="<?= e($user['foto']) ?>?v=<?= time() ?>" class="w-full h-full object-cover" alt="Foto Profil">
+                                <?php else: ?>
+                                    <span id="photoInitial" class="text-3xl font-extrabold text-blue-700"><?= e(strtoupper(substr($user['nama'], 0, 1))) ?></span>
+                                    <img id="photoPreview" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
+                                <?php endif; ?>
+                            </div>
+                            <label for="fotoInput" class="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-[#102b4e] text-white flex items-center justify-center cursor-pointer hover:bg-[#1a3d6b] shadow-md transition border-2 border-white" title="Ganti foto">
+                                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                            </label>
+                        </div>
+
+                        <!-- NAMA & ROLE -->
+                        <div class="text-center sm:text-left sm:pb-1 flex-1 min-w-0">
+                            <h2 class="text-base sm:text-xl font-extrabold text-[#102b4e] truncate"><?= e($user['nama']) ?></h2>
+                            <p class="text-xs text-slate-400 mt-0.5 truncate">@<?= e($user['username']) ?> · <?= ucfirst($user['role']) ?></p>
+                        </div>
+
+                        <!-- BADGE STATUS -->
+                        <div class="self-center sm:self-auto sm:pb-1 shrink-0">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Akun Aktif
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- DIVIDER INFO SINGKAT -->
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-slate-500">
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span><?= ucfirst($user['role']) ?></span>
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span>KOMINFO Prov. Sumut</span>
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span><?= e($user['username']) ?></span>
+                        </span>
+                    </div>
                 </div>
             </section>
 

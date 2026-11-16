@@ -153,18 +153,18 @@ $rows = $q->fetchAll();
                     </a>
                 </div>
 
-                <div class="overflow-x-auto -mx-4 sm:mx-0">
-                    <table class="w-full text-left text-xs border-collapse">
+                <div class="w-full overflow-hidden sm:overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse table-auto">
                         <thead>
                             <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider bg-slate-50/50 sm:bg-transparent">
-                                <th class="py-2.5 px-3 w-10 hidden sm:table-cell">No.</th>
-                                <th class="py-2.5 px-3">Peminjam</th>
-                                <th class="py-2.5 px-3">Peralatan</th>
-                                <th class="py-2.5 px-3 hidden md:table-cell">Kategori</th>
-                                <th class="py-2.5 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
-                                <th class="py-2.5 px-3 hidden lg:table-cell">Rencana Kembali</th>
-                                <th class="py-2.5 px-3 hidden md:table-cell">Durasi</th>
-                                <th class="py-2.5 px-3 text-right sm:text-left">Status</th>
+                                <th class="py-2 px-3 w-10 hidden sm:table-cell">No.</th>
+                                <th class="py-2 px-1.5 sm:px-3">Peminjam</th>
+                                <th class="py-2 px-1.5 sm:px-3">Peralatan</th>
+                                <th class="py-2 px-3 hidden md:table-cell">Kategori</th>
+                                <th class="py-2 px-3 hidden sm:table-cell">Tgl. Pinjam</th>
+                                <th class="py-2 px-3 hidden lg:table-cell">Rencana Kembali</th>
+                                <th class="py-2 px-3 hidden md:table-cell">Durasi</th>
+                                <th class="py-2 px-1.5 sm:px-3 text-right sm:text-left">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -189,20 +189,20 @@ $rows = $q->fetchAll();
                                     };
                                     ?>
                                     <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
-                                        <td class="py-2.5 px-3 font-bold text-slate-800">
-                                            <div class="truncate max-w-[130px] sm:max-w-none"><?= e($r['nama_peminjam']) ?></div>
-                                            <div class="text-[10px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></div>
+                                        <td class="py-2 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
+                                        <td class="py-2 px-1.5 sm:px-3 font-bold text-slate-800">
+                                            <div class="truncate max-w-[110px] sm:max-w-none text-xs"><?= e($r['nama_peminjam']) ?></div>
+                                            <div class="text-[9px] text-slate-400 font-normal sm:hidden"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></div>
                                         </td>
-                                        <td class="py-2.5 px-3 font-medium text-slate-700">
-                                            <div class="truncate max-w-[140px] sm:max-w-none"><?= e($r['nama_barang']) ?></div>
-                                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded inline-block mt-0.5"><?= (int) $r['jumlah'] ?> unit</span>
+                                        <td class="py-2 px-1.5 sm:px-3 font-medium text-slate-700">
+                                            <div class="truncate max-w-[120px] sm:max-w-none text-xs"><?= e($r['nama_barang']) ?></div>
+                                            <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.2 rounded inline-block mt-0.5 sm:hidden"><?= (int) $r['jumlah'] ?> unit</span>
                                         </td>
-                                        <td class="py-2.5 px-3 text-slate-500 hidden md:table-cell"><?= e($r['kategori']) ?></td>
-                                        <td class="py-2.5 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
-                                        <td class="py-2.5 px-3 text-slate-500 hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($r['tanggal_kembali'])) : '—' ?></td>
-                                        <td class="py-2.5 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
-                                        <td class="py-2.5 px-3 text-right sm:text-left">
+                                        <td class="py-2 px-3 text-slate-500 hidden md:table-cell"><?= e($r['kategori']) ?></td>
+                                        <td class="py-2 px-3 text-slate-500 hidden sm:table-cell"><?= date('d/m/Y', strtotime($r['tanggal_pinjam'])) ?></td>
+                                        <td class="py-2 px-3 text-slate-500 hidden lg:table-cell"><?= $r['tanggal_kembali'] ? date('d/m/Y', strtotime($row['tanggal_kembali'])) : '—' ?></td>
+                                        <td class="py-2 px-3 font-semibold text-slate-700 hidden md:table-cell"><?= hitung_durasi($r['tanggal_pinjam'], $r['tanggal_kembali']) ?> hari</td>
+                                        <td class="py-2 px-1.5 sm:px-3 text-right sm:text-left">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap <?= $badge ?>">
                                                 <?= e(ucwords($r['status'])) ?>
                                             </span>

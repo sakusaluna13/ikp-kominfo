@@ -47,39 +47,47 @@ $photoUrl = $_SESSION['user']['photo'] ?? '';
             <button 
                 type="button"
                 id="profileDropdownBtn"
-                class="flex items-center gap-2 p-1.5 pl-2.5 rounded-full bg-white border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition"
+                class="flex items-center gap-2.5 p-1 sm:py-1 sm:pl-1 sm:pr-3 rounded-full bg-white border border-slate-200 shadow-2xs hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all"
+                aria-label="Menu profil"
             >
-                <?php if ($photoUrl): ?>
-                    <img src="<?= e($photoUrl) ?>" class="w-8 h-8 rounded-full object-cover" alt="Foto Profil" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-extrabold text-xs items-center justify-center shrink-0 hidden">
-                        <?= e(strtoupper(substr($displayName, 0, 1))) ?>
-                    </div>
-                <?php else: ?>
-                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-extrabold text-xs flex items-center justify-center shrink-0">
-                        <?= e(strtoupper(substr($displayName, 0, 1))) ?>
-                    </div>
-                <?php endif; ?>
+                <div class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-slate-200/80 bg-slate-100 flex items-center justify-center">
+                    <?php if ($photoUrl): ?>
+                        <img src="<?= e($photoUrl) ?>" class="w-full h-full object-cover" alt="Foto Profil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full bg-[#102b4e] text-white font-extrabold text-xs items-center justify-center hidden">
+                            <?= e(strtoupper(substr($displayName, 0, 1))) ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="w-full h-full bg-[#102b4e] text-white font-extrabold text-xs flex items-center justify-center">
+                            <?= e(strtoupper(substr($displayName, 0, 1))) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
-                <div class="hidden sm:flex flex-col min-w-0 pr-1 text-left">
-                    <span class="text-xs font-bold text-slate-800 leading-tight truncate max-w-[100px]"><?= e($displayName) ?></span>
+                <div class="hidden sm:flex flex-col min-w-0 pr-0.5 text-left">
+                    <span class="text-xs font-bold text-slate-800 leading-tight truncate max-w-[110px]"><?= e($displayName) ?></span>
                     <span class="text-[10px] text-slate-400 leading-tight"><?= e($roleLabel) ?></span>
                 </div>
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 mr-1 hidden sm:block"></i>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 mr-0.5 hidden sm:block shrink-0"></i>
             </button>
 
             <!-- DROPDOWN MENU -->
             <div 
                 id="profileDropdown" 
-                class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl border border-slate-200 shadow-xl py-1.5 z-50"
+                class="hidden absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100"
             >
-                <a href="../profile/index.php" class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+                <div class="px-4 py-2.5 border-b border-slate-100 sm:hidden">
+                    <p class="text-xs font-bold text-[#102b4e] truncate"><?= e($displayName) ?></p>
+                    <p class="text-[10px] text-slate-400 truncate"><?= e($roleLabel) ?> · KOMINFO Sumut</p>
+                </div>
+
+                <a href="../profile/index.php" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <i data-lucide="user-circle" class="w-4 h-4 text-slate-400"></i>
-                    Edit Profil
+                    <span>Edit Profil</span>
                 </a>
                 <div class="border-t border-slate-100 my-1"></div>
-                <button type="button" data-modal-open="logoutModal" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
+                <button type="button" data-modal-open="logoutModal" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
-                    Keluar
+                    <span>Keluar Akun</span>
                 </button>
             </div>
         </div>
