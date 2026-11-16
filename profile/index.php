@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($errors as $err) {
         flash('error', $err);
-        break; // tampilkan satu error saja
+        break;
     }
 }
 ?>
@@ -144,136 +144,128 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <main class="flex-1 flex flex-col gap-6 max-w-2xl w-full mx-auto">
 
-            <!-- HEADER PROFIL -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-                <!-- BANNER ATAS -->
-                <div class="h-24 sm:h-28 bg-gradient-to-r from-[#102b4e] to-[#1a4a7a] relative">
-                    <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
-                </div>
-
-                <!-- INFO PROFIL -->
-                <div class="px-5 pb-5">
-                    <!-- FOTO & NAMA -->
-                    <div class="flex flex-col sm:flex-row sm:items-end gap-3 -mt-10 sm:-mt-12">
-                        <!-- FOTO -->
-                        <div class="relative shrink-0 self-center sm:self-auto">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border-4 border-white shadow-lg" id="photoPreviewWrap">
-                                <?php if ($user['foto']): ?>
-                                    <img id="photoPreview" src="<?= e($user['foto']) ?>?v=<?= time() ?>" class="w-full h-full object-cover" alt="Foto Profil">
-                                <?php else: ?>
-                                    <span id="photoInitial" class="text-3xl font-extrabold text-blue-700"><?= e(strtoupper(substr($user['nama'], 0, 1))) ?></span>
-                                    <img id="photoPreview" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
-                                <?php endif; ?>
-                            </div>
-                            <label for="fotoInput" class="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-[#102b4e] text-white flex items-center justify-center cursor-pointer hover:bg-[#1a3d6b] shadow-md transition border-2 border-white" title="Ganti foto">
-                                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-                            </label>
+            <!-- KARTU EDIT PROFIL -->
+            <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs p-5 sm:p-7">
+                
+                <!-- HEADER & FOTO PROFIL -->
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-100">
+                    <!-- FOTO DENGAN TOMBOL KAMERA -->
+                    <div class="relative shrink-0">
+                        <div class="w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center border-2 border-slate-200" id="photoPreviewWrap">
+                            <?php if ($user['foto']): ?>
+                                <img id="photoPreview" src="<?= e($user['foto']) ?>?v=<?= time() ?>" class="w-full h-full object-cover" alt="Foto Profil">
+                            <?php else: ?>
+                                <span id="photoInitial" class="text-3xl font-bold text-slate-600"><?= e(strtoupper(substr($user['nama'], 0, 1))) ?></span>
+                                <img id="photoPreview" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
+                            <?php endif; ?>
                         </div>
-
-                        <!-- NAMA & ROLE -->
-                        <div class="text-center sm:text-left sm:pb-1 flex-1 min-w-0">
-                            <h2 class="text-base sm:text-xl font-extrabold text-[#102b4e] truncate"><?= e($user['nama']) ?></h2>
-                            <p class="text-xs text-slate-400 mt-0.5 truncate">@<?= e($user['username']) ?> · <?= ucfirst($user['role']) ?></p>
-                        </div>
-
-                        <!-- BADGE STATUS -->
-                        <div class="self-center sm:self-auto sm:pb-1 shrink-0">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Akun Aktif
-                            </span>
-                        </div>
+                        <label for="fotoInput" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#102b4e] hover:bg-[#1a3d6b] text-white flex items-center justify-center cursor-pointer shadow transition border-2 border-white" title="Ganti foto profil">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                        </label>
                     </div>
 
-                    <!-- DIVIDER INFO SINGKAT -->
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-slate-500">
-                        <span class="flex items-center gap-1.5">
-                            <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400"></i>
-                            <span><?= ucfirst($user['role']) ?></span>
-                        </span>
-                        <span class="flex items-center gap-1.5">
-                            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400"></i>
-                            <span>KOMINFO Prov. Sumut</span>
-                        </span>
-                        <span class="flex items-center gap-1.5">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
-                            <span><?= e($user['username']) ?></span>
-                        </span>
+                    <!-- IDENTITAS SINGKAT -->
+                    <div class="text-center sm:text-left flex-1 min-w-0 pt-1">
+                        <h2 class="text-lg sm:text-xl font-bold text-[#102b4e] truncate"><?= e($user['nama']) ?></h2>
+                        <p class="text-xs text-slate-500 mt-0.5">@<?= e($user['username']) ?> · <?= ucfirst($user['role']) ?></p>
+                        <p class="text-[11px] text-slate-400 mt-1">Dinas Komunikasi dan Informatika Prov. Sumut</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- FORM EDIT PROFIL -->
-            <section class="bg-white rounded-2xl border border-slate-100 shadow-xs p-6">
-                <div class="mb-5">
-                    <span class="text-[10px] font-extrabold tracking-widest text-blue-600 uppercase">PENGATURAN</span>
-                    <h3 class="text-base font-bold text-[#102b4e]">Edit Informasi Profil</h3>
-                    <p class="text-xs text-slate-400">Perbarui nama, username, foto, dan password akun kamu.</p>
-                </div>
-
-                <form method="post" enctype="multipart/form-data" class="flex flex-col gap-5">
+                <!-- FORM EDIT PROFIL -->
+                <form method="post" enctype="multipart/form-data" class="flex flex-col gap-5 pt-6">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-                    
-                    <!-- Hidden input foto -->
                     <input type="file" id="fotoInput" name="foto" accept="image/jpeg,image/png,image/webp" class="hidden">
 
-                    <!-- Nama Lengkap -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-700">Nama Lengkap *</label>
-                        <input 
-                            type="text" 
-                            name="nama" 
-                            value="<?= e($user['nama']) ?>"
-                            class="h-11 px-4 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                            required minlength="3"
-                        >
+                    <!-- DATA UTAMA -->
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-1.5">
+                            <label for="nama" class="text-xs font-bold text-slate-700">Nama Lengkap *</label>
+                            <input 
+                                type="text" 
+                                id="nama"
+                                name="nama" 
+                                value="<?= e($user['nama']) ?>"
+                                class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#102b4e] focus:ring-1 focus:ring-[#102b4e] transition"
+                                placeholder="Masukkan nama lengkap"
+                                required 
+                                minlength="3"
+                            >
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label for="username" class="text-xs font-bold text-slate-700">Username *</label>
+                            <input 
+                                type="text" 
+                                id="username"
+                                name="username" 
+                                value="<?= e($user['username']) ?>"
+                                class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#102b4e] focus:ring-1 focus:ring-[#102b4e] transition"
+                                placeholder="Masukkan username"
+                                required
+                            >
+                            <span class="text-[10px] text-slate-400">4–50 karakter (huruf, angka, titik, strip).</span>
+                        </div>
                     </div>
 
-                    <!-- Username -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-700">Username *</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            value="<?= e($user['username']) ?>"
-                            class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                            required
-                        >
-                        <span class="text-[10px] text-slate-400">4–50 karakter, huruf/angka/titik/strip saja.</span>
-                    </div>
+                    <!-- GANTI SANDI -->
+                    <div class="border-t border-slate-100 pt-5 flex flex-col gap-4">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-700">Ganti Sandi</h3>
+                            <p class="text-[11px] text-slate-400">Kosongkan kolom ini jika tidak ingin mengganti sandi.</p>
+                        </div>
 
-                    <!-- Ganti Password (Opsional) -->
-                    <div class="border-t border-slate-100 pt-4">
-                        <p class="text-xs font-bold text-slate-500 mb-3">Ganti Password <span class="font-normal text-slate-400">(kosongkan jika tidak ingin mengganti)</span></p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-xs font-bold text-slate-700">Password Baru</label>
-                                <input 
-                                    type="password" 
-                                    name="password"
-                                    class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                                    placeholder="Masukkan sandi baru"
-                                >
+                                <label for="password" class="text-xs font-medium text-slate-600">Sandi Baru</label>
+                                <div class="relative flex items-center">
+                                    <input 
+                                        type="password" 
+                                        id="password" 
+                                        name="password"
+                                        minlength="8"
+                                        class="w-full h-10 sm:h-11 px-3.5 pr-10 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#102b4e] focus:ring-1 focus:ring-[#102b4e] transition"
+                                        placeholder="Masukkan sandi baru"
+                                    >
+                                    <button type="button" data-toggle-password="password" class="absolute right-3 text-slate-400 hover:text-slate-600 p-1" aria-label="Lihat sandi">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
                             </div>
+
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-xs font-bold text-slate-700">Konfirmasi Password</label>
-                                <input 
-                                    type="password" 
-                                    name="confirm_password"
-                                    class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                                    placeholder="Ulangi sandi baru"
-                                >
+                                <label for="confirm_password" class="text-xs font-medium text-slate-600">Ulangi Sandi Baru</label>
+                                <div class="relative flex items-center">
+                                    <input 
+                                        type="password" 
+                                        id="confirm_password" 
+                                        name="confirm_password"
+                                        minlength="8"
+                                        class="w-full h-10 sm:h-11 px-3.5 pr-10 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#102b4e] focus:ring-1 focus:ring-[#102b4e] transition"
+                                        placeholder="Ulangi sandi baru"
+                                    >
+                                    <button type="button" data-toggle-password="confirm_password" class="absolute right-3 text-slate-400 hover:text-slate-600 p-1" aria-label="Lihat sandi">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TOMBOL -->
-                    <div class="flex items-center gap-2.5 pt-2">
-                        <button type="submit" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#102b4e] hover:bg-[#1a3d6b] !text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition whitespace-nowrap">
-                            <i data-lucide="save" class="w-4 h-4 !text-white"></i>
-                            <span class="!text-white whitespace-nowrap">Simpan Perubahan</span>
+                    <!-- TOMBOL AKSI -->
+                    <div class="flex items-center gap-3 pt-3">
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition whitespace-nowrap"
+                        >
+                            <i data-lucide="save" class="w-4 h-4 text-white"></i>
+                            <span class="text-white">Simpan Perubahan</span>
                         </button>
-                        <a href="../dashboard/index.php" class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition whitespace-nowrap">
+
+                        <a 
+                            href="../dashboard/index.php" 
+                            class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition whitespace-nowrap"
+                        >
                             Batal
                         </a>
                     </div>
@@ -287,19 +279,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="../assets/js/script.js"></script>
     <script>
-    // PREVIEW FOTO SEBELUM UPLOAD
-    document.getElementById('fotoInput')?.addEventListener('change', function() {
+    const fotoInput = document.getElementById('fotoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoInitial = document.getElementById('photoInitial');
+
+    fotoInput?.addEventListener('change', function() {
         const file = this.files[0];
         if (!file) return;
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            const preview = document.getElementById('photoPreview');
-            const initial = document.getElementById('photoInitial');
-            if (preview) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
+            if (photoPreview) {
+                photoPreview.src = e.target.result;
+                photoPreview.classList.remove('hidden');
             }
-            if (initial) initial.classList.add('hidden');
+            if (photoInitial) photoInitial.classList.add('hidden');
         };
         reader.readAsDataURL(file);
     });
