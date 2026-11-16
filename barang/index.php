@@ -11,6 +11,13 @@ $pageSubtitle = 'MASTER INVENTARIS';
 
 $userRole = $_SESSION['user']['role'] ?? 'peminjam';
 
+// pastikan kolom foto pada tabel barang tersedia
+try {
+    $pdo->exec("ALTER TABLE barang ADD COLUMN foto VARCHAR(255) NULL DEFAULT NULL");
+} catch (PDOException $e) {
+    // abaikan jika kolom sudah ada
+}
+
 // proses simpan, edit, dan hapus barang
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -27,12 +34,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($nama_barang === '' || $kategori === '') {
             flash('error', 'Nama barang dan kategori wajib diisi.');
         } else {
-            $stmt = $pdo->prepare('INSERT INTO barang (nama_barang, kategori, jumlah, kondisi) VALUES (:nama, :kategori, :jumlah, :kondisi)');
+            // kelola unggah foto barang
+            $fotoPath = null;
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['foto'];
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->file($file['tmp_name']);
+
+                if (in_array($mimeType, $allowedTypes, true) && $file['size'] <= 2 * 1024 * 1024) {
+                    $uploadDir = __DIR__ . '/../assets/images/barang/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+                    $ext = match($mimeType) {
+                        'image/png' => 'png',
+                        'image/webp' => 'webp',
+                        default => 'jpg'
+                    };
+                    $filename = 'barang_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                    if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+                        $fotoPath = '../assets/images/barang/' . $filename;
+                    }
+                }
+            }
+
+            $stmt = $pdo->prepare('INSERT INTO barang (nama_barang, kategori, jumlah, kondisi, foto) VALUES (:nama, :kategori, :jumlah, :kondisi, :foto)');
             $stmt->execute([
                 'nama' => $nama_barang,
                 'kategori' => $kategori,
                 'jumlah' => $jumlah,
                 'kondisi' => $kondisi,
+                'foto' => $fotoPath,
             ]);
             flash('success', 'Barang "' . $nama_barang . '" berhasil ditambahkan.');
         }
@@ -51,12 +84,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id <= 0 || $nama_barang === '' || $kategori === '') {
             flash('error', 'Data perubahan tidak valid.');
         } else {
-            $stmt = $pdo->prepare('UPDATE barang SET nama_barang = :nama, kategori = :kategori, jumlah = :jumlah, kondisi = :kondisi WHERE id = :id');
+            // ambil data foto lama
+            $stmtCek = $pdo->prepare('SELECT foto FROM barang WHERE id = :id');
+            $stmtCek->execute(['id' => $id]);
+            $currentFoto = $stmtCek->fetchColumn() ?: null;
+            $fotoPath = $currentFoto;
+
+            // opsi hapus foto jika dicentang
+            if (!empty($_POST['hapus_foto']) && $_POST['hapus_foto'] === '1') {
+                if ($currentFoto) {
+                    $oldReal = __DIR__ . '/' . $currentFoto;
+                    if (is_file($oldReal)) {
+                        @unlink($oldReal);
+                    }
+                }
+                $fotoPath = null;
+            }
+
+            // proses foto baru jika diunggah
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['foto'];
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->file($file['tmp_name']);
+
+                if (in_array($mimeType, $allowedTypes, true) && $file['size'] <= 2 * 1024 * 1024) {
+                    $uploadDir = __DIR__ . '/../assets/images/barang/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+                    $ext = match($mimeType) {
+                        'image/png' => 'png',
+                        'image/webp' => 'webp',
+                        default => 'jpg'
+                    };
+                    $filename = 'barang_' . $id . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+                        if ($currentFoto) {
+                            $oldReal = __DIR__ . '/' . $currentFoto;
+                            if (is_file($oldReal)) {
+                                @unlink($oldReal);
+                            }
+                        }
+                        $fotoPath = '../assets/images/barang/' . $filename;
+                    }
+                }
+            }
+
+            $stmt = $pdo->prepare('UPDATE barang SET nama_barang = :nama, kategori = :kategori, jumlah = :jumlah, kondisi = :kondisi, foto = :foto WHERE id = :id');
             $stmt->execute([
                 'nama' => $nama_barang,
                 'kategori' => $kategori,
                 'jumlah' => $jumlah,
                 'kondisi' => $kondisi,
+                'foto' => $fotoPath,
                 'id' => $id,
             ]);
             flash('success', 'Data barang berhasil diperbarui.');
@@ -75,8 +156,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('error', 'Barang tidak dapat dihapus karena masih sedang dipinjam.');
         } else {
             try {
+                $stmtFoto = $pdo->prepare('SELECT foto FROM barang WHERE id = :id');
+                $stmtFoto->execute(['id' => $id]);
+                $fotoHapus = $stmtFoto->fetchColumn();
+
                 $stmt = $pdo->prepare('DELETE FROM barang WHERE id = :id');
                 $stmt->execute(['id' => $id]);
+
+                if ($fotoHapus) {
+                    $fileDel = __DIR__ . '/' . $fotoHapus;
+                    if (is_file($fileDel)) {
+                        @unlink($fileDel);
+                    }
+                }
                 flash('success', 'Barang berhasil dihapus.');
             } catch (PDOException $e) {
                 flash('error', 'Barang memiliki riwayat transaksi peminjaman sehingga tidak dapat dihapus.');
@@ -99,6 +191,7 @@ $sql = "
         b.kategori,
         b.jumlah,
         b.kondisi,
+        b.foto,
         b.created_at,
         COALESCE(p.dipinjam_count, 0) AS sedang_dipinjam,
         GREATEST(0, b.jumlah - COALESCE(p.dipinjam_count, 0)) AS sisa_tersedia
@@ -269,10 +362,21 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                     <tr class="hover:bg-slate-50/60 transition">
                                         <td class="py-2.5 px-3 text-slate-400 hidden sm:table-cell"><?= $i + 1 ?></td>
                                         <td class="py-2 px-1.5 sm:py-2.5 sm:px-3 font-bold text-slate-800">
-                                            <div class="truncate max-w-[120px] sm:max-w-none text-xs sm:text-[13px]"><?= e($b['nama_barang']) ?></div>
-                                            <div class="flex items-center gap-1 mt-0.5 sm:hidden text-[9px]">
-                                                <span class="text-slate-400 truncate max-w-[65px]"><?= e($b['kategori']) ?></span>
-                                                <span class="px-1 py-0.2 rounded font-semibold whitespace-nowrap text-[8.5px] <?= $kondisiBadge ?>"><?= e($b['kondisi']) ?></span>
+                                            <div class="flex items-center gap-2.5 sm:gap-3">
+                                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/70 flex items-center justify-center text-slate-400">
+                                                    <?php if (!empty($b['foto'])): ?>
+                                                        <img src="<?= e($b['foto']) ?>" alt="<?= e($b['nama_barang']) ?>" class="w-full h-full object-cover" onerror="this.remove();">
+                                                    <?php else: ?>
+                                                        <i data-lucide="package" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="truncate max-w-[120px] sm:max-w-none text-xs sm:text-[13px] text-slate-800 font-bold"><?= e($b['nama_barang']) ?></div>
+                                                    <div class="flex items-center gap-1 mt-0.5 sm:hidden text-[9px]">
+                                                        <span class="text-slate-400 truncate max-w-[65px]"><?= e($b['kategori']) ?></span>
+                                                        <span class="px-1 py-0.2 rounded font-semibold whitespace-nowrap text-[8.5px] <?= $kondisiBadge ?>"><?= e($b['kondisi']) ?></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="py-2.5 px-3 text-slate-500 font-medium hidden md:table-cell"><?= e($b['kategori']) ?></td>
@@ -312,6 +416,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                         data-kategori="<?= e($b['kategori']) ?>"
                                                         data-jumlah="<?= (int) $b['jumlah'] ?>"
                                                         data-kondisi="<?= e($b['kondisi']) ?>"
+                                                        data-foto="<?= e($b['foto'] ?? '') ?>"
                                                         onclick="editBarangDariBtn(this)"
                                                     >
                                                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
@@ -371,7 +476,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </button>
                 </div>
 
-                <form method="post"
+                <form method="post" enctype="multipart/form-data"
                     data-confirm="Simpan peralatan baru ini ke inventaris multimedia?"
                     data-confirm-title="Tambah Peralatan"
                     data-confirm-icon="question"
@@ -418,6 +523,19 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                         </select>
                     </div>
 
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-700">Foto Peralatan (Opsional)</label>
+                        <div class="flex items-center gap-3">
+                            <div id="previewTambahWrapper" class="w-12 h-12 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center shrink-0 overflow-hidden text-slate-400">
+                                <i data-lucide="image" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <input type="file" name="foto" id="inputFotoTambah" accept="image/png, image/jpeg, image/webp" class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#102b4e] hover:file:bg-blue-100 cursor-pointer" onchange="pratinjauFoto(this, 'previewTambahWrapper')">
+                                <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG, atau WebP. Maks 2 MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 mt-2">
                         <button type="button" data-modal-close class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
                             Batal
@@ -440,7 +558,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </button>
                 </div>
 
-                <form method="post" id="formEditBarang"
+                <form method="post" id="formEditBarang" enctype="multipart/form-data"
                     data-confirm="Simpan perubahan data peralatan ini?"
                     data-confirm-title="Perbarui Data"
                     data-confirm-icon="question"
@@ -477,6 +595,25 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                         </select>
                     </div>
 
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-700">Foto Peralatan (Opsional)</label>
+                        <div class="flex items-center gap-3">
+                            <div id="edit_foto_preview" class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden text-slate-400">
+                                <i data-lucide="image" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <input type="file" name="foto" id="edit_input_foto" accept="image/png, image/jpeg, image/webp" class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#102b4e] hover:file:bg-blue-100 cursor-pointer" onchange="pratinjauFoto(this, 'edit_foto_preview')">
+                                <div id="wrapperHapusFoto" class="hidden items-center gap-1.5 mt-1.5">
+                                    <label class="inline-flex items-center gap-1.5 text-[11px] text-rose-600 font-semibold cursor-pointer">
+                                        <input type="checkbox" name="hapus_foto" value="1" id="checkHapusFoto" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                                        Hapus foto saat ini
+                                    </label>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Biarkan kosong jika tidak ingin mengubah foto.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 mt-2">
                         <button type="button" data-modal-close class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
                             Batal
@@ -497,6 +634,26 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
             document.getElementById('edit_jumlah').value = btn.dataset.jumlah;
             document.getElementById('edit_kondisi').value = btn.dataset.kondisi;
             
+            // reset input file dan opsi hapus foto
+            const fileInput = document.getElementById('edit_input_foto');
+            if (fileInput) fileInput.value = '';
+            const chkHapus = document.getElementById('checkHapusFoto');
+            if (chkHapus) chkHapus.checked = false;
+
+            const preview = document.getElementById('edit_foto_preview');
+            const wrapperHapus = document.getElementById('wrapperHapusFoto');
+            const fotoUrl = btn.dataset.foto;
+
+            if (fotoUrl && fotoUrl.trim() !== '') {
+                preview.innerHTML = `<img src="${fotoUrl}" class="w-full h-full object-cover">`;
+                if (wrapperHapus) wrapperHapus.classList.remove('hidden');
+                if (wrapperHapus) wrapperHapus.classList.add('flex');
+            } else {
+                preview.innerHTML = `<i data-lucide="image" class="w-5 h-5 text-slate-400"></i>`;
+                if (wrapperHapus) wrapperHapus.classList.add('hidden');
+                if (wrapperHapus) wrapperHapus.classList.remove('flex');
+            }
+
             const modal = document.getElementById('modalEditBarang');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -506,19 +663,15 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
             }
         }
 
-        function editBarang(item) {
-            document.getElementById('edit_id').value = item.id;
-            document.getElementById('edit_nama').value = item.nama_barang;
-            document.getElementById('edit_kategori').value = item.kategori;
-            document.getElementById('edit_jumlah').value = item.jumlah;
-            document.getElementById('edit_kondisi').value = item.kondisi;
-            
-            const modal = document.getElementById('modalEditBarang');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                modal.style.display = 'flex';
-                if (window.lucide) lucide.createIcons();
+        function pratinjauFoto(input, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
         </script>

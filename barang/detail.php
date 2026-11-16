@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
 // data barang dan status ketersediaan
 $stmt = $pdo->prepare("
     SELECT
-        b.id, b.nama_barang, b.kategori, b.jumlah, b.kondisi, b.created_at,
+        b.id, b.nama_barang, b.kategori, b.jumlah, b.kondisi, b.foto, b.created_at,
         COALESCE(SUM(CASE WHEN p.status = 'dipinjam' THEN p.jumlah ELSE 0 END), 0) AS sedang_dipinjam,
         GREATEST(0, b.jumlah - COALESCE(SUM(CASE WHEN p.status = 'dipinjam' THEN p.jumlah ELSE 0 END), 0)) AS sisa_tersedia
     FROM barang b
@@ -186,8 +186,12 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
             <!-- rincian barang -->
             <div class="p-5">
                 <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <i data-lucide="package" class="w-8 h-8 text-slate-400"></i>
+                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden border border-slate-200/70">
+                        <?php if (!empty($barang['foto'])): ?>
+                            <img src="<?= e($barang['foto']) ?>" alt="<?= e($barang['nama_barang']) ?>" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <i data-lucide="package" class="w-8 h-8 text-slate-400"></i>
+                        <?php endif; ?>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h1 class="text-lg font-bold text-slate-900 leading-tight"><?= e($barang['nama_barang']) ?></h1>

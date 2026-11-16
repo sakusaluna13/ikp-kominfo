@@ -23,7 +23,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_item') {
 
     $stmt = $pdo->prepare("
         SELECT
-            b.id, b.nama_barang, b.kategori, b.jumlah, b.kondisi,
+            b.id, b.nama_barang, b.kategori, b.jumlah, b.kondisi, b.foto,
             COALESCE(SUM(CASE WHEN p.status = 'dipinjam' THEN p.jumlah ELSE 0 END), 0) AS sedang_dipinjam,
             GREATEST(0, b.jumlah - COALESCE(SUM(CASE WHEN p.status = 'dipinjam' THEN p.jumlah ELSE 0 END), 0)) AS sisa_tersedia
         FROM barang b
@@ -54,6 +54,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_item') {
             'nama_barang'     => $item['nama_barang'],
             'kategori'        => $item['kategori'],
             'kondisi'         => $item['kondisi'],
+            'foto'            => $item['foto'] ?: null,
             'total_jumlah'    => (int) $item['jumlah'],
             'sedang_dipinjam' => (int) $item['sedang_dipinjam'],
             'sisa_tersedia'   => (int) $item['sisa_tersedia'],
@@ -288,7 +289,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 
                 <!-- nama dan kategori -->
                 <div class="flex items-start gap-3.5">
-                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
+                    <div id="modalBarangImgWrapper" class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden border border-slate-200/60">
                         <i data-lucide="package" class="w-7 h-7 text-slate-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -636,6 +637,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         document.getElementById('statDipinjam').textContent = item.sedang_dipinjam;
         document.getElementById('statTersedia').textContent = item.sisa_tersedia;
         document.getElementById('modalMaxKet').textContent = 'Maks. ' + item.sisa_tersedia + ' unit tersedia';
+
+        const imgWrapper = document.getElementById('modalBarangImgWrapper');
+        if (imgWrapper) {
+            if (item.foto) {
+                imgWrapper.innerHTML = `<img src="${item.foto}" alt="${item.nama_barang}" class="w-full h-full object-cover">`;
+            } else {
+                imgWrapper.innerHTML = `<i data-lucide="package" class="w-7 h-7 text-slate-500"></i>`;
+            }
+        }
 
         const banner = document.getElementById('modalStatusBanner');
         const bannerText = document.getElementById('modalStatusBannerText');
