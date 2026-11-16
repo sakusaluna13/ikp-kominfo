@@ -202,6 +202,7 @@ function bukaModalLogout(e) {
     if (m) {
         m.classList.remove('hidden');
         m.classList.add('flex');
+        m.style.display = 'flex';
         if (window.lucide) lucide.createIcons();
     }
 }
@@ -210,6 +211,7 @@ function tutupModalLogout() {
     if (m) {
         m.classList.add('hidden');
         m.classList.remove('flex');
+        m.style.display = 'none';
     }
 }
 document.addEventListener('keydown', function(e) {

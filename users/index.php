@@ -307,7 +307,7 @@ $userList = $stmt->fetchAll();
                                                 <div class="inline-flex items-center justify-end gap-1">
 
                                                     <!-- toggle status -->
-                                                    <form method="post" class="m-0 inline">
+                                                    <form method="post" data-confirm="Apakah Anda yakin ingin <?= $u['status'] === 'aktif' ? 'menonaktifkan' : 'mengaktifkan' ?> akun pengguna <?= e($u['nama']) ?>?" data-confirm-title="Ubah Status Pengguna" data-confirm-icon="question" data-confirm-btn="Ya, Ubah Status" data-confirm-color="<?= $u['status'] === 'aktif' ? '#e11d48' : '#059669' ?>" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="toggle_status">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -330,14 +330,16 @@ $userList = $stmt->fetchAll();
                                                     <!-- reset password -->
                                                     <button
                                                         type="button"
-                                                        onclick="bukaResetPassword(<?= $u['id'] ?>, '<?= e($u['nama']) ?>')"
+                                                        data-id="<?= (int) $u['id'] ?>"
+                                                        data-nama="<?= e($u['nama']) ?>"
+                                                        onclick="bukaResetPasswordDariBtn(this)"
                                                         title="Reset Password"
                                                         class="p-1.5 rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
                                                         <i data-lucide="key" class="w-3.5 h-3.5"></i>
                                                     </button>
 
                                                     <!-- hapus akun -->
-                                                    <form method="post" onsubmit="return confirm('Hapus pengguna <?= e($u['nama']) ?>?')" class="m-0 inline">
+                                                    <form method="post" data-confirm="Hapus akun pengguna <?= e($u['nama']) ?> dari sistem?" data-confirm-title="Hapus Pengguna" data-confirm-icon="warning" data-confirm-btn="Ya, Hapus Akun" data-confirm-color="#e11d48" class="m-0 inline">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
                                                         <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -378,7 +380,13 @@ $userList = $stmt->fetchAll();
                 </button>
             </div>
 
-            <form method="post" class="p-6 space-y-4">
+            <form method="post"
+                data-confirm="Daftarkan pengguna baru ini ke dalam sistem?"
+                data-confirm-title="Tambah Pengguna"
+                data-confirm-icon="question"
+                data-confirm-btn="Simpan Akun"
+                data-confirm-color="#102b4e"
+                class="p-6 space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="action" value="tambah">
 
@@ -447,7 +455,13 @@ $userList = $stmt->fetchAll();
                 </button>
             </div>
 
-            <form method="post" class="p-6 space-y-4">
+            <form method="post"
+                data-confirm="Apakah Anda yakin ingin mengatur ulang kata sandi pengguna ini?"
+                data-confirm-title="Reset Password"
+                data-confirm-icon="question"
+                data-confirm-btn="Ya, Reset Sandi"
+                data-confirm-color="#102b4e"
+                class="p-6 space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="action" value="reset_password">
                 <input type="hidden" name="id" id="reset_user_id">
@@ -478,14 +492,21 @@ $userList = $stmt->fetchAll();
     </div>
 
     <script>
+    function bukaResetPasswordDariBtn(btn) {
+        bukaResetPassword(btn.dataset.id, btn.dataset.nama);
+    }
+
     function bukaResetPassword(userId, userName) {
         document.getElementById('reset_user_id').value = userId;
         document.getElementById('reset_user_nama').textContent = userName;
 
         const modal = document.getElementById('modalResetPassword');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        if (window.lucide) lucide.createIcons();
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.style.display = 'flex';
+            if (window.lucide) lucide.createIcons();
+        }
     }
     </script>
 

@@ -10,6 +10,13 @@ if ($id <= 0) { header('Location: ../dashboard/index.php'); exit; }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     verify_csrf();
 
+    // admin tidak boleh meminjam barang untuk diri sendiri
+    if (($_SESSION['user']['role'] ?? '') === 'admin') {
+        flash('error', 'Administrator tidak diizinkan meminjam barang. Pengajuan peminjaman hanya untuk akun staf/peminjam.');
+        header('Location: detail.php?id=' . $id);
+        exit;
+    }
+
     $userId     = (int) $_SESSION['user']['id'];
     $barangId   = (int) ($_POST['barang_id'] ?? 0);
     $tglKembali = trim((string) ($_POST['tanggal_kembali'] ?? ''));
@@ -262,6 +269,26 @@ if ($flashMsg) { unset($_SESSION['flash_message'], $_SESSION['flash_type']); }
                             Stok habis — tidak tersedia
                         </div>
                     <?php endif; ?>
+                <?php elseif (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+                    <div class="mt-4 p-4 rounded-xl bg-blue-50/80 border border-blue-200/80 flex flex-col gap-2.5">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-blue-700 shrink-0"></i>
+                            <span class="text-xs font-bold text-[#102b4e]">Mode Administrator</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">
+                            Akun Administrator bertugas mengelola inventaris dan menyetujui peminjaman. Pengajuan peminjaman hanya dilakukan oleh akun staf/peminjam.
+                        </p>
+                        <div class="flex gap-2 pt-1">
+                            <a href="index.php" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#102b4e] text-white hover:bg-[#1a3d6b] transition flex-1">
+                                <i data-lucide="box" class="w-3.5 h-3.5"></i>
+                                <span>Kelola di Inventaris</span>
+                            </a>
+                            <a href="../peminjaman/index.php" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition flex-1">
+                                <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                                <span>Catat Transaksi</span>
+                            </a>
+                        </div>
+                    </div>
                 <?php elseif (!isset($_SESSION['user'])): ?>
                     <a href="../auth/login.php"
                        class="mt-4 w-full flex items-center justify-center gap-2 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold py-3 rounded-xl transition text-sm">

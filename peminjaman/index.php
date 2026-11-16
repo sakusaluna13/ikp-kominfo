@@ -20,6 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ajukan peminjaman oleh peminjam
     if ($action === 'ajukan_peminjam') {
+        if ($userRole === 'admin') {
+            flash('error', 'Administrator tidak diizinkan meminjam barang untuk diri sendiri. Gunakan formulir di bawah untuk mencatat peminjaman staf.');
+            header('Location: index.php');
+            exit;
+        }
+
         $barang_id = (int) ($_POST['barang_id'] ?? 0);
         $jumlah = max(1, (int) ($_POST['jumlah'] ?? 1));
         $tanggal_pinjam = trim((string) ($_POST['tanggal_pinjam'] ?? date('Y-m-d')));
@@ -182,7 +188,7 @@ $barangTersedia = $pdo->query("
 
 $userList = [];
 if ($userRole === 'admin') {
-    $userList = $pdo->query("SELECT id, nama, username FROM users WHERE status = 'aktif' ORDER BY nama ASC")->fetchAll();
+    $userList = $pdo->query("SELECT id, nama, username FROM users WHERE status = 'aktif' AND role = 'peminjam' ORDER BY nama ASC")->fetchAll();
 }
 
 $pengajuanStmt = $pdo->prepare("
@@ -258,7 +264,13 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                     </span>
                 </div>
 
-                <form method="post" class="flex flex-col gap-4">
+                <form method="post"
+                    data-confirm="<?= $userRole === 'admin' ? 'Catat transaksi peminjaman barang ini untuk staf terpilih? Unit akan langsung dipotong dari stok.' : 'Kirim pengajuan peminjaman barang ini?' ?>"
+                    data-confirm-title="<?= $userRole === 'admin' ? 'Catat Peminjaman' : 'Ajukan Peminjaman' ?>"
+                    data-confirm-icon="question"
+                    data-confirm-btn="<?= $userRole === 'admin' ? 'Catat Sekarang' : 'Kirim Pengajuan' ?>"
+                    data-confirm-color="#102b4e"
+                    class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="<?= $userRole === 'admin' ? 'catat_admin' : 'ajukan_peminjam' ?>">
 
@@ -384,7 +396,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                             <div class="inline-flex items-center gap-1 justify-end">
                                                 <?php if ($userRole === 'admin'): ?>
                                                     <!-- setujui -->
-                                                    <form method="post" class="inline m-0">
+                                                    <form method="post" data-confirm="Setujui pengajuan peminjaman barang ini? Unit akan otomatis dipotong dari stok inventaris." data-confirm-title="Setujui Peminjaman" data-confirm-icon="question" data-confirm-btn="Ya, Setujui" data-confirm-color="#059669" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="setujui">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
@@ -395,7 +407,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                     </form>
 
                                                     <!-- tolak -->
-                                                    <form method="post" onsubmit="return confirm('Tolak permohonan peminjaman ini?');" class="inline m-0">
+                                                    <form method="post" data-confirm="Tolak permohonan peminjaman ini?" data-confirm-title="Tolak Peminjaman" data-confirm-icon="warning" data-confirm-btn="Tolak Pengajuan" data-confirm-color="#e11d48" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="tolak">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">
@@ -406,7 +418,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                                                     </form>
                                                 <?php else: ?>
                                                     <!-- batalkan pengajuan -->
-                                                    <form method="post" onsubmit="return confirm('Batalkan pengajuan ini?');" class="inline m-0">
+                                                    <form method="post" data-confirm="Batalkan pengajuan peminjaman ini?" data-confirm-title="Batalkan Pengajuan" data-confirm-icon="warning" data-confirm-btn="Ya, Batalkan" data-confirm-color="#e11d48" class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="batalkan_pengajuan">
                                                         <input type="hidden" name="peminjaman_id" value="<?= $row['id'] ?>">

@@ -68,6 +68,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_item') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajukan_scan') {
     verify_csrf();
 
+    if ($userRole === 'admin') {
+        flash('error', 'Administrator tidak diizinkan mengajukan peminjaman. Scan QR pada akun Admin hanya untuk mencari data dan memeriksa status barang.');
+        header('Location: scan.php');
+        exit;
+    }
+
     $barangId    = (int) ($_POST['barang_id'] ?? 0);
     $jumlah      = max(1, (int) ($_POST['jumlah'] ?? 1));
     $tglPinjam   = date('Y-m-d');
@@ -330,6 +336,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <span>Anda sudah memiliki pengajuan aktif untuk barang ini.</span>
                     </div>
 
+                    <!-- panel info administrator (khusus admin) -->
+                    <div id="modalAdminInfo" class="hidden p-4 rounded-xl bg-blue-50/80 border border-blue-200 text-xs text-[#102b4e] flex flex-col gap-2.5">
+                        <div class="flex items-center gap-2 font-bold">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-blue-700"></i>
+                            <span>Mode Administrator</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">
+                            Data barang berhasil ditemukan. Akun Admin bertugas memantau ketersediaan fisik. Peminjaman hanya dilakukan oleh akun peminjam.
+                        </p>
+                        <div class="flex items-center gap-2 pt-1">
+                            <a id="btnAdminDetailBarang" href="#" class="flex-1 text-center py-2.5 px-3 rounded-xl bg-[#102b4e] text-white font-bold text-xs hover:bg-[#1a3d6b] transition shadow-2xs">
+                                Detail Lengkap
+                            </a>
+                            <a href="index.php" class="flex-1 text-center py-2.5 px-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition">
+                                Kelola Inventaris
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- input peminjaman -->
                     <div id="modalFormFields" class="space-y-3.5">
                         
@@ -553,7 +578,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         if (barangId <= 0) {
-            alert('QR Code terbaca: "' + rawText + '"\nNamun tidak ditemukan ID barang yang cocok.');
+            appAlert('QR Code terbaca, namun tidak ditemukan ID barang yang cocok.', 'warning', 'Barang Tidak Ditemukan');
             isProcessing = false;
             setScannerStatus('Kamera aktif — Siap memindai QR Code', 'emerald');
             return;
@@ -576,7 +601,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             })
             .catch(err => {
                 fileScanner.clear();
-                alert('Gambar tidak dapat terbaca sebagai QR Code. Pastikan foto QR cukup jelas dan tidak buram.');
+                appAlert('Gambar tidak dapat terbaca sebagai QR Code. Pastikan foto QR cukup jelas dan tidak buram.', 'warning', 'Gagal Membaca QR');
                 setScannerStatus('Kamera aktif — Siap memindai QR Code', 'emerald');
             });
     }
@@ -586,7 +611,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             .then(res => res.json())
             .then(data => {
                 if (!data.success) {
-                    alert(data.message || 'Barang tidak ditemukan.');
+                    appAlert(data.message || 'Barang tidak ditemukan.', 'warning', 'Data Tidak Ditemukan');
                     isProcessing = false;
                     setScannerStatus('Kamera aktif — Siap memindai QR Code', 'emerald');
                     return;
@@ -594,7 +619,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 bukaFloatingCard(data.item);
             })
             .catch(err => {
-                alert('Gagal mengambil data barang: ' + err);
+                appAlert('Gagal mengambil data barang: ' + err, 'error', 'Terjadi Kesalahan');
                 isProcessing = false;
                 setScannerStatus('Kamera aktif — Siap memindai QR Code', 'emerald');
             });
@@ -634,13 +659,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             badge.className = 'ml-auto font-bold text-rose-100 text-sm';
         }
 
-        if (item.sudah_ada) {
+        const adminInfo = document.getElementById('modalAdminInfo');
+        const btnAdminDetail = document.getElementById('btnAdminDetailBarang');
+        if (btnAdminDetail) {
+            btnAdminDetail.href = 'detail.php?id=' + item.id;
+        }
+
+        if (item.is_admin) {
+            if (adminInfo) adminInfo.classList.remove('hidden');
+            alertSudahAda.classList.add('hidden');
+            formFields.classList.add('hidden');
+        } else if (item.sudah_ada) {
+            if (adminInfo) adminInfo.classList.add('hidden');
             alertSudahAda.classList.remove('hidden');
             formFields.classList.add('hidden');
-        } else if (item.sisa_tersedia <= 0 || item.is_admin) {
+        } else if (item.sisa_tersedia <= 0) {
+            if (adminInfo) adminInfo.classList.add('hidden');
             alertSudahAda.classList.add('hidden');
             formFields.classList.add('hidden');
         } else {
+            if (adminInfo) adminInfo.classList.add('hidden');
             alertSudahAda.classList.add('hidden');
             formFields.classList.remove('hidden');
         }
@@ -681,15 +719,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     function bukaModalManual() {
         const modal = document.getElementById('modalManualInput');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.style.display = 'flex';
+        }
         document.getElementById('manualBarangId').focus();
     }
 
     function tutupModalManual() {
         const modal = document.getElementById('modalManualInput');
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     }
 
     function prosesManualId(e) {

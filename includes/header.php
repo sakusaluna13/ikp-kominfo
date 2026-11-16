@@ -8,6 +8,8 @@ $roleLabel = ($_SESSION['user']['role'] ?? '') === 'admin' ? 'Administrator' : '
 $photoUrl = $_SESSION['user']['photo'] ?? '';
 ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- wadah notifikasi -->
 <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-[min(90vw,320px)] sm:w-80 pointer-events-none [&>*]:pointer-events-auto"></div>
 

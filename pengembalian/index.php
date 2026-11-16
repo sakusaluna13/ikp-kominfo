@@ -202,7 +202,13 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                                                 <button
                                                     type="button"
                                                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 !text-white shadow-2xs transition"
-                                                    onclick="bukaModalKembali(<?= htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8') ?>)"
+                                                    data-peminjaman-id="<?= (int) $row['peminjaman_id'] ?>"
+                                                    data-barang-id="<?= (int) $row['barang_id'] ?>"
+                                                    data-nama-peminjam="<?= e($row['nama_peminjam']) ?>"
+                                                    data-nama-barang="<?= e($row['nama_barang']) ?>"
+                                                    data-kategori="<?= e($row['kategori']) ?>"
+                                                    data-kondisi="<?= e($row['kondisi_awal']) ?>"
+                                                    onclick="bukaModalKembaliDariBtn(this)"
                                                 >
                                                     <i data-lucide="check-square" class="w-3.5 h-3.5 !text-white"></i>
                                                     <span class="hidden sm:inline !text-white">Konfirmasi Terima</span>
@@ -306,7 +312,13 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
                     </button>
                 </div>
 
-                <form method="post" class="flex flex-col gap-4">
+                <form method="post"
+                    data-confirm="Konfirmasi penerimaan barang ini? Unit akan kembali masuk ke stok inventaris."
+                    data-confirm-title="Konfirmasi Pengembalian"
+                    data-confirm-icon="question"
+                    data-confirm-btn="Ya, Terima Barang"
+                    data-confirm-color="#059669"
+                    class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="proses_kembali">
                     <input type="hidden" name="peminjaman_id" id="kembali_peminjaman_id">
@@ -351,6 +363,22 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
         </div>
 
         <script>
+        function bukaModalKembaliDariBtn(btn) {
+            document.getElementById('kembali_peminjaman_id').value = btn.dataset.peminjamanId;
+            document.getElementById('kembali_barang_id').value = btn.dataset.barangId;
+            document.getElementById('kembali_peminjam_nama').textContent = btn.dataset.namaPeminjam;
+            document.getElementById('kembali_barang_nama').textContent = btn.dataset.namaBarang + ' (' + btn.dataset.kategori + ')';
+            document.getElementById('kembali_kondisi').value = btn.dataset.kondisi || 'Baik';
+
+            const modal = document.getElementById('modalPengembalian');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
         function bukaModalKembali(data) {
             document.getElementById('kembali_peminjaman_id').value = data.peminjaman_id;
             document.getElementById('kembali_barang_id').value = data.barang_id;
@@ -359,9 +387,12 @@ $riwayatKembali = $riwayatKembaliStmt->fetchAll();
             document.getElementById('kembali_kondisi').value = data.kondisi_awal || 'Baik';
 
             const modal = document.getElementById('modalPengembalian');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            if (window.lucide) lucide.createIcons();
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+            }
         }
         </script>
     <?php endif; ?>

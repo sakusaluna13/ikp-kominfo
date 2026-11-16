@@ -105,3 +105,11 @@ html, body {
   .data-table th, .data-table td{border:1px solid #999 !important;padding:6px 8px !important;color:#000 !important;font-size:10pt !important}
   .data-table th{background:#eee !important}
 }
+
+
+/* sweetalert2 kustom */
+.swal-popup-custom { border-radius: 1.25rem !important; border: 1px solid #f1f5f9; box-shadow: 0 20px 60px -15px rgba(0,0,0,0.15) !important; font-family: 'DM Sans', sans-serif; }
+.swal-title-custom { font-weight: 800 !important; color: #0f172a !important; font-size: 1.1rem !important; }
+.swal-text-custom { color: #475569 !important; font-size: 0.8rem !important; line-height: 1.6 !important; }
+.swal-btn-custom { border-radius: 0.75rem !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 0.6rem 1.25rem !important; }
+.swal-btn-cancel-custom { border-radius: 0.75rem !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 0.6rem 1.25rem !important; }

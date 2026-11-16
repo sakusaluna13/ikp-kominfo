@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target) {
                 target.classList.remove('hidden');
                 target.classList.add('flex');
+                target.style.display = 'flex';
                 if (window.lucide) lucide.createIcons();
             }
             // tutup dropdown profil bila terbuka
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+                modal.style.display = 'none';
             }
         });
     });
@@ -97,15 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === m) {
                 m.classList.add('hidden');
                 m.classList.remove('flex');
+                m.style.display = 'none';
             }
         });
     });
 
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.app-modal.flex').forEach(m => {
+            document.querySelectorAll('.app-modal').forEach(m => {
                 m.classList.add('hidden');
                 m.classList.remove('flex');
+                m.style.display = 'none';
             });
             closeSidebar();
         }
@@ -136,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const p = loginForm.querySelector('[name=password]');
         if (!u.value.trim() || !p.value) {
             e.preventDefault();
-            alert('Username dan password wajib diisi.');
+            appAlert('Username dan password wajib diisi.', 'warning', 'Kolom Wajib Diisi');
             (!u.value.trim() ? u : p).focus();
             return;
         }
@@ -153,13 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const c = regForm.querySelector('[name=confirmation]');
         if (p && p.value.length < 8) {
             e.preventDefault();
-            alert('Password minimal 8 karakter.');
+            appAlert('Password minimal 8 karakter.', 'warning', 'Password Terlalu Pendek');
             p.focus();
             return;
         }
         if (p && c && p.value !== c.value) {
             e.preventDefault();
-            alert('Konfirmasi password tidak sama.');
+            appAlert('Konfirmasi password tidak sama.', 'warning', 'Password Tidak Cocok');
             c.focus();
         }
     });
@@ -217,3 +221,86 @@ window.showToast = function(message, type = 'success') {
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 };
+
+// dialog konfirmasi kustom pengganti confirm bawaan browser
+window.appConfirm = function(options) {
+    const title        = typeof options === 'string' ? 'Konfirmasi' : (options.title || 'Konfirmasi Tindakan');
+    const text         = typeof options === 'string' ? options : (options.text || '');
+    const icon         = (typeof options === 'object' && options.icon) || 'question';
+    const confirmText  = (typeof options === 'object' && options.confirmText) || 'Ya, Lanjutkan';
+    const cancelText   = (typeof options === 'object' && options.cancelText) || 'Batal';
+    const confirmColor = (typeof options === 'object' && options.confirmColor) || '#102b4e';
+
+    if (window.Swal) {
+        return Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            showCancelButton: true,
+            confirmButtonColor: confirmColor,
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText,
+            reverseButtons: true,
+            focusCancel: false,
+            customClass: {
+                popup:         'swal-popup-custom',
+                title:         'swal-title-custom',
+                htmlContainer: 'swal-text-custom',
+                confirmButton: 'swal-btn-custom',
+                cancelButton:  'swal-btn-cancel-custom'
+            }
+        });
+    }
+    return Promise.resolve({ isConfirmed: window.confirm(text) });
+};
+
+// notifikasi alert kustom pengganti alert bawaan browser
+window.appAlert = function(message, type, title) {
+    type = type || 'info';
+    const defaultTitles = { success: 'Berhasil!', error: 'Terjadi Kesalahan', warning: 'Perhatian', info: 'Informasi' };
+    title = title || defaultTitles[type] || 'Pemberitahuan';
+
+    if (window.Swal) {
+        return Swal.fire({
+            title: title,
+            text: message,
+            icon: type,
+            confirmButtonColor: '#102b4e',
+            confirmButtonText: 'Mengerti',
+            customClass: {
+                popup:         'swal-popup-custom',
+                title:         'swal-title-custom',
+                htmlContainer: 'swal-text-custom',
+                confirmButton: 'swal-btn-custom'
+            }
+        });
+    }
+    window.alert(message);
+    return Promise.resolve({ isConfirmed: true });
+};
+
+// intersepsi submit form yang memiliki atribut data-confirm
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (!form || !form.hasAttribute('data-confirm')) return;
+    if (form.dataset.confirmed === 'true') {
+        form.removeAttribute('data-confirmed');
+        return;
+    }
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    window.appConfirm({
+        title:        form.getAttribute('data-confirm-title') || 'Konfirmasi Tindakan',
+        text:         form.getAttribute('data-confirm'),
+        icon:         form.getAttribute('data-confirm-icon') || 'question',
+        confirmText:  form.getAttribute('data-confirm-btn') || 'Ya, Lanjutkan',
+        confirmColor: form.getAttribute('data-confirm-color') || '#102b4e'
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            form.dataset.confirmed = 'true';
+            form.submit();
+        }
+    });
+}, true);

@@ -73,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>body { font-family: 'DM Sans', sans-serif; }</style>
 </head>
 <body class="bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50/30 text-slate-800 min-h-screen flex items-center justify-center p-4 sm:p-8">

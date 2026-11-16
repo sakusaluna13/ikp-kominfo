@@ -292,7 +292,9 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                         <td class="py-2 px-1 sm:py-2.5 sm:px-2 text-center">
                                             <button
                                                 type="button"
-                                                onclick="bukaModalQR(<?= $b['id'] ?>, '<?= e($b['nama_barang']) ?>')"
+                                                data-id="<?= (int) $b['id'] ?>"
+                                                data-nama="<?= e($b['nama_barang']) ?>"
+                                                onclick="bukaModalQRBarang(this)"
                                                 title="Lihat QR Code"
                                                 class="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition">
                                                 <i data-lucide="qr-code" class="w-3 h-3 sm:w-4 sm:h-4"></i>
@@ -305,14 +307,25 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                     <button
                                                         type="button"
                                                         class="p-1 sm:px-2.5 sm:py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
-                                                        onclick="editBarang(<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>)"
+                                                        data-id="<?= (int) $b['id'] ?>"
+                                                        data-nama="<?= e($b['nama_barang']) ?>"
+                                                        data-kategori="<?= e($b['kategori']) ?>"
+                                                        data-jumlah="<?= (int) $b['jumlah'] ?>"
+                                                        data-kondisi="<?= e($b['kondisi']) ?>"
+                                                        onclick="editBarangDariBtn(this)"
                                                     >
                                                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                                         <span class="hidden sm:inline">Edit</span>
                                                     </button>
 
                                                     <!-- tombol hapus -->
-                                                    <form method="post" onsubmit="return confirm('Hapus barang <?= e($b['nama_barang']) ?>?');" class="inline m-0">
+                                                    <form method="post"
+                                                        data-confirm="Hapus barang <?= e($b['nama_barang']) ?> dari inventaris?"
+                                                        data-confirm-title="Hapus Peralatan"
+                                                        data-confirm-icon="warning"
+                                                        data-confirm-btn="Ya, Hapus"
+                                                        data-confirm-color="#e11d48"
+                                                        class="inline m-0">
                                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                                         <input type="hidden" name="action" value="hapus">
                                                         <input type="hidden" name="id" value="<?= $b['id'] ?>">
@@ -358,7 +371,13 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </button>
                 </div>
 
-                <form method="post" class="flex flex-col gap-4">
+                <form method="post"
+                    data-confirm="Simpan peralatan baru ini ke inventaris multimedia?"
+                    data-confirm-title="Tambah Peralatan"
+                    data-confirm-icon="question"
+                    data-confirm-btn="Simpan Barang"
+                    data-confirm-color="#102b4e"
+                    class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="tambah">
 
@@ -421,7 +440,13 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     </button>
                 </div>
 
-                <form method="post" id="formEditBarang" class="flex flex-col gap-4">
+                <form method="post" id="formEditBarang"
+                    data-confirm="Simpan perubahan data peralatan ini?"
+                    data-confirm-title="Perbarui Data"
+                    data-confirm-icon="question"
+                    data-confirm-btn="Simpan Perubahan"
+                    data-confirm-color="#102b4e"
+                    class="flex flex-col gap-4">
                     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" name="id" id="edit_id">
@@ -465,6 +490,22 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
         </div>
 
         <script>
+        function editBarangDariBtn(btn) {
+            document.getElementById('edit_id').value = btn.dataset.id;
+            document.getElementById('edit_nama').value = btn.dataset.nama;
+            document.getElementById('edit_kategori').value = btn.dataset.kategori;
+            document.getElementById('edit_jumlah').value = btn.dataset.jumlah;
+            document.getElementById('edit_kondisi').value = btn.dataset.kondisi;
+            
+            const modal = document.getElementById('modalEditBarang');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
         function editBarang(item) {
             document.getElementById('edit_id').value = item.id;
             document.getElementById('edit_nama').value = item.nama_barang;
@@ -473,9 +514,12 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
             document.getElementById('edit_kondisi').value = item.kondisi;
             
             const modal = document.getElementById('modalEditBarang');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            if (window.lucide) lucide.createIcons();
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+            }
         }
         </script>
     <?php endif; ?>
@@ -509,20 +553,23 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                     Scan QR ini dengan HP untuk melihat<br>status & detail barang secara langsung
                 </p>
 
-                <!-- tautan qr -->
-                <div class="w-full bg-slate-50 rounded-xl px-3 py-2.5 text-[11px] text-slate-500 font-mono break-all text-center" id="qrUrlText"></div>
-
                 <!-- tombol aksi -->
-                <div class="flex gap-3 w-full">
-                    <button onclick="downloadQR()"
-                        class="flex-1 inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition text-xs">
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                        Download QR
-                    </button>
-                    <button onclick="printQR()"
-                        class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
-                        <i data-lucide="printer" class="w-4 h-4"></i>
-                        Print
+                <div class="flex flex-col gap-2 w-full">
+                    <div class="flex gap-2.5 w-full">
+                        <button type="button" onclick="downloadQR()"
+                            class="flex-1 inline-flex items-center justify-center gap-1.5 bg-[#102b4e] hover:bg-[#1a3d6b] text-white font-bold py-2.5 rounded-xl transition text-xs shadow-xs">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Unduh QR</span>
+                        </button>
+                        <button type="button" onclick="printQR()"
+                            class="flex-1 inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Cetak</span>
+                        </button>
+                    </div>
+                    <button type="button" data-modal-close
+                        class="w-full py-2 text-center text-xs font-semibold text-slate-500 hover:text-slate-700 transition">
+                        Tutup
                     </button>
                 </div>
             </div>
@@ -533,53 +580,87 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
     let currentQRUrl = '';
     let qrInstance   = null;
 
+    function bukaModalQRBarang(btn) {
+        const id = btn.dataset.id;
+        const nama = btn.dataset.nama || 'Peralatan';
+        bukaModalQR(id, nama);
+    }
+
     function bukaModalQR(id, nama) {
-        // Buat URL detail barang
         const baseUrl = window.location.origin + window.location.pathname.replace('index.php', 'detail.php');
         const url = baseUrl + '?id=' + id;
         currentQRUrl = url;
 
         document.getElementById('qrNamaBarang').textContent = nama;
-        document.getElementById('qrUrlText').textContent    = url;
 
-        // Hapus QR lama
         const canvas = document.getElementById('qrCanvas');
         canvas.innerHTML = '';
 
-        // Generate QR baru
-        qrInstance = new QRCode(canvas, {
-            text:         url,
-            width:        200,
-            height:       200,
-            colorDark:    '#102b4e',
-            colorLight:   '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H,
-        });
-
-        // Buka modal
+        // buka modal terlebih dahulu
         const modal = document.getElementById('modalQRCode');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        if (window.lucide) lucide.createIcons();
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.style.display = 'flex';
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // buat qr code dengan penanganan error
+        try {
+            if (typeof QRCode !== 'undefined') {
+                qrInstance = new QRCode(canvas, {
+                    text:         url,
+                    width:        200,
+                    height:       200,
+                    colorDark:    '#102b4e',
+                    colorLight:   '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H,
+                });
+                setTimeout(() => {
+                    const img = canvas.querySelector('img');
+                    if (img) img.removeAttribute('title');
+                    const cnv = canvas.querySelector('canvas');
+                    if (cnv) cnv.removeAttribute('title');
+                }, 50);
+            } else {
+                throw new Error('Library QRCode belum siap');
+            }
+        } catch (err) {
+            // fallback otomatis bila cdn qr code gagal dimuat
+            const fallbackImg = document.createElement('img');
+            fallbackImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=102b4e&data=' + encodeURIComponent(url);
+            fallbackImg.alt = 'QR Code';
+            fallbackImg.className = 'w-[200px] h-[200px] mx-auto rounded-lg';
+            canvas.appendChild(fallbackImg);
+        }
     }
 
     function downloadQR() {
         setTimeout(() => {
-            const canvas = document.getElementById('qrCanvas').querySelector('canvas');
-            if (!canvas) return;
+            const canvasEl = document.getElementById('qrCanvas').querySelector('canvas');
+            const imgEl = document.getElementById('qrCanvas').querySelector('img');
             const link  = document.createElement('a');
-            link.download = 'qr-barang-' + currentQRUrl.split('id=')[1] + '.png';
-            link.href      = canvas.toDataURL('image/png');
-            link.click();
+            link.download = 'qr-barang-' + (currentQRUrl.split('id=')[1] || 'item') + '.png';
+            
+            if (canvasEl) {
+                link.href = canvasEl.toDataURL('image/png');
+                link.click();
+            } else if (imgEl && imgEl.src) {
+                link.href = imgEl.src;
+                link.target = '_blank';
+                link.click();
+            }
         }, 100);
     }
 
     function printQR() {
-        const canvas = document.getElementById('qrCanvas').querySelector('canvas');
-        if (!canvas) return;
-        const nama   = document.getElementById('qrNamaBarang').textContent;
-        const imgSrc = canvas.toDataURL('image/png');
-        const win    = window.open('', '_blank');
+        const canvasEl = document.getElementById('qrCanvas').querySelector('canvas');
+        const imgEl = document.getElementById('qrCanvas').querySelector('img');
+        const imgSrc = canvasEl ? canvasEl.toDataURL('image/png') : (imgEl ? imgEl.src : '');
+        if (!imgSrc) return;
+
+        const nama = document.getElementById('qrNamaBarang').textContent;
+        const win = window.open('', '_blank');
         win.document.write(`
             <html><head><title>QR Code - ${nama}</title>
             <style>
