@@ -213,7 +213,7 @@ foreach ($rows as $r) {
                         </div>
 
                         <div class="col-span-2 sm:col-span-1 flex items-center gap-1.5">
-                            <button type="submit" class="flex-1 sm:flex-none h-8 sm:h-9 px-3 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-lg sm:rounded-xl flex items-center justify-center gap-1 transition">
+                            <button type="submit" class="flex-1 sm:flex-none h-8 sm:h-9 px-3 bg-[#102b4e] hover:bg-[#1a3d6b] !text-white font-bold text-xs rounded-lg sm:rounded-xl flex items-center justify-center gap-1 transition">
                                 <i data-lucide="filter" class="w-3.5 h-3.5 !text-white"></i>
                                 <span class="!text-white">Filter</span>
                             </button>

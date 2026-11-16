@@ -314,7 +314,7 @@ $selectedBarangId = (int) ($_GET['barang_id'] ?? 0);
                     </div>
 
                     <div class="flex items-center justify-end pt-1">
-                        <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs rounded-xl shadow-xs transition whitespace-nowrap">
+                        <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#102b4e] hover:bg-[#1a3d6b] !text-white font-bold text-xs rounded-xl shadow-xs transition whitespace-nowrap">
                             <i data-lucide="send" class="w-3.5 h-3.5 !text-white"></i>
                             <span class="!text-white whitespace-nowrap"><?= $userRole === 'admin' ? 'Catat Peminjaman' : 'Kirim Pengajuan' ?></span>
                         </button>

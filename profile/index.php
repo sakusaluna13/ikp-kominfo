@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     type="password" 
                                     name="password"
                                     class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                                    placeholder="Min. 8 karakter"
+                                    placeholder="Masukkan sandi baru"
                                 >
                             </div>
                             <div class="flex flex-col gap-1.5">
@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     type="password" 
                                     name="confirm_password"
                                     class="h-10 sm:h-11 px-3.5 sm:px-4 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
-                                    placeholder="Ulangi password baru"
+                                    placeholder="Ulangi sandi baru"
                                 >
                             </div>
                         </div>
@@ -237,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- TOMBOL -->
                     <div class="flex items-center gap-2.5 pt-2">
-                        <button type="submit" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition whitespace-nowrap">
+                        <button type="submit" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#102b4e] hover:bg-[#1a3d6b] !text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition whitespace-nowrap">
                             <i data-lucide="save" class="w-4 h-4 !text-white"></i>
                             <span class="!text-white whitespace-nowrap">Simpan Perubahan</span>
                         </button>

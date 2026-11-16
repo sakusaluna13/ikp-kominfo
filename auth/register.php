@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             value="<?= e($nama) ?>" 
                             maxlength="150"
                             class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                            placeholder="Contoh: Muhammad Raihan" 
+                            placeholder="Masukkan nama lengkap" 
                             required
                         >
                     </div>
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             minlength="4"
                             maxlength="50"
                             class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                            placeholder="raihan_kominfo" 
+                            placeholder="Masukkan username" 
                             required
                         >
                     </div>
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             name="password" 
                             minlength="8"
                             class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                            placeholder="Minimal 8 karakter" 
+                            placeholder="Masukkan sandi (min. 8 karakter)" 
                             required
                         >
                         <button type="button" data-toggle-password="password" class="p-1 text-slate-400 hover:text-slate-600">
@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             name="confirmation" 
                             minlength="8"
                             class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                            placeholder="Ketik ulang password" 
+                            placeholder="Ulangi sandi" 
                             required
                         >
                         <button type="button" data-toggle-password="confirmation" class="p-1 text-slate-400 hover:text-slate-600">

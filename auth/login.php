@@ -144,7 +144,7 @@ $notice = get_flash();
                                 id="password" 
                                 name="password" 
                                 class="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none" 
-                                placeholder="Masukkan password" 
+                                placeholder="Masukkan sandi" 
                                 autocomplete="current-password"
                                 required
                             >

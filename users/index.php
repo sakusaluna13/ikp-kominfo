@@ -390,7 +390,7 @@ $userList = $stmt->fetchAll();
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap Pegawai *</label>
                     <input type="text" name="nama"
                         class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Contoh: Budi Santoso" required>
+                        placeholder="Masukkan nama lengkap pegawai" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -398,13 +398,13 @@ $userList = $stmt->fetchAll();
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Username *</label>
                         <input type="text" name="username"
                             class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="budisantoso" required>
+                            placeholder="Masukkan username" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password Awal *</label>
                         <input type="password" name="password"
                             class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Min. 8 karakter" required>
+                            placeholder="Masukkan sandi (min. 8 karakter)" required>
                     </div>
                 </div>
 
@@ -464,7 +464,7 @@ $userList = $stmt->fetchAll();
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru *</label>
                     <input type="password" name="new_password"
                         class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Minimal 8 karakter" required>
+                        placeholder="Masukkan sandi baru (min. 8 karakter)" required>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">

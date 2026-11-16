@@ -1,23 +1,13 @@
 <?php
 declare(strict_types=1);
 
-// ============================================================
-// KONFIGURASI DATABASE
-// Ganti nilai di bawah sesuai hosting yang digunakan
-// ============================================================
+// KONFIGURASI DATABASE — SIMPEL MEDIA KOMINFO SUMUT
+// Sesuaikan nilai di bawah dengan kredensial hosting Anda
 
-// Jika menggunakan environment variable (Railway, Render, dll):
-// $host   = getenv('DB_HOST')   ?: 'localhost';
-// $dbname = getenv('DB_NAME')   ?: 'db_peminjaman_multimedia3';
-// $dbuser = getenv('DB_USER')   ?: 'root';
-// $dbpass = getenv('DB_PASS')   ?: '';
-// $dbport = getenv('DB_PORT')   ?: '3306';
-
-// Untuk InfinityFree / 000webhost — isi manual di sini:
 $host   = 'localhost';
-$dbname = 'db_peminjaman_multimedia3';  // <-- ganti dengan nama DB dari panel hosting
-$dbuser = 'root';                        // <-- ganti dengan user DB dari panel hosting
-$dbpass = 'Raihan110123041';             // <-- ganti dengan password DB dari panel hosting
+$dbname = 'db_peminjaman_multimedia3';
+$dbuser = 'root';
+$dbpass = 'Raihan110123041';
 $dbport = '3306';
 
 try {

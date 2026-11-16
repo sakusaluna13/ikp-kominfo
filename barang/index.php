@@ -326,7 +326,7 @@ $kategoriList = $pdo->query("SELECT DISTINCT kategori FROM barang WHERE kategori
                                                     </form>
                                                 <?php else: ?>
                                                     <?php if ($b['sisa_tersedia'] > 0): ?>
-                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 !text-white inline-flex items-center gap-1 shadow-2xs transition">
+                                                        <a href="../peminjaman/index.php?barang_id=<?= $b['id'] ?>" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#102b4e] hover:bg-[#1a3d6b] !text-white inline-flex items-center gap-1 shadow-2xs transition">
                                                             <span class="!text-white font-bold">Pinjam</span>
                                                             <i data-lucide="arrow-right" class="w-3.5 h-3.5 !text-white"></i>
                                                         </a>
